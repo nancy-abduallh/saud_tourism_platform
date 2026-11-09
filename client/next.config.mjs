@@ -11,10 +11,13 @@ const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: __dirname,
   async rewrites() {
-    return [
-      { source: '/api/:path*', destination: `${API}/api/:path*` },
-      { source: '/uploads/:path*', destination: `${API}/uploads/:path*` },
-    ];
+    if (process.env.API_ORIGIN && process.env.API_ORIGIN !== 'http://localhost:4001') {
+      return [
+        { source: '/api/:path*', destination: `${process.env.API_ORIGIN}/api/:path*` },
+        { source: '/uploads/:path*', destination: `${process.env.API_ORIGIN}/uploads/:path*` },
+      ];
+    }
+    return [];
   },
 };
 
