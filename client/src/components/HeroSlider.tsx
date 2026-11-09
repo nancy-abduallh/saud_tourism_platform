@@ -44,7 +44,7 @@ export default function HeroSlider({ slides, destinations }: { slides: HeroSlide
 
   return (
     <motion.section
-      className="relative z-30 min-h-[820px] w-full bg-navy-950 lg:min-h-[880px]"
+      className="relative z-10 min-h-[820px] w-full bg-navy-950 lg:min-h-[880px]"
       style={{ touchAction: 'pan-y' }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}

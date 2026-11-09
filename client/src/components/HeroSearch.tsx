@@ -85,6 +85,7 @@ export default function HeroSearch({ destinations }: { destinations: Destination
             placeholder="الكل"
             theme="dark"
             align="right"
+            direction="up"
             menuWidth="w-[280px] sm:w-[320px]"
             maxHeight="max-h-48"
           />
@@ -97,6 +98,7 @@ export default function HeroSearch({ destinations }: { destinations: Destination
             options={guestOptions}
             theme="dark"
             align="left"
+            direction="up"
             menuWidth="w-[220px] sm:w-[240px]"
             maxHeight="max-h-48"
           />

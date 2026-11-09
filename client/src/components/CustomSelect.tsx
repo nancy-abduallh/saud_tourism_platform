@@ -21,6 +21,7 @@ interface CustomSelectProps {
   icon?: ReactNode;
   disabled?: boolean;
   align?: 'right' | 'left';
+  direction?: 'down' | 'up';
   menuWidth?: string;
   maxHeight?: string;
 }
@@ -36,6 +37,7 @@ export default function CustomSelect({
   icon,
   disabled = false,
   align = 'right',
+  direction = 'down',
   menuWidth = 'min-w-full w-full',
   maxHeight = 'max-h-56',
 }: CustomSelectProps) {
@@ -75,7 +77,7 @@ export default function CustomSelect({
   const isDark = theme === 'dark';
 
   return (
-    <div ref={containerRef} className={`relative w-full text-right ${className}`}>
+    <div ref={containerRef} className={`relative w-full text-right ${isOpen ? 'z-50' : 'z-10'} ${className}`}>
       {/* Trigger Button */}
       <button
         type="button"
@@ -110,11 +112,11 @@ export default function CustomSelect({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            initial={{ opacity: 0, y: direction === 'up' ? 6 : -6, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            exit={{ opacity: 0, y: direction === 'up' ? 6 : -6, scale: 0.98 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className={`absolute top-full mt-2 z-[100] ${
+            className={`absolute ${direction === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'} z-[100] ${
               align === 'left' ? 'left-0' : 'right-0'
             } ${menuWidth} ${maxHeight} custom-select-menu overflow-y-auto rounded-2xl p-1.5 shadow-2xl backdrop-blur-2xl ${
               isDark
