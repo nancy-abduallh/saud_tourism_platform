@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import PackageCard from './PackageCard';
 import { formatPrice } from '@/lib/format';
 import { CATEGORY_LABEL, type Destination, type PackageSummary } from '@/lib/types';
+import CustomSelect from './CustomSelect';
 
 interface Props {
   packages: PackageSummary[];
@@ -53,12 +54,19 @@ export default function PackagesBrowser({ packages, destinations, initial }: Pro
             </button>
           ))}
         </div>
-        <select value={sort} onChange={(e) => setSort(e.target.value)} className="field !w-auto !py-2">
-          <option value="featured">الترتيب الفاخر</option>
-          <option value="price_asc">السعر: من الأقل</option>
-          <option value="price_desc">السعر: من الأعلى</option>
-          <option value="rating">الأعلى تقييماً</option>
-        </select>
+        <div className="w-56">
+          <CustomSelect
+            value={sort}
+            onChange={(val) => setSort(String(val))}
+            options={[
+              { value: 'featured', label: 'الترتيب الفاخر' },
+              { value: 'price_asc', label: 'السعر: من الأقل' },
+              { value: 'price_desc', label: 'السعر: من الأعلى' },
+              { value: 'rating', label: 'الأعلى تقييماً' },
+            ]}
+            theme="light"
+          />
+        </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[300px_1fr]">

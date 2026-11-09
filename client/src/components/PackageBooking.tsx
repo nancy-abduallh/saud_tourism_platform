@@ -5,6 +5,7 @@ import { Check, Crown, Loader2 } from 'lucide-react';
 import { api } from '@/lib/client-api';
 import { VIP_ADDON_PRICE, formatPrice } from '@/lib/format';
 import type { PackageDetail } from '@/lib/types';
+import CustomSelect from './CustomSelect';
 
 export default function PackageBooking({ pkg, initialGuests = 2, initialDate = '' }: { pkg: PackageDetail; initialGuests?: number; initialDate?: string }) {
   const [f, setF] = useState({ fullName: '', email: '', phone: '', startDate: initialDate, guests: Math.min(initialGuests, pkg.maxGuests), vipAddon: false, notes: '' });
@@ -61,10 +62,16 @@ export default function PackageBooking({ pkg, initialGuests = 2, initialDate = '
                 <input required type="date" min={today} value={f.startDate} onChange={(e) => set('startDate', e.target.value)} className="field-dark [color-scheme:dark]" />
               </div>
               <div>
-                <label className="label text-white/70">الضيوف</label>
-                <select value={f.guests} onChange={(e) => set('guests', Number(e.target.value))} className="field-dark">
-                  {Array.from({ length: pkg.maxGuests }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n}</option>)}
-                </select>
+                <label className="label mb-1.5 block text-white/70">الضيوف</label>
+                <CustomSelect
+                  value={f.guests}
+                  onChange={(val) => set('guests', Number(val))}
+                  options={Array.from({ length: pkg.maxGuests }, (_, i) => i + 1).map((n) => ({
+                    value: n,
+                    label: `${n} ${n === 1 ? 'ضيف' : n === 2 ? 'ضيفان' : n <= 10 ? 'ضيوف' : 'ضيف'}`,
+                  }))}
+                  theme="dark"
+                />
               </div>
             </div>
             <label className="flex cursor-pointer items-center justify-between rounded-xl border border-white/15 px-4 py-3 text-sm">

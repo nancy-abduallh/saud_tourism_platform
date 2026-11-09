@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { CalendarDays, MapPin, Search, Sparkles, Users } from 'lucide-react';
 import { CATEGORY_LABEL, type Destination } from '@/lib/types';
 import { EASE } from '@/lib/motion';
+import { DEFAULT_DESTINATIONS } from '@/lib/default-data';
+import CustomSelect, { type SelectOption } from './CustomSelect';
 
 export default function HeroSearch({ destinations }: { destinations: Destination[] }) {
   const router = useRouter();
@@ -12,6 +14,29 @@ export default function HeroSearch({ destinations }: { destinations: Destination
   const [category, setCategory] = useState('');
   const [date, setDate] = useState('');
   const [guests, setGuests] = useState(2);
+
+  const destList = destinations && destinations.length > 0 ? destinations : DEFAULT_DESTINATIONS;
+  const destinationOptions: SelectOption[] = [
+    { value: '', label: 'جميع الوجهات' },
+    ...destList.map((d) => ({
+      value: d.slug,
+      label: d.name,
+      badge: d.nameEn || undefined,
+    })),
+  ];
+
+  const categoryOptions: SelectOption[] = [
+    { value: '', label: 'الكل' },
+    ...Object.entries(CATEGORY_LABEL).map(([k, v]) => ({
+      value: k,
+      label: v,
+    })),
+  ];
+
+  const guestOptions: SelectOption[] = [1, 2, 3, 4, 5, 6, 8, 10].map((n) => ({
+    value: n,
+    label: `${n} ${n === 1 ? 'ضيف' : n === 2 ? 'ضيفان' : n <= 10 ? 'ضيوف' : 'ضيف'}`,
+  }));
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,28 +59,39 @@ export default function HeroSearch({ destinations }: { destinations: Destination
         <h2 className="font-display text-lg font-bold text-white">خطّط لرحلتك الفاخرة</h2>
       </div>
 
-      <label className="label flex items-center gap-2 text-white/80"><MapPin size={15} /> الوجهة</label>
-      <select value={dest} onChange={(e) => setDest(e.target.value)} className="field-dark mb-4">
-        <option value="">جميع الوجهات</option>
-        {destinations.map((d) => <option key={d.id} value={d.slug}>{d.name}</option>)}
-      </select>
+      <label className="label mb-1.5 flex items-center gap-2 text-white/80"><MapPin size={15} /> الوجهة</label>
+      <div className="mb-4">
+        <CustomSelect
+          value={dest}
+          onChange={(val) => setDest(String(val))}
+          options={destinationOptions}
+          placeholder="جميع الوجهات"
+          theme="dark"
+        />
+      </div>
 
-      <label className="label flex items-center gap-2 text-white/80"><CalendarDays size={15} /> تاريخ الوصول</label>
+      <label className="label mb-1.5 flex items-center gap-2 text-white/80"><CalendarDays size={15} /> تاريخ الوصول</label>
       <input type="date" value={date} min={new Date().toISOString().split('T')[0]} onChange={(e) => setDate(e.target.value)} className="field-dark mb-4 [color-scheme:dark]" />
 
       <div className="mb-5 grid grid-cols-2 gap-3">
         <div>
-          <label className="label text-white/80">التجربة</label>
-          <select value={category} onChange={(e) => setCategory(e.target.value)} className="field-dark">
-            <option value="">الكل</option>
-            {Object.entries(CATEGORY_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-          </select>
+          <label className="label mb-1.5 block text-white/80">التجربة</label>
+          <CustomSelect
+            value={category}
+            onChange={(val) => setCategory(String(val))}
+            options={categoryOptions}
+            placeholder="الكل"
+            theme="dark"
+          />
         </div>
         <div>
-          <label className="label flex items-center gap-1 text-white/80"><Users size={15} /> الضيوف</label>
-          <select value={guests} onChange={(e) => setGuests(Number(e.target.value))} className="field-dark">
-            {[1, 2, 3, 4, 5, 6, 8, 10].map((n) => <option key={n} value={n}>{n}</option>)}
-          </select>
+          <label className="label mb-1.5 flex items-center gap-1 text-white/80"><Users size={15} /> الضيوف</label>
+          <CustomSelect
+            value={guests}
+            onChange={(val) => setGuests(Number(val))}
+            options={guestOptions}
+            theme="dark"
+          />
         </div>
       </div>
 
