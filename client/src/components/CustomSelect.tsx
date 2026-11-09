@@ -16,9 +16,13 @@ interface CustomSelectProps {
   options: SelectOption[];
   placeholder?: string;
   className?: string;
+  dropdownClassName?: string;
   theme?: 'dark' | 'light';
   icon?: ReactNode;
   disabled?: boolean;
+  align?: 'right' | 'left';
+  menuWidth?: string;
+  maxHeight?: string;
 }
 
 export default function CustomSelect({
@@ -27,9 +31,13 @@ export default function CustomSelect({
   options,
   placeholder = 'اختر...',
   className = '',
+  dropdownClassName = '',
   theme = 'dark',
   icon,
   disabled = false,
+  align = 'right',
+  menuWidth = 'min-w-full w-full',
+  maxHeight = 'max-h-56',
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -106,15 +114,13 @@ export default function CustomSelect({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className={`absolute top-full mt-2 w-full z-50 max-h-64 overflow-y-auto rounded-2xl p-1.5 shadow-2xl backdrop-blur-2xl ${
+            className={`absolute top-full mt-2 z-50 ${
+              align === 'left' ? 'left-0' : 'right-0'
+            } ${menuWidth} ${maxHeight} custom-select-menu overflow-y-auto rounded-2xl p-1.5 shadow-2xl backdrop-blur-2xl ${
               isDark
                 ? 'border border-gold-500/40 bg-[#091326]/95 text-white shadow-navy-950/90'
                 : 'border border-gold-500/40 bg-white/98 text-navy-950 shadow-navy-900/20'
-            }`}
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#c9a24b transparent',
-            }}
+            } ${dropdownClassName}`}
             role="listbox"
           >
             {options.map((opt) => {
@@ -141,7 +147,7 @@ export default function CustomSelect({
                 >
                   <div className="flex items-center gap-2.5 truncate">
                     {opt.icon && <span className="shrink-0">{opt.icon}</span>}
-                    <span className="truncate">{opt.label}</span>
+                    <span className="truncate whitespace-normal text-start">{opt.label}</span>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">

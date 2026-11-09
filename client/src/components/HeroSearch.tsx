@@ -52,11 +52,11 @@ export default function HeroSearch({ destinations }: { destinations: Destination
     <motion.form
       onSubmit={submit}
       initial={{ opacity: 0, x: -70 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8, duration: 1, ease: EASE }}
-      className="glass w-full max-w-md rounded-3xl border-2 border-gold-400/70 p-6 text-white shadow-2xl shadow-navy-950/80 backdrop-blur-xl"
+      className="glass w-full max-w-[480px] xl:max-w-[510px] rounded-3xl border-2 border-gold-400/70 p-7 text-white shadow-2xl shadow-navy-950/80 backdrop-blur-xl"
     >
       <div className="mb-5 flex items-center gap-2 text-gold-300">
         <Sparkles size={18} />
-        <h2 className="font-display text-lg font-bold text-white">خطّط لرحلتك الفاخرة</h2>
+        <h2 className="font-display text-xl font-bold text-white">خطّط لرحلتك الفاخرة</h2>
       </div>
 
       <label className="label mb-1.5 flex items-center gap-2 text-white/80"><MapPin size={15} /> الوجهة</label>
@@ -67,13 +67,15 @@ export default function HeroSearch({ destinations }: { destinations: Destination
           options={destinationOptions}
           placeholder="جميع الوجهات"
           theme="dark"
+          menuWidth="w-full"
+          maxHeight="max-h-56"
         />
       </div>
 
       <label className="label mb-1.5 flex items-center gap-2 text-white/80"><CalendarDays size={15} /> تاريخ الوصول</label>
       <input type="date" value={date} min={new Date().toISOString().split('T')[0]} onChange={(e) => setDate(e.target.value)} className="field-dark mb-4 [color-scheme:dark]" />
 
-      <div className="mb-5 grid grid-cols-2 gap-3">
+      <div className="mb-5 grid grid-cols-2 gap-3.5">
         <div>
           <label className="label mb-1.5 block text-white/80">التجربة</label>
           <CustomSelect
@@ -82,6 +84,9 @@ export default function HeroSearch({ destinations }: { destinations: Destination
             options={categoryOptions}
             placeholder="الكل"
             theme="dark"
+            align="right"
+            menuWidth="min-w-full sm:min-w-[280px]"
+            maxHeight="max-h-52"
           />
         </div>
         <div>
@@ -91,11 +96,14 @@ export default function HeroSearch({ destinations }: { destinations: Destination
             onChange={(val) => setGuests(Number(val))}
             options={guestOptions}
             theme="dark"
+            align="left"
+            menuWidth="min-w-full sm:min-w-[220px]"
+            maxHeight="max-h-52"
           />
         </div>
       </div>
 
-      <button className="btn-gold w-full"><Search size={18} /> ابحث</button>
+      <button className="btn-gold w-full text-base"><Search size={18} /> ابحث</button>
     </motion.form>
   );
 }

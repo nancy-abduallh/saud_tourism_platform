@@ -83,7 +83,7 @@ export default function HeroSlider({ slides, destinations }: { slides: HeroSlide
       ))}
 
       {/* Content */}
-      <div className="container-x relative z-10 grid min-h-[820px] items-center gap-10 pb-44 pt-28 lg:min-h-[880px] lg:grid-cols-[1fr_420px]">
+      <div className="container-x relative z-10 grid min-h-[820px] items-center gap-10 pb-44 pt-28 lg:min-h-[880px] lg:grid-cols-[1fr_480px] xl:grid-cols-[1fr_520px]">
         <AnimatePresence mode="wait">
           <motion.div key={index} variants={group} initial="hidden" animate="show" exit="exit" className="max-w-3xl">
             {slide.titleEn && (
