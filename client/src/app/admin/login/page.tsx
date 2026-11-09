@@ -47,26 +47,30 @@ export default function AdminLogin() {
         </div>
         <h1 className="mt-4 text-center font-display text-xl font-bold text-white/90">لوحة تحكم الإدارة</h1>
         <div className="mt-8 space-y-4">
-          <input required type="email" dir="ltr" placeholder="البريد الإلكتروني" className="field-dark" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input required type="email" dir="ltr" placeholder="البريد الإلكتروني" className="field" value={email} onChange={(e) => setEmail(e.target.value)} />
           <div className="relative">
             <input
               required
               type={showPassword ? 'text' : 'password'}
               dir="ltr"
               placeholder="كلمة المرور"
-              className="field-dark pr-11"
+              className="field pr-11"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-white/50 hover:text-gold-400 focus:outline-none transition-colors"
+              className="absolute inset-y-0 right-0 z-10 flex items-center pr-3.5 text-black hover:text-gray-700 focus:outline-none transition-colors cursor-pointer"
               aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
               title={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
               tabIndex={-1}
             >
-              {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+              {showPassword ? (
+                <EyeOff size={20} className="text-black stroke-[2.2]" />
+              ) : (
+                <Eye size={20} className="text-black stroke-[2.2]" />
+              )}
             </button>
           </div>
           {error && <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-300">{error}</p>}
