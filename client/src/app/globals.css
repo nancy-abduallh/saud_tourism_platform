@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Dancing+Script:wght@400..700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.allura-regular {
+  font-family: "Allura", cursive !important;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.dancing-script {
+  font-family: "Dancing Script", cursive !important;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+html { scroll-behavior: smooth; }
+body { @apply bg-white font-sans text-navy-900 antialiased; }
+::selection { background: #c9a24b; color: #0a1631; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #060d1f; }
+::-webkit-scrollbar-thumb { background: linear-gradient(#e8cf8a, #a8812f); border-radius: 8px; }
+
+@layer components {
+  .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+
+  .btn-gold {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gold-gradient px-6 py-3 font-bold text-navy-950 shadow-gold transition duration-300 hover:-translate-y-0.5 hover:shadow-goldlg disabled:opacity-60;
+  }
+  .btn-gold::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.6) 50%, transparent 70%);
+    transform: translateX(130%);
+    transition: transform 0.9s;
+  }
+  .btn-gold:hover::after { transform: translateX(-130%); }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-gold-400/70 px-6 py-3 font-bold text-gold-200 transition duration-300 hover:bg-gold-400 hover:text-navy-950;
+  }
+  .glass { @apply border border-white/20 bg-white/10 backdrop-blur-xl; }
+  .text-gold-gradient {
+    @apply bg-gold-gradient bg-clip-text text-transparent;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-navy-900/15 bg-white px-4 py-3 text-navy-900 outline-none transition focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30;
+  }
+  .field-dark {
+    @apply w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/50 focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30;
+  }
+  .field-dark option { color: #0a1631; }
+  .label { @apply mb-1.5 block text-sm font-medium; }
+  .bg-pattern { background-image: radial-gradient(rgba(201, 162, 75, 0.18) 1px, transparent 1px); background-size: 24px 24px; }
+}
+
+@keyframes heroProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }

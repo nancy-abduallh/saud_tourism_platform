@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PackageCategory {
+  LUXURY
+  VIP
+  UMRAH
+  DESERT
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(120)
+  email        String   @unique @db.VarChar(190)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  role         Role     @default(ADMIN)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model HeroSlide {
+  id        Int     @id @default(autoincrement())
+  title     String  @db.VarChar(200)
+  titleEn   String? @map("title_en") @db.VarChar(200)
+  subtitle  String? @db.VarChar(400)
+  image     String  @db.VarChar(400)
+  ctaText   String  @default("اكتشف الآن") @map("cta_text") @db.VarChar(80)
+  ctaLink   String  @default("/packages") @map("cta_link") @db.VarChar(200)
+  sortOrder Int     @default(0) @map("sort_order")
+  isActive  Boolean @default(true) @map("is_active")
+
+  @@map("hero_slides")
+}
+
+model Destination {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique @db.VarChar(120)
+  name        String    @db.VarChar(120)
+  nameEn      String?   @map("name_en") @db.VarChar(120)
+  tagline     String    @db.VarChar(200)
+  description String    @db.Text
+  image       String    @db.VarChar(400)
+  sortOrder   Int       @default(0) @map("sort_order")
+  isActive    Boolean   @default(true) @map("is_active")
+  packages    Package[]
+
+  @@map("destinations")
+}
+
+model Package {
+  id            Int                @id @default(autoincrement())
+  slug          String             @unique @db.VarChar(160)
+  title         String             @db.VarChar(200)
+  titleEn       String?            @map("title_en") @db.VarChar(200)
+  summary       String             @db.VarChar(500)
+  description   String             @db.Text
+  destinationId Int                @map("destination_id")
+  category      PackageCategory    @default(LUXURY)
+  priceSar      Int                @map("price_sar")
+  days          Int                @default(5)
+  nights        Int                @default(4)
+  rating        Float              @default(5)
+  maxGuests     Int                @default(6) @map("max_guests")
+  coverImage    String             @map("cover_image") @db.VarChar(400)
+  badges        String?            @db.VarChar(300)
+  isFeatured    Boolean            @default(false) @map("is_featured")
+  isActive      Boolean            @default(true) @map("is_active")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  destination   Destination        @relation(fields: [destinationId], references: [id])
+  images        PackageImage[]
+  inclusions    PackageInclusion[]
+  itinerary     ItineraryDay[]
+  bookings      Booking[]
+
+  @@index([destinationId])
+  @@map("packages")
+}
+
+model PackageImage {
+  id        Int     @id @default(autoincrement())
+  packageId Int     @map("package_id")
+  url       String  @db.VarChar(400)
+  sortOrder Int     @default(0) @map("sort_order")
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@index([packageId])
+  @@map("package_images")
+}
+
+model PackageInclusion {
+  id        Int     @id @default(autoincrement())
+  packageId Int     @map("package_id")
+  text      String  @db.VarChar(255)
+  sortOrder Int     @default(0) @map("sort_order")
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@index([packageId])
+  @@map("package_inclusions")
+}
+
+model ItineraryDay {
+  id          Int     @id @default(autoincrement())
+  packageId   Int     @map("package_id")
+  dayNumber   Int     @map("day_number")
+  title       String  @db.VarChar(200)
+  description String  @db.Text
+  package     Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@index([packageId])
+  @@map("itinerary_days")
+}
+
+model VipService {
+  id          Int     @id @default(autoincrement())
+  title       String  @db.VarChar(160)
+  description String  @db.VarChar(300)
+  icon        String  @default("concierge") @db.VarChar(40)
+  sortOrder   Int     @default(0) @map("sort_order")
+  isActive    Boolean @default(true) @map("is_active")
+
+  @@map("vip_services")
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(120)
+  location   String?  @db.VarChar(120)
+  rating     Int      @default(5)
+  comment    String   @db.Text
+  isApproved Boolean  @default(true) @map("is_approved")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("reviews")
+}
+
+model Booking {
+  id        Int           @id @default(autoincrement())
+  reference String        @unique @db.VarChar(20)
+  packageId Int           @map("package_id")
+  fullName  String        @map("full_name") @db.VarChar(120)
+  email     String        @db.VarChar(190)
+  phone     String        @db.VarChar(30)
+  startDate DateTime      @map("start_date") @db.Date
+  guests    Int           @default(1)
+  vipAddon  Boolean       @default(false) @map("vip_addon")
+  notes     String?       @db.Text
+  totalSar  Int           @map("total_sar")
+  status    BookingStatus @default(PENDING)
+  createdAt DateTime      @default(now()) @map("created_at")
+  package   Package       @relation(fields: [packageId], references: [id])
+
+  @@index([packageId])
+  @@map("bookings")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(120)
+  email     String   @db.VarChar(190)
+  phone     String?  @db.VarChar(30)
+  message   String   @db.Text
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(190)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("subscribers")
+}
