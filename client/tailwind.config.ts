@@ -9,10 +9,10 @@ const config: Config = {
         gold: { 50: '#fdf9ec', 100: '#f9efc9', 200: '#f3e2a5', 300: '#e8cf8a', 400: '#d9b563', 500: '#c9a24b', 600: '#a8812f', 700: '#86641f' },
       },
       fontFamily: {
-        sans: ['var(--font-tajawal)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-cairo)', 'var(--font-tajawal)', 'system-ui', 'sans-serif'],
-        dancing: ['var(--font-dancing)', 'Dancing Script', 'cursive'],
-        allura: ['var(--font-allura)', 'Allura', 'cursive'],
+        sans: ['Tajawal', 'Cairo', '"Noto Sans Arabic"', 'Arial', 'sans-serif'],
+        display: ['Cairo', 'Tajawal', '"Noto Sans Arabic"', 'Arial', 'sans-serif'],
+        dancing: ['"Dancing Script"', 'cursive'],
+        allura: ['Allura', 'cursive'],
       },
       backgroundImage: {
         'gold-gradient': 'linear-gradient(135deg,#fff0b8 0%,#f3d37a 30%,#dfb34f 65%,#f9e59d 100%)',

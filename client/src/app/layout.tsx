@@ -1,11 +1,5 @@
 import type { Metadata } from 'next';
-import { Cairo, Tajawal, Dancing_Script, Allura } from 'next/font/google';
 import './globals.css';
-
-const tajawal = Tajawal({ subsets: ['arabic', 'latin'], weight: ['300', '400', '500', '700', '800'], variable: '--font-tajawal', display: 'swap' });
-const cairo = Cairo({ subsets: ['arabic', 'latin'], weight: ['600', '700', '800', '900'], variable: '--font-cairo', display: 'swap' });
-const dancingScript = Dancing_Script({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-dancing', display: 'swap' });
-const allura = Allura({ subsets: ['latin'], weight: '400', variable: '--font-allura', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'SA للسياحة | تجارب سعودية فاخرة',
@@ -15,7 +9,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${tajawal.variable} ${cairo.variable} ${dancingScript.variable} ${allura.variable}`}>
+    <html lang="ar" dir="rtl">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Allura&family=Cairo:wght@400;600;700;800;900&family=Dancing+Script:wght@400..700&family=Tajawal:wght@300;400;500;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

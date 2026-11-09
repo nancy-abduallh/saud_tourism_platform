@@ -1,23 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Allura&family=Dancing+Script:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Cairo:wght@400;600;700;800;900&family=Dancing+Script:wght@400..700&family=Tajawal:wght@300;400;500;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.allura-regular {
+.allura-regular, .font-allura {
   font-family: "Allura", cursive !important;
   font-weight: 400;
   font-style: normal;
 }
 
-.dancing-script {
+.dancing-script, .font-dancing {
   font-family: "Dancing Script", cursive !important;
   font-optical-sizing: auto;
   font-style: normal;
 }
 
 html { scroll-behavior: smooth; }
-body { @apply bg-white font-sans text-navy-900 antialiased; }
+body {
+  font-family: 'Tajawal', 'Cairo', 'Noto Sans Arabic', Arial, sans-serif;
+  @apply bg-white text-navy-900 antialiased;
+}
 ::selection { background: #c9a24b; color: #0a1631; }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #060d1f; }
@@ -48,16 +51,14 @@ body { @apply bg-white font-sans text-navy-900 antialiased; }
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
-
+  .bg-pattern {
+    background-image: radial-gradient(rgba(201, 162, 75, 0.15) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
   .field {
-    @apply w-full rounded-xl border border-navy-900/15 bg-white px-4 py-3 text-navy-900 outline-none transition focus:border-gold-500 focus:ring-2 focus:ring-gold-400/30;
+    @apply w-full rounded-xl border border-navy-100 bg-white px-4 py-3 text-navy-900 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20;
   }
   .field-dark {
-    @apply w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white outline-none transition placeholder:text-white/50 focus:border-gold-400 focus:ring-2 focus:ring-gold-400/30;
+    @apply w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder-white/40 transition focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20;
   }
-  .field-dark option { color: #0a1631; }
-  .label { @apply mb-1.5 block text-sm font-medium; }
-  .bg-pattern { background-image: radial-gradient(rgba(201, 162, 75, 0.18) 1px, transparent 1px); background-size: 24px 24px; }
 }
-
-@keyframes heroProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
