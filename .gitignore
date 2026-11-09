@@ -36,3 +36,5 @@ Thumbs.db
 .idea/
 
 powershell.cmd
+
+/package-lock.json

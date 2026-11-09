@@ -1,5 +1,6 @@
 import PackageForm from '@/components/admin/PackageForm';
 
-export default function EditPackagePage({ params }: { params: { id: string } }) {
-  return <PackageForm id={params.id} />;
+export default async function EditPackagePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <PackageForm id={id} />;
 }

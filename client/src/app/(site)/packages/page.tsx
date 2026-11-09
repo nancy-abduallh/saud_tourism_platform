@@ -5,7 +5,8 @@ import type { Destination, PackageSummary } from '@/lib/types';
 export const metadata = { title: 'الباقات الفاخرة | SA للسياحة' };
 export const revalidate = 30;
 
-export default async function PackagesPage({ searchParams }: { searchParams: { destination?: string; category?: string; guests?: string; date?: string } }) {
+export default async function PackagesPage({ searchParams }: { searchParams: Promise<{ destination?: string; category?: string; guests?: string; date?: string }> }) {
+  const resolvedSearchParams = await searchParams;
   const [packages, destinations] = await Promise.all([
     serverFetch<PackageSummary[]>('/packages', []),
     serverFetch<Destination[]>('/destinations', []),
@@ -29,7 +30,7 @@ export default async function PackagesPage({ searchParams }: { searchParams: { d
       <PackagesBrowser
         packages={packages}
         destinations={destinations}
-        initial={{ destination: searchParams.destination, category: searchParams.category, guests: Number(searchParams.guests) || undefined, date: searchParams.date }}
+        initial={{ destination: resolvedSearchParams.destination, category: resolvedSearchParams.category, guests: Number(resolvedSearchParams.guests) || undefined, date: resolvedSearchParams.date }}
       />
     </>
   );

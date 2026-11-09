@@ -12,13 +12,22 @@ import type { PackageDetail, PackageSummary } from '@/lib/types';
 
 export const revalidate = 30;
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const pkg = await serverFetch<PackageDetail | null>(`/packages/${params.slug}`, null);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const pkg = await serverFetch<PackageDetail | null>(`/packages/${slug}`, null);
   return { title: pkg ? `${pkg.title} | SA للسياحة` : 'الباقة غير موجودة' };
 }
 
-export default async function PackagePage({ params, searchParams }: { params: { slug: string }; searchParams: { guests?: string; date?: string } }) {
-  const pkg = await serverFetch<PackageDetail | null>(`/packages/${params.slug}`, null);
+export default async function PackagePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ guests?: string; date?: string }>;
+}) {
+  const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
+  const pkg = await serverFetch<PackageDetail | null>(`/packages/${slug}`, null);
   if (!pkg) notFound();
 
   const related = await serverFetch<PackageSummary[]>(`/packages?destination=${pkg.destination.slug}&limit=3&exclude=${pkg.id}`, []);
@@ -39,7 +48,7 @@ export default async function PackagePage({ params, searchParams }: { params: { 
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[380px_1fr]">
           <aside className="order-2 lg:sticky lg:top-28 lg:order-1 lg:self-start">
-            <PackageBooking pkg={pkg} initialGuests={Number(searchParams.guests) || 2} initialDate={searchParams.date} />
+            <PackageBooking pkg={pkg} initialGuests={Number(resolvedSearchParams.guests) || 2} initialDate={resolvedSearchParams.date} />
           </aside>
 
           <div className="order-1 lg:order-2">
