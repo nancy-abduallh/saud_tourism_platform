@@ -13,7 +13,7 @@ export default function CtaBanner() {
   return (
     <section ref={ref} className="relative overflow-hidden py-28 md:py-36">
       <motion.div style={{ y }} className="absolute inset-x-0 -top-[15%] h-[130%]">
-        <Img src="/images/gallery-3.jpg" alt="" className="h-full w-full object-cover" />
+        <Img src="/images/gallery-3.jpg" alt="رحلتك الفاخرة تبدأ من هنا - SA للسياحة السعودية" className="h-full w-full object-cover" />
       </motion.div>
       <div className="absolute inset-0 bg-gradient-to-l from-navy-950/95 via-navy-950/80 to-navy-950/60" />
       <div className="container-x relative text-center">

@@ -42,10 +42,10 @@ export default function WhyUs() {
 
         <div className="relative mx-auto grid h-[520px] w-full max-w-lg grid-cols-2 gap-5">
           <motion.div style={{ y: y1 }} className="mt-10 overflow-hidden rounded-3xl border-4 border-white shadow-2xl">
-            <Img src="/images/gallery-1.jpg" alt="تجربة فاخرة" className="h-full w-full object-cover" />
+            <Img src="/images/gallery-1.jpg" alt="تجربة سياحية فاخرة في صحراء المملكة العربية السعودية" className="h-full w-full object-cover" />
           </motion.div>
           <motion.div style={{ y: y2 }} className="mb-10 overflow-hidden rounded-3xl border-4 border-white shadow-2xl">
-            <Img src="/images/gallery-2.jpg" alt="ضيافة سعودية" className="h-full w-full object-cover" />
+            <Img src="/images/gallery-2.jpg" alt="ضيافة سعودية أصيلة في مخيم فاخر" className="h-full w-full object-cover" />
           </motion.div>
           <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
             <div className="animate-float rounded-2xl border-2 border-gold-400 bg-navy-900 px-6 py-4 text-center shadow-2xl shadow-navy-950/80">
