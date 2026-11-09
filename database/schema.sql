@@ -1,5 +1,6 @@
-CREATE DATABASE IF NOT EXISTS saud_tourism CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE saud_tourism;
+-- Hostinger / Production compatible schema (database already selected)
+-- CREATE DATABASE IF NOT EXISTS saud_tourism CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE saud_tourism;
 
 CREATE TABLE IF NOT EXISTS users (
   id INT NOT NULL AUTO_INCREMENT,
