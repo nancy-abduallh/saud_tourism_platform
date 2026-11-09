@@ -6,7 +6,7 @@ import type { Destination } from '@/lib/types';
 export default function DestinationCards({ destinations }: { destinations: Destination[] }) {
   if (!destinations.length) return null;
   return (
-    <section id="destinations" className="relative z-20 -mt-36 pb-16">
+    <section id="destinations" className="relative z-10 -mt-24 pb-16">
       <div className="container-x">
         <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {destinations.slice(0, 4).map((d) => (

@@ -52,7 +52,7 @@ export default function HeroSearch({ destinations }: { destinations: Destination
     <motion.form
       onSubmit={submit}
       initial={{ opacity: 0, x: -70 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8, duration: 1, ease: EASE }}
-      className="glass w-full max-w-[480px] xl:max-w-[510px] rounded-3xl border-2 border-gold-400/70 p-7 text-white shadow-2xl shadow-navy-950/80 backdrop-blur-xl"
+      className="glass w-full rounded-3xl border-2 border-gold-400/70 p-7 text-white shadow-2xl shadow-navy-950/80 backdrop-blur-xl"
     >
       <div className="mb-5 flex items-center gap-2 text-gold-300">
         <Sparkles size={18} />
@@ -85,8 +85,8 @@ export default function HeroSearch({ destinations }: { destinations: Destination
             placeholder="الكل"
             theme="dark"
             align="right"
-            menuWidth="min-w-full sm:min-w-[280px]"
-            maxHeight="max-h-52"
+            menuWidth="w-[280px] sm:w-[320px]"
+            maxHeight="max-h-48"
           />
         </div>
         <div>
@@ -97,8 +97,8 @@ export default function HeroSearch({ destinations }: { destinations: Destination
             options={guestOptions}
             theme="dark"
             align="left"
-            menuWidth="min-w-full sm:min-w-[220px]"
-            maxHeight="max-h-52"
+            menuWidth="w-[220px] sm:w-[240px]"
+            maxHeight="max-h-48"
           />
         </div>
       </div>

@@ -114,7 +114,7 @@ export default function CustomSelect({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className={`absolute top-full mt-2 z-50 ${
+            className={`absolute top-full mt-2 z-[100] ${
               align === 'left' ? 'left-0' : 'right-0'
             } ${menuWidth} ${maxHeight} custom-select-menu overflow-y-auto rounded-2xl p-1.5 shadow-2xl backdrop-blur-2xl ${
               isDark

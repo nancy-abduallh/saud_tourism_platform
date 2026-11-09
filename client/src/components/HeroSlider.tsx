@@ -44,7 +44,7 @@ export default function HeroSlider({ slides, destinations }: { slides: HeroSlide
 
   return (
     <motion.section
-      className="relative min-h-[820px] w-full overflow-hidden bg-navy-950 lg:min-h-[880px]"
+      className="relative z-30 min-h-[820px] w-full bg-navy-950 lg:min-h-[880px]"
       style={{ touchAction: 'pan-y' }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -53,39 +53,41 @@ export default function HeroSlider({ slides, destinations }: { slides: HeroSlide
         if (info.offset.x > 80) prev();
       }}
     >
-      {/* Background slides with Ken Burns */}
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={slide.id + '-' + index}
-          className="absolute inset-0"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          transition={{ duration: 1.4, ease: 'easeInOut' }}
-        >
-          <motion.div className="absolute inset-0" initial={{ scale: 1.18 }} animate={{ scale: 1 }} transition={{ duration: DURATION + 3, ease: 'linear' }}>
-            <Img src={slide.image} alt={slide.title} priority className="h-full w-full object-cover" />
+      {/* Background layer with overflow-hidden for scaling animation and particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={slide.id + '-' + index}
+            className="absolute inset-0"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 1.4, ease: 'easeInOut' }}
+          >
+            <motion.div className="absolute inset-0" initial={{ scale: 1.18 }} animate={{ scale: 1 }} transition={{ duration: DURATION + 3, ease: 'linear' }}>
+              <Img src={slide.image} alt={slide.title} priority className="h-full w-full object-cover" />
+            </motion.div>
           </motion.div>
-        </motion.div>
-      </AnimatePresence>
+        </AnimatePresence>
 
-      {/* Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-l from-navy-950/90 via-navy-950/45 to-navy-950/10" />
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-l from-navy-950/90 via-navy-950/45 to-navy-950/10" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
 
-      {/* Floating gold particles */}
-      {Array.from({ length: 14 }).map((_, i) => (
-        <motion.span
-          key={i}
-          className="absolute h-1 w-1 rounded-full bg-gold-300/80"
-          style={{ left: `${(i * 73) % 100}%`, top: `${(i * 41) % 80}%` }}
-          animate={{ y: [0, -40, 0], opacity: [0, 0.9, 0] }}
-          transition={{ duration: 5 + (i % 5), repeat: Infinity, delay: i * 0.4 }}
-        />
-      ))}
+        {/* Floating gold particles */}
+        {Array.from({ length: 14 }).map((_, i) => (
+          <motion.span
+            key={i}
+            className="absolute h-1 w-1 rounded-full bg-gold-300/80"
+            style={{ left: `${(i * 73) % 100}%`, top: `${(i * 41) % 80}%` }}
+            animate={{ y: [0, -40, 0], opacity: [0, 0.9, 0] }}
+            transition={{ duration: 5 + (i % 5), repeat: Infinity, delay: i * 0.4 }}
+          />
+        ))}
+      </div>
 
       {/* Content */}
-      <div className="container-x relative z-10 grid min-h-[820px] items-center gap-10 pb-44 pt-28 lg:min-h-[880px] lg:grid-cols-[1fr_480px] xl:grid-cols-[1fr_520px]">
+      <div className="container-x relative z-40 grid min-h-[820px] items-center gap-8 pb-48 pt-28 lg:min-h-[880px] lg:grid-cols-[1fr_auto]">
         <AnimatePresence mode="wait">
-          <motion.div key={index} variants={group} initial="hidden" animate="show" exit="exit" className="max-w-3xl">
+          <motion.div key={index} variants={group} initial="hidden" animate="show" exit="exit" className="max-w-2xl xl:max-w-3xl">
             {slide.titleEn && (
               <motion.div variants={fade} className="mb-4 inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.3em] text-gold-300" dir="ltr">
                 <span className="h-px w-10 bg-gold-gradient" /> {slide.titleEn}
@@ -151,7 +153,7 @@ export default function HeroSlider({ slides, destinations }: { slides: HeroSlide
           </motion.div>
         </AnimatePresence>
 
-        <div className="hidden justify-self-end lg:block">
+        <div className="hidden w-[460px] lg:w-[480px] xl:w-[520px] justify-self-end lg:block relative z-50">
           <HeroSearch destinations={destinations} />
         </div>
       </div>
