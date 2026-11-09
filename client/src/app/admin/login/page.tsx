@@ -2,13 +2,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Loader2, Lock } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Lock } from 'lucide-react';
 import { api } from '@/lib/client-api';
 
 export default function AdminLogin() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -47,7 +48,27 @@ export default function AdminLogin() {
         <h1 className="mt-4 text-center font-display text-xl font-bold text-white/90">لوحة تحكم الإدارة</h1>
         <div className="mt-8 space-y-4">
           <input required type="email" dir="ltr" placeholder="البريد الإلكتروني" className="field-dark" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <input required type="password" dir="ltr" placeholder="كلمة المرور" className="field-dark" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <div className="relative">
+            <input
+              required
+              type={showPassword ? 'text' : 'password'}
+              dir="ltr"
+              placeholder="كلمة المرور"
+              className="field-dark pr-11"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-white/50 hover:text-gold-400 focus:outline-none transition-colors"
+              aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+              title={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+            </button>
+          </div>
           {error && <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-300">{error}</p>}
           <button disabled={busy} className="btn-gold w-full">{busy ? <Loader2 className="animate-spin" /> : <><Lock size={18} /> تسجيل الدخول</>}</button>
         </div>
