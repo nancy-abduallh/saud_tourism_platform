@@ -13,6 +13,11 @@ CREATE TABLE IF NOT EXISTS users (
   UNIQUE KEY users_email_key (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Admin user default seed (admin@saudtourism.sa / Admin@12345)
+INSERT INTO users (name, email, password_hash, role)
+VALUES ('مدير النظام', 'admin@saudtourism.sa', '$2a$10$yCBISOJgk6HxZCIDH2CXtOsZ3e/SOs1HUu64W3psaaIsY4tW/OVv2', 'ADMIN')
+ON DUPLICATE KEY UPDATE name = VALUES(name);
+
 CREATE TABLE IF NOT EXISTS hero_slides (
   id INT NOT NULL AUTO_INCREMENT,
   title VARCHAR(200) NOT NULL,
