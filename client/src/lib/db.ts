@@ -4,10 +4,11 @@ import {
   DEFAULT_PACKAGES,
   DEFAULT_REVIEWS,
   DEFAULT_SERVICES,
+  DEFAULT_SETTINGS,
   DEFAULT_SLIDES,
   DEFAULT_STATS,
 } from './default-data';
-import type { Destination, HeroSlide, PackageDetail, PackageSummary, PublicStats, Review, VipService } from './types';
+import type { Destination, HeroSlide, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 
 let pool: mysql.Pool | null = null;
 
@@ -779,4 +780,99 @@ export async function getAdminStats() {
     statusCounts: { CONFIRMED: 10, PENDING: 2, COMPLETED: 3, CANCELLED: 1 },
     recent: [],
   };
+}
+
+/* ==========================================================================
+   SITE SETTINGS (FOOTER LINKS, WHATSAPP, CONTACT)
+   ========================================================================== */
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const p = getPool();
+  if (p) {
+    try {
+      // Ensure table exists automatically
+      await p.query(`
+        CREATE TABLE IF NOT EXISTS site_settings (
+          setting_key VARCHAR(80) NOT NULL PRIMARY KEY,
+          setting_value TEXT NULL,
+          updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+
+      const [rows] = await p.query<any[]>('SELECT setting_key, setting_value FROM site_settings');
+      if (rows && rows.length > 0) {
+        const map: Record<string, string> = {};
+        for (const r of rows) {
+          map[r.setting_key] = r.setting_value ?? '';
+        }
+        return {
+          instagramUrl: map.instagram_url ?? DEFAULT_SETTINGS.instagramUrl,
+          twitterUrl: map.twitter_url ?? DEFAULT_SETTINGS.twitterUrl,
+          youtubeUrl: map.youtube_url ?? DEFAULT_SETTINGS.youtubeUrl,
+          tiktokUrl: map.tiktok_url ?? DEFAULT_SETTINGS.tiktokUrl,
+          snapchatUrl: map.snapchat_url ?? DEFAULT_SETTINGS.snapchatUrl,
+          linkedinUrl: map.linkedin_url ?? DEFAULT_SETTINGS.linkedinUrl,
+          whatsappNumber: map.whatsapp_number ?? DEFAULT_SETTINGS.whatsappNumber,
+          whatsappMessage: map.whatsapp_message ?? DEFAULT_SETTINGS.whatsappMessage,
+          phone: map.phone ?? DEFAULT_SETTINGS.phone,
+          email: map.email ?? DEFAULT_SETTINGS.email,
+          address: map.address ?? DEFAULT_SETTINGS.address,
+          workingHours: map.working_hours ?? DEFAULT_SETTINGS.workingHours,
+          footerDescription: map.footer_description ?? DEFAULT_SETTINGS.footerDescription,
+          copyrightText: map.copyright_text ?? DEFAULT_SETTINGS.copyrightText,
+        };
+      }
+    } catch (e) {
+      console.warn('MySQL getSiteSettings error, using fallback:', e);
+    }
+  }
+  return DEFAULT_SETTINGS;
+}
+
+export async function updateSiteSettings(settings: Partial<SiteSettings>): Promise<SiteSettings> {
+  const p = getPool();
+  if (p) {
+    try {
+      await p.query(`
+        CREATE TABLE IF NOT EXISTS site_settings (
+          setting_key VARCHAR(80) NOT NULL PRIMARY KEY,
+          setting_value TEXT NULL,
+          updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+
+      const keyMap: Record<keyof SiteSettings, string> = {
+        instagramUrl: 'instagram_url',
+        twitterUrl: 'twitter_url',
+        youtubeUrl: 'youtube_url',
+        tiktokUrl: 'tiktok_url',
+        snapchatUrl: 'snapchat_url',
+        linkedinUrl: 'linkedin_url',
+        whatsappNumber: 'whatsapp_number',
+        whatsappMessage: 'whatsapp_message',
+        phone: 'phone',
+        email: 'email',
+        address: 'address',
+        workingHours: 'working_hours',
+        footerDescription: 'footer_description',
+        copyrightText: 'copyright_text',
+      };
+
+      for (const [prop, val] of Object.entries(settings)) {
+        const dbKey = keyMap[prop as keyof SiteSettings];
+        if (dbKey) {
+          await p.query(
+            `INSERT INTO site_settings (setting_key, setting_value)
+             VALUES (?, ?)
+             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`,
+            [dbKey, val ?? '']
+          );
+        }
+      }
+    } catch (e) {
+      console.error('MySQL updateSiteSettings error:', e);
+      throw new Error('فشل حفظ الإعدادات في قاعدة البيانات');
+    }
+  }
+  return getSiteSettings();
 }

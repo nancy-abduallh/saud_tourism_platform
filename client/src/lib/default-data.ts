@@ -1,4 +1,4 @@
-import type { Destination, HeroSlide, PackageDetail, PackageSummary, PublicStats, Review, VipService } from './types';
+import type { Destination, HeroSlide, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 
 export const DEFAULT_SLIDES: HeroSlide[] = [
   {
@@ -322,3 +322,20 @@ export const DEFAULT_PACKAGES: PackageDetail[] = [
     ],
   },
 ];
+
+export const DEFAULT_SETTINGS: SiteSettings = {
+  instagramUrl: 'https://instagram.com',
+  twitterUrl: 'https://x.com',
+  youtubeUrl: 'https://youtube.com',
+  tiktokUrl: 'https://tiktok.com',
+  snapchatUrl: 'https://snapchat.com',
+  linkedinUrl: 'https://linkedin.com',
+  whatsappNumber: '966500000000',
+  whatsappMessage: 'مرحباً، أود الاستفسار عن باقات وتجارب SA للسياحة الفاخرة',
+  phone: '+966 11 000 0000',
+  email: 'info@saudtourism.sa',
+  address: 'الرياض، المملكة العربية السعودية',
+  workingHours: 'كونسيرج VIP متاح 24/7',
+  footerDescription: 'نصنع رحلات سعودية فاخرة تجمع بين عراقة التاريخ وروعة الطبيعة وأرقى مستويات الضيافة.',
+  copyrightText: '© 2026 سعود للسياحة. جميع الحقوق محفوظة.',
+};

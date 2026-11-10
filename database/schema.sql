@@ -156,3 +156,26 @@ CREATE TABLE IF NOT EXISTS subscribers (
   PRIMARY KEY (id),
   UNIQUE KEY subscribers_email_key (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS site_settings (
+  setting_key VARCHAR(80) NOT NULL PRIMARY KEY,
+  setting_value TEXT NULL,
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO site_settings (setting_key, setting_value) VALUES
+  ('instagram_url', 'https://instagram.com'),
+  ('twitter_url', 'https://x.com'),
+  ('youtube_url', 'https://youtube.com'),
+  ('tiktok_url', 'https://tiktok.com'),
+  ('snapchat_url', 'https://snapchat.com'),
+  ('linkedin_url', 'https://linkedin.com'),
+  ('whatsapp_number', '966500000000'),
+  ('whatsapp_message', 'مرحباً، أود الاستفسار عن باقات وتجارب SA للسياحة الفاخرة'),
+  ('phone', '+966 11 000 0000'),
+  ('email', 'info@saudtourism.sa'),
+  ('address', 'الرياض، المملكة العربية السعودية'),
+  ('working_hours', 'كونسيرج VIP متاح 24/7'),
+  ('footer_description', 'نصنع رحلات سعودية فاخرة تجمع بين عراقة التاريخ وروعة الطبيعة وأرقى مستويات الضيافة.'),
+  ('copyright_text', '© 2026 سعود للسياحة. جميع الحقوق محفوظة.')
+ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);

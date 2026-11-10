@@ -28,3 +28,20 @@ export interface PublicStats {
   averageRating: number;
   vipConcierge: string;
 }
+
+export interface SiteSettings {
+  instagramUrl: string;
+  twitterUrl: string;
+  youtubeUrl: string;
+  tiktokUrl: string;
+  snapchatUrl: string;
+  linkedinUrl: string;
+  whatsappNumber: string;
+  whatsappMessage?: string;
+  phone: string;
+  email: string;
+  address: string;
+  workingHours: string;
+  footerDescription: string;
+  copyrightText: string;
+}

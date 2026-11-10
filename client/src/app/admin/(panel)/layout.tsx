@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { CalendarCheck, ConciergeBell, Images, LayoutDashboard, LogOut, MapPin, Mail, Menu, Package, Star, X } from 'lucide-react';
+import { CalendarCheck, ConciergeBell, Images, LayoutDashboard, LogOut, MapPin, Mail, Menu, Package, Share2, Star, X } from 'lucide-react';
 import clsx from 'clsx';
 
 const nav = [
@@ -14,6 +14,7 @@ const nav = [
   { href: '/admin/reviews', label: 'التقييمات', icon: Star },
   { href: '/admin/bookings', label: 'الحجوزات', icon: CalendarCheck },
   { href: '/admin/messages', label: 'الرسائل والمشتركون', icon: Mail },
+  { href: '/admin/settings', label: 'روابط الفوتر والتواصل', icon: Share2 },
 ];
 
 export default function PanelLayout({ children }: { children: React.ReactNode }) {

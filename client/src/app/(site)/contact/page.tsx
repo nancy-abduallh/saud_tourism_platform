@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Clock, Mail, MapPin, Phone } from 'lucide-react';
 import ContactForm from '@/components/ContactForm';
 import { Reveal } from '@/components/Reveal';
+import { getSiteSettings } from '@/lib/db';
+import { DEFAULT_SETTINGS } from '@/lib/default-data';
 
 const BASE_URL = 'https://saudtourism.ksaplatforms.com';
 
@@ -92,14 +94,16 @@ const contactJsonLd = {
   ],
 };
 
-const info = [
-  { icon: Phone, title: 'الهاتف', text: '+966 11 000 0000', dir: 'ltr' as const },
-  { icon: Mail, title: 'البريد', text: 'info@saudtourism.sa', dir: 'ltr' as const },
-  { icon: MapPin, title: 'العنوان', text: 'الرياض، المملكة العربية السعودية', dir: 'rtl' as const },
-  { icon: Clock, title: 'ساعات العمل', text: 'كونسيرج VIP متاح 24/7', dir: 'rtl' as const },
-];
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
 
-export default function ContactPage() {
+  const info = [
+    { icon: Phone, title: 'الهاتف', text: settings.phone || DEFAULT_SETTINGS.phone, dir: 'ltr' as const },
+    { icon: Mail, title: 'البريد', text: settings.email || DEFAULT_SETTINGS.email, dir: 'ltr' as const },
+    { icon: MapPin, title: 'العنوان', text: settings.address || DEFAULT_SETTINGS.address, dir: 'rtl' as const },
+    { icon: Clock, title: 'ساعات العمل', text: settings.workingHours || DEFAULT_SETTINGS.workingHours, dir: 'rtl' as const },
+  ];
+
   return (
     <>
       <script
