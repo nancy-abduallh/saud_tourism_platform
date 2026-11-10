@@ -206,23 +206,23 @@ export default function SettingsPage() {
 
           <div className="grid gap-5 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-xs font-bold text-navy-900">
-                رقم الواتساب (مع كود الدولة) <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  dir="ltr"
-                  value={form.whatsappNumber}
-                  onChange={(e) => handleChange('whatsappNumber', e.target.value)}
-                  placeholder="966500000000"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-                />
-                <span className="absolute end-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+              <div className="mb-2 flex items-center justify-between">
+                <label className="text-xs font-bold text-navy-900">
+                  رقم الواتساب (مع كود الدولة) <span className="text-rose-500">*</span>
+                </label>
+                <span className="text-[11px] font-normal text-slate-400">
                   مثال: 966501234567
                 </span>
               </div>
-              <p className="mt-1.5 text-[11px] text-slate-400">
+              <input
+                type="text"
+                dir="ltr"
+                value={form.whatsappNumber}
+                onChange={(e) => handleChange('whatsappNumber', e.target.value)}
+                placeholder="966500000000"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+              />
+              <p className="mt-1.5 text-[11px] text-slate-500">
                 أدخل الرقم الدولي مباشرة دون أصفار في البداية وبدون علامة الزائد (+) (مثال للسعودية: 9665xxxxxxx).
               </p>
             </div>
@@ -238,7 +238,7 @@ export default function SettingsPage() {
                 placeholder="مرحباً، أود الاستفسار عن باقات وتجارب SA للسياحة الفاخرة"
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
               />
-              <p className="mt-1.5 text-[11px] text-slate-400">
+              <p className="mt-1.5 text-[11px] text-slate-500">
                 هذه الرسالة تظهر مكتوبة وجاهزة للعميل عند فتح محادثة الواتساب مع المنصة.
               </p>
             </div>
@@ -262,170 +262,164 @@ export default function SettingsPage() {
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {/* Instagram */}
             <div>
-              <label className="mb-2 flex items-center gap-2 text-xs font-bold text-navy-900">
-                <Instagram size={15} className="text-pink-600" /> إنستغرام (Instagram)
-              </label>
-              <div className="relative">
-                <input
-                  type="url"
-                  dir="ltr"
-                  value={form.instagramUrl}
-                  onChange={(e) => handleChange('instagramUrl', e.target.value)}
-                  placeholder="https://instagram.com/your-account"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-                />
+              <div className="mb-2 flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-navy-900">
+                  <Instagram size={15} className="text-pink-600" /> إنستغرام (Instagram)
+                </label>
                 {form.instagramUrl && (
                   <a
                     href={form.instagramUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="absolute end-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-navy-900"
-                    title="فتح الرابط"
+                    className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-gold-600 transition-colors"
                   >
-                    <ExternalLink size={14} />
+                    فتح الرابط <ExternalLink size={11} />
                   </a>
                 )}
               </div>
+              <input
+                type="url"
+                dir="ltr"
+                value={form.instagramUrl}
+                onChange={(e) => handleChange('instagramUrl', e.target.value)}
+                placeholder="https://instagram.com/your-account"
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+              />
             </div>
 
             {/* Twitter / X */}
             <div>
-              <label className="mb-2 flex items-center gap-2 text-xs font-bold text-navy-900">
-                <Twitter size={15} className="text-sky-500" /> إكس / تويتر (X / Twitter)
-              </label>
-              <div className="relative">
-                <input
-                  type="url"
-                  dir="ltr"
-                  value={form.twitterUrl}
-                  onChange={(e) => handleChange('twitterUrl', e.target.value)}
-                  placeholder="https://x.com/your-account"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-                />
+              <div className="mb-2 flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-navy-900">
+                  <Twitter size={15} className="text-sky-500" /> إكس / تويتر (X / Twitter)
+                </label>
                 {form.twitterUrl && (
                   <a
                     href={form.twitterUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="absolute end-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-navy-900"
-                    title="فتح الرابط"
+                    className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-gold-600 transition-colors"
                   >
-                    <ExternalLink size={14} />
+                    فتح الرابط <ExternalLink size={11} />
                   </a>
                 )}
               </div>
+              <input
+                type="url"
+                dir="ltr"
+                value={form.twitterUrl}
+                onChange={(e) => handleChange('twitterUrl', e.target.value)}
+                placeholder="https://x.com/your-account"
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+              />
             </div>
 
             {/* YouTube */}
             <div>
-              <label className="mb-2 flex items-center gap-2 text-xs font-bold text-navy-900">
-                <Youtube size={15} className="text-red-600" /> يوتيوب (YouTube)
-              </label>
-              <div className="relative">
-                <input
-                  type="url"
-                  dir="ltr"
-                  value={form.youtubeUrl}
-                  onChange={(e) => handleChange('youtubeUrl', e.target.value)}
-                  placeholder="https://youtube.com/@your-channel"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-                />
+              <div className="mb-2 flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-navy-900">
+                  <Youtube size={15} className="text-red-600" /> يوتيوب (YouTube)
+                </label>
                 {form.youtubeUrl && (
                   <a
                     href={form.youtubeUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="absolute end-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-navy-900"
-                    title="فتح الرابط"
+                    className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-gold-600 transition-colors"
                   >
-                    <ExternalLink size={14} />
+                    فتح الرابط <ExternalLink size={11} />
                   </a>
                 )}
               </div>
+              <input
+                type="url"
+                dir="ltr"
+                value={form.youtubeUrl}
+                onChange={(e) => handleChange('youtubeUrl', e.target.value)}
+                placeholder="https://youtube.com/@your-channel"
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+              />
             </div>
 
             {/* TikTok */}
             <div>
-              <label className="mb-2 flex items-center gap-2 text-xs font-bold text-navy-900">
-                <span className="font-black text-black">TikTok</span> تيك توك
-              </label>
-              <div className="relative">
-                <input
-                  type="url"
-                  dir="ltr"
-                  value={form.tiktokUrl}
-                  onChange={(e) => handleChange('tiktokUrl', e.target.value)}
-                  placeholder="https://tiktok.com/@your-account"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-                />
+              <div className="mb-2 flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-navy-900">
+                  <span className="font-black text-black">TikTok</span> تيك توك
+                </label>
                 {form.tiktokUrl && (
                   <a
                     href={form.tiktokUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="absolute end-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-navy-900"
-                    title="فتح الرابط"
+                    className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-gold-600 transition-colors"
                   >
-                    <ExternalLink size={14} />
+                    فتح الرابط <ExternalLink size={11} />
                   </a>
                 )}
               </div>
+              <input
+                type="url"
+                dir="ltr"
+                value={form.tiktokUrl}
+                onChange={(e) => handleChange('tiktokUrl', e.target.value)}
+                placeholder="https://tiktok.com/@your-account"
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+              />
             </div>
 
             {/* Snapchat */}
             <div>
-              <label className="mb-2 flex items-center gap-2 text-xs font-bold text-navy-900">
-                <span className="font-black text-amber-500">Snapchat</span> سناب شات
-              </label>
-              <div className="relative">
-                <input
-                  type="url"
-                  dir="ltr"
-                  value={form.snapchatUrl}
-                  onChange={(e) => handleChange('snapchatUrl', e.target.value)}
-                  placeholder="https://snapchat.com/add/your-account"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-                />
+              <div className="mb-2 flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-navy-900">
+                  <span className="font-black text-amber-500">Snapchat</span> سناب شات
+                </label>
                 {form.snapchatUrl && (
                   <a
                     href={form.snapchatUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="absolute end-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-navy-900"
-                    title="فتح الرابط"
+                    className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-gold-600 transition-colors"
                   >
-                    <ExternalLink size={14} />
+                    فتح الرابط <ExternalLink size={11} />
                   </a>
                 )}
               </div>
+              <input
+                type="url"
+                dir="ltr"
+                value={form.snapchatUrl}
+                onChange={(e) => handleChange('snapchatUrl', e.target.value)}
+                placeholder="https://snapchat.com/add/your-account"
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+              />
             </div>
 
             {/* LinkedIn */}
             <div>
-              <label className="mb-2 flex items-center gap-2 text-xs font-bold text-navy-900">
-                <Linkedin size={15} className="text-blue-700" /> لينكد إن (LinkedIn)
-              </label>
-              <div className="relative">
-                <input
-                  type="url"
-                  dir="ltr"
-                  value={form.linkedinUrl}
-                  onChange={(e) => handleChange('linkedinUrl', e.target.value)}
-                  placeholder="https://linkedin.com/company/your-company"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
-                />
+              <div className="mb-2 flex items-center justify-between">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-navy-900">
+                  <Linkedin size={15} className="text-blue-700" /> لينكد إن (LinkedIn)
+                </label>
                 {form.linkedinUrl && (
                   <a
                     href={form.linkedinUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="absolute end-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-navy-900"
-                    title="فتح الرابط"
+                    className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-gold-600 transition-colors"
                   >
-                    <ExternalLink size={14} />
+                    فتح الرابط <ExternalLink size={11} />
                   </a>
                 )}
               </div>
+              <input
+                type="url"
+                dir="ltr"
+                value={form.linkedinUrl}
+                onChange={(e) => handleChange('linkedinUrl', e.target.value)}
+                placeholder="https://linkedin.com/company/your-company"
+                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+              />
             </div>
           </div>
         </div>
