@@ -36,15 +36,19 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
     <div className="flex min-h-screen bg-slate-100">
       <aside className={clsx('fixed inset-y-0 right-0 z-40 flex w-64 flex-col bg-navy-950 text-white transition-transform lg:static lg:translate-x-0', open ? 'translate-x-0' : 'translate-x-full')}>
         <div className="flex items-center gap-3 border-b border-white/10 p-5">
-          <img src="/logo-badge.png" alt="جمعية نجوم السياحة" className="h-11 w-11 rounded-full shadow-md shadow-black/30" />
-          <div className="flex flex-col text-start leading-tight">
-            <span className="font-display text-sm font-bold text-white">
-              جمعية نجوم السياحة
+          <img src="/logo.png" alt="SA للسياحة" className="h-11 w-11 rounded-full ring-2 ring-gold-500/60" />
+          <div className="flex flex-col text-start leading-none">
+            <span
+              className="allura-regular font-allura text-3xl leading-none text-gold-gradient"
+              style={{ fontFamily: '"Allura", cursive' }}
+              dir="ltr"
+            >
+              SA
             </span>
-            <span className="font-sans text-[10px] font-medium tracking-wider text-gold-400 mt-0.5">
-              لوحة الإدارة
+            <span className="font-display text-[10px] font-bold tracking-[0.2em] text-white leading-tight mt-0.5">
+              للسياحة
             </span>
-            {name && <div className="text-[10px] text-white/50 mt-1">{name}</div>}
+            <div className="text-[10px] text-white/50 mt-1">{name}</div>
           </div>
         </div>
         <nav className="flex-1 space-y-1 p-3">

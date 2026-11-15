@@ -32,17 +32,17 @@ export default function AdminLogin() {
     <main className="relative grid min-h-screen place-items-center overflow-hidden bg-navy-gradient p-4">
       <div className="absolute inset-0 bg-pattern opacity-60" />
       <motion.form initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} onSubmit={submit} className="glass relative w-full max-w-md rounded-3xl p-8 text-white shadow-2xl">
-        <img
-          src="/logo-badge.png"
-          alt="جمعية نجوم السياحة"
-          className="mx-auto mb-3 h-20 w-20 rounded-full shadow-lg shadow-black/40"
-        />
+        <img src="/logo.png" alt="SA للسياحة" className="mx-auto mb-3 h-20 w-20 rounded-full ring-2 ring-gold-500/70" />
         <div className="flex flex-col items-center justify-center text-center">
-          <span className="font-display text-xl font-bold tracking-tight text-white">
-            جمعية نجوم السياحة
+          <span
+            className="allura-regular font-allura text-4xl leading-none text-gold-gradient drop-shadow"
+            style={{ fontFamily: '"Allura", cursive' }}
+            dir="ltr"
+          >
+            SA
           </span>
-          <span className="font-sans text-xs font-medium tracking-wider text-gold-400 mt-1">
-            Tourism Stars Association
+          <span className="font-display text-xs font-bold tracking-[0.25em] text-white leading-tight mt-1">
+            للسياحة
           </span>
         </div>
         <h1 className="mt-4 text-center font-display text-xl font-bold text-white/90">لوحة تحكم الإدارة</h1>

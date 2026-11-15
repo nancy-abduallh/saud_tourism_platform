@@ -42,17 +42,17 @@ export default function Header() {
     >
       <div className="container-x flex h-20 items-center justify-between gap-6">
         <Link href="/" className="group flex items-center gap-3">
-          <img
-            src="/logo-badge.png"
-            alt="جمعية نجوم السياحة"
-            className="h-12 w-12 rounded-full shadow-md shadow-black/30 transition-transform duration-300 group-hover:scale-105"
-          />
-          <div className="flex flex-col text-start leading-tight">
-            <span className="font-display text-base font-bold tracking-tight text-white transition-colors duration-300 group-hover:text-gold-300 sm:text-lg">
-              جمعية نجوم السياحة
+          <img src="/logo.png" alt="SA للسياحة" className="h-12 w-12 rounded-full ring-2 ring-gold-500/60 transition-transform duration-300 group-hover:scale-105" />
+          <div className="flex flex-col text-start leading-none">
+            <span
+              className="allura-regular font-allura text-4xl leading-none text-gold-gradient drop-shadow-[0_2px_10px_rgba(243,211,122,0.45)]"
+              style={{ fontFamily: '"Allura", cursive' }}
+              dir="ltr"
+            >
+              SA
             </span>
-            <span className="font-sans text-[10px] font-medium tracking-wider text-gold-400/90 sm:text-[11px]">
-              Tourism Stars Association
+            <span className="font-display text-[11px] font-bold tracking-[0.25em] text-white leading-tight -mt-0.5">
+              للسياحة
             </span>
           </div>
         </Link>

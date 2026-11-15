@@ -235,7 +235,7 @@ export default function SettingsPage() {
                 type="text"
                 value={form.whatsappMessage ?? ''}
                 onChange={(e) => handleChange('whatsappMessage', e.target.value)}
-                placeholder="مرحباً، أود الاستفسار عن باقات وتجارب جمعية نجوم السياحة الفاخرة"
+                placeholder="مرحباً، أود الاستفسار عن باقات وتجارب SA للسياحة الفاخرة"
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
               />
               <p className="mt-1.5 text-[11px] text-slate-500">
