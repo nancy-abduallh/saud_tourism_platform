@@ -9,7 +9,9 @@ import WhyUs from '@/components/WhyUs';
 import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import CtaBanner from '@/components/CtaBanner';
+import BranchesHomeSection from '@/components/BranchesHomeSection';
 import { serverFetch } from '@/lib/api';
+import { getBranches } from '@/lib/db';
 import type { Destination, HeroSlide, PackageSummary, PublicStats, Review, VipService } from '@/lib/types';
 
 export const revalidate = 30;
@@ -60,13 +62,14 @@ const homeJsonLd = {
 };
 
 export default async function HomePage() {
-  const [slides, destinations, packages, services, reviews, stats] = await Promise.all([
+  const [slides, destinations, packages, services, reviews, stats, branches] = await Promise.all([
     serverFetch<HeroSlide[]>('/hero', []),
     serverFetch<Destination[]>('/destinations', []),
     serverFetch<PackageSummary[]>('/packages?featured=1&limit=6', []),
     serverFetch<VipService[]>('/services', []),
     serverFetch<Review[]>('/reviews', []),
     serverFetch<PublicStats | undefined>('/stats', undefined),
+    getBranches(),
   ]);
 
   const marqueeItems = [
@@ -92,6 +95,7 @@ export default async function HomePage() {
       <FeaturedPackages packages={packages} />
       <Stats data={stats} />
       <VipServices services={services} />
+      <BranchesHomeSection branches={branches} />
       <WhyUs />
       <HowItWorks />
       <Testimonials reviews={reviews} />

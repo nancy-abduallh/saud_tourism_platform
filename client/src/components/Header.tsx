@@ -10,6 +10,7 @@ import { EASE } from '@/lib/motion';
 const links = [
   { href: '/#destinations', label: 'الوجهات' },
   { href: '/packages', label: 'الباقات الفاخرة' },
+  { href: '/branches', label: 'فروعنا' },
   { href: '/#vip', label: 'خدمات VIP' },
   { href: '/#testimonials', label: 'آراء الضيوف' },
   { href: '/contact', label: 'تواصل معنا' },

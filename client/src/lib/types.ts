@@ -45,3 +45,31 @@ export interface SiteSettings {
   footerDescription: string;
   copyrightText: string;
 }
+
+export interface Branch {
+  id: number;
+  name: string;
+  nameEn?: string | null;
+  city: string;
+  region: string;
+  address?: string | null;
+  phone?: string | null;
+  whatsapp?: string | null;
+  email?: string | null;
+  managerName?: string | null;
+  workingHours?: string | null;
+  description?: string | null;
+  mapUrl?: string | null;
+  isMain?: boolean;
+  isActive: boolean;
+  sortOrder?: number;
+}
+
+export const BRANCH_REGIONS = [
+  'الكل',
+  'المنطقة الوسطى',
+  'المنطقة الغربية',
+  'المنطقة الشمالية',
+  'المنطقة الجنوبية',
+  'المنطقة الشرقية',
+] as const;

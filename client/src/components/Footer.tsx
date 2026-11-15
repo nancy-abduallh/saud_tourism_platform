@@ -75,6 +75,7 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
           <ul className="space-y-3">
             {[
               ['/packages', 'الباقات الفاخرة'],
+              ['/branches', 'فروع الجمعية (13 فرعاً)'],
               ['/#vip', 'خدمات VIP'],
               ['/#testimonials', 'آراء الضيوف'],
               ['/contact', 'تواصل معنا'],

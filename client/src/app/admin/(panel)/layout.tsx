@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { CalendarCheck, ConciergeBell, Images, LayoutDashboard, LogOut, MapPin, Mail, Menu, Package, Share2, Star, X } from 'lucide-react';
+import { Building2, CalendarCheck, ConciergeBell, Images, LayoutDashboard, LogOut, MapPin, Mail, Menu, Package, Share2, Star, X } from 'lucide-react';
 import clsx from 'clsx';
 
 const nav = [
   { href: '/admin', label: 'لوحة التحكم', icon: LayoutDashboard },
   { href: '/admin/packages', label: 'الباقات', icon: Package },
   { href: '/admin/destinations', label: 'الوجهات', icon: MapPin },
+  { href: '/admin/branches', label: 'فروع الجمعية (13)', icon: Building2 },
   { href: '/admin/hero', label: 'شرائح الهيرو', icon: Images },
   { href: '/admin/services', label: 'خدمات VIP', icon: ConciergeBell },
   { href: '/admin/reviews', label: 'التقييمات', icon: Star },

@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import {
+  DEFAULT_BRANCHES,
   DEFAULT_DESTINATIONS,
   DEFAULT_PACKAGES,
   DEFAULT_REVIEWS,
@@ -8,7 +9,7 @@ import {
   DEFAULT_SLIDES,
   DEFAULT_STATS,
 } from './default-data';
-import type { Destination, HeroSlide, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
+import type { Branch, Destination, HeroSlide, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 
 let pool: mysql.Pool | null = null;
 
@@ -875,4 +876,200 @@ export async function updateSiteSettings(settings: Partial<SiteSettings>): Promi
     }
   }
   return getSiteSettings();
+}
+
+/* ==========================================================================
+   BRANCHES (فروع الجمعية)
+   ========================================================================== */
+
+let branchesTableChecked = false;
+
+async function ensureBranchesTable(p: mysql.Pool) {
+  if (branchesTableChecked) return;
+  try {
+    await p.query(`
+      CREATE TABLE IF NOT EXISTS branches (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        name_en VARCHAR(255) NULL,
+        city VARCHAR(100) NOT NULL,
+        region VARCHAR(100) NOT NULL,
+        address VARCHAR(255) NULL,
+        phone VARCHAR(50) NULL,
+        whatsapp VARCHAR(50) NULL,
+        email VARCHAR(100) NULL,
+        manager_name VARCHAR(100) NULL,
+        working_hours VARCHAR(100) NULL,
+        description TEXT NULL,
+        map_url VARCHAR(500) NULL,
+        is_main TINYINT(1) DEFAULT 0,
+        is_active TINYINT(1) DEFAULT 1,
+        sort_order INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Check if table is empty, if so, seed DEFAULT_BRANCHES
+    const [rows]: any = await p.query('SELECT COUNT(*) as count FROM branches');
+    if (rows && rows[0] && rows[0].count === 0) {
+      for (const b of DEFAULT_BRANCHES) {
+        await p.query(
+          `INSERT INTO branches (name, name_en, city, region, address, phone, whatsapp, email, working_hours, description, is_main, is_active, sort_order)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            b.name,
+            b.nameEn || null,
+            b.city,
+            b.region,
+            b.address || null,
+            b.phone || null,
+            b.whatsapp || null,
+            b.email || null,
+            b.workingHours || null,
+            b.description || null,
+            b.isMain ? 1 : 0,
+            b.isActive ? 1 : 0,
+            b.sortOrder || 0,
+          ]
+        );
+      }
+    }
+    branchesTableChecked = true;
+  } catch (err) {
+    console.warn('ensureBranchesTable warning:', err);
+  }
+}
+
+export async function getBranches(): Promise<Branch[]> {
+  const p = getPool();
+  if (p) {
+    try {
+      await ensureBranchesTable(p);
+      const [rows] = await p.query<any[]>(
+        `SELECT id, name, name_en as nameEn, city, region, address, phone, whatsapp, email,
+                manager_name as managerName, working_hours as workingHours, description,
+                map_url as mapUrl, is_main as isMain, is_active as isActive, sort_order as sortOrder
+         FROM branches
+         WHERE is_active = 1
+         ORDER BY sort_order ASC, id ASC`
+      );
+      if (rows && rows.length > 0) {
+        return rows.map((r) => ({
+          ...r,
+          isMain: Boolean(r.isMain),
+          isActive: Boolean(r.isActive),
+        }));
+      }
+    } catch (e) {
+      console.warn('MySQL getBranches error, using fallback:', e);
+    }
+  }
+  return DEFAULT_BRANCHES;
+}
+
+export async function getAllBranchesAdmin(): Promise<Branch[]> {
+  const p = getPool();
+  if (p) {
+    try {
+      await ensureBranchesTable(p);
+      const [rows] = await p.query<any[]>(
+        `SELECT id, name, name_en as nameEn, city, region, address, phone, whatsapp, email,
+                manager_name as managerName, working_hours as workingHours, description,
+                map_url as mapUrl, is_main as isMain, is_active as isActive, sort_order as sortOrder
+         FROM branches
+         ORDER BY sort_order ASC, id ASC`
+      );
+      if (rows && rows.length > 0) {
+        return rows.map((r) => ({
+          ...r,
+          isMain: Boolean(r.isMain),
+          isActive: Boolean(r.isActive),
+        }));
+      }
+    } catch (e) {
+      console.warn('MySQL getAllBranchesAdmin error, using fallback:', e);
+    }
+  }
+  return DEFAULT_BRANCHES;
+}
+
+export async function createBranch(b: any): Promise<Branch> {
+  const p = getPool();
+  if (!p) throw new Error('Database connection not available');
+  await ensureBranchesTable(p);
+  const [res]: any = await p.query(
+    `INSERT INTO branches (name, name_en, city, region, address, phone, whatsapp, email, manager_name, working_hours, description, map_url, is_main, is_active, sort_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      b.name,
+      b.nameEn || null,
+      b.city,
+      b.region,
+      b.address || null,
+      b.phone || null,
+      b.whatsapp || null,
+      b.email || null,
+      b.managerName || null,
+      b.workingHours || null,
+      b.description || null,
+      b.mapUrl || null,
+      b.isMain ? 1 : 0,
+      b.isActive !== undefined ? (b.isActive ? 1 : 0) : 1,
+      Number(b.sortOrder) || 0,
+    ]
+  );
+  return { id: res.insertId, ...b };
+}
+
+export async function updateBranch(id: number, b: any): Promise<Branch> {
+  const p = getPool();
+  if (!p) throw new Error('Database connection not available');
+  await ensureBranchesTable(p);
+  await p.query(
+    `UPDATE branches SET
+      name = COALESCE(?, name),
+      name_en = COALESCE(?, name_en),
+      city = COALESCE(?, city),
+      region = COALESCE(?, region),
+      address = COALESCE(?, address),
+      phone = COALESCE(?, phone),
+      whatsapp = COALESCE(?, whatsapp),
+      email = COALESCE(?, email),
+      manager_name = COALESCE(?, manager_name),
+      working_hours = COALESCE(?, working_hours),
+      description = COALESCE(?, description),
+      map_url = COALESCE(?, map_url),
+      is_main = COALESCE(?, is_main),
+      is_active = COALESCE(?, is_active),
+      sort_order = COALESCE(?, sort_order)
+     WHERE id = ?`,
+    [
+      b.name,
+      b.nameEn,
+      b.city,
+      b.region,
+      b.address,
+      b.phone,
+      b.whatsapp,
+      b.email,
+      b.managerName,
+      b.workingHours,
+      b.description,
+      b.mapUrl,
+      b.isMain !== undefined ? (b.isMain ? 1 : 0) : null,
+      b.isActive !== undefined ? (b.isActive ? 1 : 0) : null,
+      b.sortOrder !== undefined ? Number(b.sortOrder) : null,
+      id,
+    ]
+  );
+  return { id, ...b };
+}
+
+export async function deleteBranch(id: number): Promise<{ ok: boolean }> {
+  const p = getPool();
+  if (!p) throw new Error('Database connection not available');
+  await ensureBranchesTable(p);
+  await p.query('DELETE FROM branches WHERE id = ?', [id]);
+  return { ok: true };
 }

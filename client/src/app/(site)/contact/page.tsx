@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
-import { Clock, Mail, MapPin, Phone } from 'lucide-react';
+import { Suspense } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, Building2, Clock, Mail, MapPin, Phone } from 'lucide-react';
 import ContactForm from '@/components/ContactForm';
 import { Reveal } from '@/components/Reveal';
-import { getSiteSettings } from '@/lib/db';
+import { getSiteSettings, getBranches } from '@/lib/db';
 import { DEFAULT_SETTINGS } from '@/lib/default-data';
 
 const BASE_URL = 'https://saudtourism.ksaplatforms.com';
@@ -96,7 +98,10 @@ const contactJsonLd = {
 };
 
 export default async function ContactPage() {
-  const settings = await getSiteSettings();
+  const [settings, branches] = await Promise.all([
+    getSiteSettings(),
+    getBranches(),
+  ]);
 
   const info = [
     { icon: Phone, title: 'الهاتف', text: settings.phone || DEFAULT_SETTINGS.phone, dir: 'ltr' as const },
@@ -128,7 +133,9 @@ export default async function ContactPage() {
       <section className="bg-slate-50 py-16">
         <div className="container-x grid gap-10 lg:grid-cols-[1fr_380px]">
           <Reveal>
-            <ContactForm />
+            <Suspense fallback={<div className="h-96 rounded-3xl bg-white shadow-xl animate-pulse" />}>
+              <ContactForm />
+            </Suspense>
           </Reveal>
           <Reveal delay={0.15} className="space-y-4">
             {info.map((c) => (
@@ -147,6 +154,35 @@ export default async function ContactPage() {
                 </div>
               </div>
             ))}
+
+            {/* Branches Quick Card in Sidebar */}
+            <div className="rounded-2xl border border-gold-500/30 bg-gradient-to-b from-navy-900 to-navy-950 p-5 text-white shadow-xl">
+              <div className="flex items-center gap-2 text-gold-400">
+                <Building2 size={18} />
+                <span className="text-xs font-bold uppercase tracking-wider">فروع الجمعية (13 فرعاً)</span>
+              </div>
+              <h4 className="mt-2 font-display text-base font-bold">شبكة التمثيل الميداني بالمملكة</h4>
+              <p className="mt-1 text-xs leading-relaxed text-white/70">
+                يمكنك أيضاً زيارة أو مراسلة فروعنا المنتشرة في 13 مدينة ومحافظة لتنسيق الخدمات محلياً.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {branches.slice(0, 7).map((b) => (
+                  <span key={b.id} className="rounded-md bg-white/10 px-2 py-0.5 text-[10px] text-white/80">
+                    {b.city}
+                  </span>
+                ))}
+                <span className="rounded-md bg-gold-500/20 px-2 py-0.5 text-[10px] font-bold text-gold-300">
+                  +6 فروع أخرى
+                </span>
+              </div>
+              <Link
+                href="/branches"
+                className="mt-4 flex items-center justify-between rounded-xl bg-gold-gradient px-4 py-2.5 text-xs font-bold text-navy-950 transition hover:shadow-gold"
+              >
+                <span>دليل الفروع وأرقام التواصل</span>
+                <ArrowLeft size={14} />
+              </Link>
+            </div>
           </Reveal>
         </div>
       </section>
