@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'لوحة التحكم | SA للسياحة',
+  title: 'لوحة التحكم | جمعية نجوم السياحة',
   robots: {
     index: false,
     follow: false,
