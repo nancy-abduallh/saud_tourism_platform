@@ -14,7 +14,7 @@ import { serverFetch } from '@/lib/api';
 import { getBranches } from '@/lib/db';
 import type { Destination, HeroSlide, PackageSummary, PublicStats, Review, VipService } from '@/lib/types';
 
-export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 const BASE_URL = 'https://saudtourism.ksaplatforms.com';
 

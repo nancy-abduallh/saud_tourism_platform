@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 export default async function BranchesPage() {
   const branches = await getBranches();

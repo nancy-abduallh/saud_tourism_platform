@@ -97,6 +97,8 @@ const contactJsonLd = {
   ],
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function ContactPage() {
   const [settings, branches] = await Promise.all([
     getSiteSettings(),

@@ -10,6 +10,10 @@ const API = process.env.API_ORIGIN || 'http://localhost:4001';
 const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: __dirname,
+  experimental: {
+    cpus: 2,
+    workerThreads: false,
+  },
   async rewrites() {
     if (process.env.API_ORIGIN && process.env.API_ORIGIN !== 'http://localhost:4001') {
       return [
