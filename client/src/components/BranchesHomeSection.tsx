@@ -23,14 +23,14 @@ export default function BranchesHomeSection({ branches }: Props) {
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/10 px-3.5 py-1 text-xs font-bold text-gold-300">
-              <Building2 size={14} /> شبكة فروع الجمعية الميدانية (مختلفة عن الوجهات)
+              <Building2 size={14} /> شبكة فروع SA الميدانية (مختلفة عن الوجهات)
             </div>
             <h2 className="mt-3 font-display text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
               حاضرون في <span className="text-gold-gradient">13 مدينة ومنطقة</span> عبر المملكة
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/70 sm:text-base">
-              بالإضافة إلى باقاتنا ووجهاتنا السياحية، تنتشر مكاتب وفروع جمعية نجوم السياحة في كافة أرجاء
-              المملكة لتقديم أرقى خدمات الاستقبال، الدعم اللوجستي، ورعاية الأعضاء والضيوف على مدار الساعة.
+              بالإضافة إلى باقاتنا ووجهاتنا السياحية، تنتشر مكاتب وفروع SA للسياحة في كافة أرجاء
+              المملكة لتقديم أرقى خدمات الاستقبال، الدعم اللوجستي، ورعاية الضيوف على مدار الساعة.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ export default function BranchesHomeSection({ branches }: Props) {
             const cleanWa = branch.whatsapp ? branch.whatsapp.replace(/\D/g, '') : '';
             const waUrl = cleanWa
               ? `https://wa.me/${cleanWa}?text=${encodeURIComponent(
-                  `مرحباً جمعية نجوم السياحة - ${branch.name}، أود الاستفسار عن خدمات الفرع.`
+                  `مرحباً SA للسياحة - ${branch.name}، أود الاستفسار عن خدمات الفرع.`
                 )}`
               : '#';
 

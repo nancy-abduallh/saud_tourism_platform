@@ -141,7 +141,7 @@ export default function BranchesBrowser({ initialBranches }: Props) {
             const cleanWa = branch.whatsapp ? branch.whatsapp.replace(/\D/g, '') : '';
             const waUrl = cleanWa
               ? `https://wa.me/${cleanWa}?text=${encodeURIComponent(
-                  `مرحباً جمعية نجوم السياحة - ${branch.name}، أود الاستفسار عن خدمات وتجارب الفرع.`
+                  `مرحباً SA للسياحة - ${branch.name}، أود الاستفسار عن خدمات وتجارب الفرع.`
                 )}`
               : '#';
 
@@ -298,7 +298,7 @@ export default function BranchesBrowser({ initialBranches }: Props) {
         <div className="relative grid gap-8 lg:grid-cols-2 lg:items-center">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-3.5 py-1 text-xs font-bold text-gold-300">
-              <Sparkles size={14} /> الهوية المؤسسية لجمعية نجوم السياحة
+              <Sparkles size={14} /> الهوية المؤسسية لـ SA للسياحة
             </div>
             <h2 className="mt-3 font-display text-2xl font-black text-white sm:text-3xl">
               تكامل فريد بين <span className="text-gold-gradient">الفروع الميدانية</span> و
@@ -306,8 +306,8 @@ export default function BranchesBrowser({ initialBranches }: Props) {
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-white/75">
               تختلف فروعنا الميدانية عن وجهاتنا السياحية؛ فوجهاتنا هي المسارات والبرامج الفاخرة التي نصممها
-              لضيوفنا (كالعلا، حافة العالم، جزر البحر الأحمر، وقصور الدرعية)، بينما فروع الجمعية هي مكاتب
-              التمثيل الرسمية المنتشرة في 13 مدينة ومحافظة لتقديم الدعم اللوجستي، خدمة الأعضاء، إصدار التصاريح،
+              لضيوفنا (كالعلا، حافة العالم، جزر البحر الأحمر، وقصور الدرعية)، بينما فروع SA للسياحة هي مكاتب
+              التمثيل الرسمية المنتشرة في 13 مدينة ومحافظة لتقديم الدعم اللوجستي، خدمة الضيوف، وإصدار التصاريح،
               والإشراف الميداني المباشر بأعلى معايير الحوكمة والضيافة السعودية.
             </p>
           </div>

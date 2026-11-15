@@ -6,11 +6,11 @@ import { Building2, Globe2, MapPin, ShieldCheck, Sparkles, Users } from 'lucide-
 const BASE_URL = 'https://saudtourism.ksaplatforms.com';
 
 export const metadata: Metadata = {
-  title: 'فروع ومكاتب جمعية نجوم السياحة بالمملكة (13 فرعاً)',
+  title: 'فروع ومكاتب SA للسياحة بالمملكة (13 فرعاً)',
   description:
-    'شبكة فروع ومكاتب تمثيل جمعية نجوم السياحة في 13 مدينة ومحافظة في السعودية: الرياض، القصيم، حايل، الخرج، الزلفي، تبوك، العلا، المنطقة الغربية، عسير، جيزان، نجران، الدمام، والمدينة المنورة.',
+    'شبكة فروع ومكاتب تمثيل SA للسياحة في 13 مدينة ومحافظة في السعودية: الرياض، القصيم، حايل، الخرج، الزلفي، تبوك، العلا، المنطقة الغربية، عسير، جيزان، نجران، الدمام، والمدينة المنورة.',
   keywords: [
-    'فروع جمعية نجوم السياحة',
+    'فروع SA للسياحة',
     'فروع سياحة السعودية',
     'فرع الرياض',
     'فرع القصيم',
@@ -19,16 +19,16 @@ export const metadata: Metadata = {
     'فرع تبوك',
     'فرع عسير',
     'فرع الدمام',
-    'مكاتب جمعية نجوم السياحة',
-    'Tourism Stars Association Branches',
+    'مكاتب SA للسياحة',
+    'SA Tourism Branches',
   ],
   alternates: {
     canonical: `${BASE_URL}/branches`,
   },
   openGraph: {
-    title: 'فروع ومكاتب جمعية نجوم السياحة بالمملكة (13 فرعاً)',
+    title: 'فروع ومكاتب SA للسياحة بالمملكة (13 فرعاً)',
     description:
-      'شبكة فروع ومكاتب تمثيل جمعية نجوم السياحة في 13 مدينة ومحافظة في السعودية: الرياض، القصيم، حايل، الخرج، الزلفي، تبوك، العلا، المنطقة الغربية، عسير، جيزان، نجران، الدمام، والمدينة المنورة.',
+      'شبكة فروع ومكاتب تمثيل SA للسياحة في 13 مدينة ومحافظة في السعودية: الرياض، القصيم، حايل، الخرج، الزلفي، تبوك، العلا، المنطقة الغربية، عسير، جيزان، نجران، الدمام، والمدينة المنورة.',
     url: `${BASE_URL}/branches`,
     type: 'website',
     images: [
@@ -36,15 +36,15 @@ export const metadata: Metadata = {
         url: '/images/hero-1.jpg',
         width: 1920,
         height: 1080,
-        alt: 'شبكة فروع جمعية نجوم السياحة في السعودية',
+        alt: 'شبكة فروع SA للسياحة في السعودية',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'فروع ومكاتب جمعية نجوم السياحة بالمملكة (13 فرعاً)',
+    title: 'فروع ومكاتب SA للسياحة بالمملكة (13 فرعاً)',
     description:
-      'شبكة فروع ومكاتب تمثيل جمعية نجوم السياحة في 13 مدينة ومحافظة في السعودية.',
+      'شبكة فروع ومكاتب تمثيل SA للسياحة في 13 مدينة ومحافظة في السعودية.',
     images: ['/images/hero-1.jpg'],
   },
 };
@@ -58,10 +58,10 @@ export default async function BranchesPage() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${BASE_URL}/#organization`,
-    name: 'جمعية نجوم السياحة',
+    name: 'SA للسياحة',
     url: BASE_URL,
     description:
-      'شبكة فروع ومكاتب تمثيل جمعية نجوم السياحة في 13 مدينة ومحافظة بالمملكة العربية السعودية.',
+      'شبكة فروع ومكاتب تمثيل SA للسياحة في 13 مدينة ومحافظة بالمملكة العربية السعودية.',
     subOrganization: branches.map((b) => ({
       '@type': 'LocalBusiness',
       name: b.name,
@@ -94,11 +94,11 @@ export default async function BranchesPage() {
         <div className="container-x relative">
           <div className="mx-auto max-w-4xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-4 py-1.5 text-xs font-bold text-gold-300">
-              <Building2 size={15} /> فروع الجمعية المعتمدة بالمملكة
+              <Building2 size={15} /> فروع SA المعتمدة بالمملكة
             </div>
 
             <h1 className="mt-5 font-display text-3xl font-black leading-tight sm:text-5xl md:text-6xl">
-              شبكة فروع <span className="text-gold-gradient">جمعية نجوم السياحة</span> عبر المملكة
+              شبكة فروع <span className="text-gold-gradient">SA للسياحة</span> عبر المملكة
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
