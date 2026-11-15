@@ -1,5 +1,8 @@
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
-import { Instagram, Linkedin, Twitter, Youtube } from 'lucide-react';
+import { ChevronDown, Instagram, Linkedin, Twitter, Youtube } from 'lucide-react';
+import clsx from 'clsx';
 import NewsletterForm from './NewsletterForm';
 import { DEFAULT_SETTINGS } from '@/lib/default-data';
 import type { SiteSettings } from '@/lib/types';
@@ -18,6 +21,8 @@ const SnapchatIcon = ({ size = 18 }: { size?: number }) => (
 
 export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: SiteSettings }) {
   const currentSettings = settings || DEFAULT_SETTINGS;
+  const [quickOpen, setQuickOpen] = useState(false);
+  const [destinationsOpen, setDestinationsOpen] = useState(false);
 
   const socialLinks = [
     { name: 'Instagram', href: currentSettings.instagramUrl, icon: Instagram },
@@ -70,41 +75,89 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
           )}
         </div>
 
+        {/* روابط سريعة (Collapsible on Mobile) */}
         <div>
-          <h4 className="mb-5 font-display text-lg font-bold text-gold-300">روابط سريعة</h4>
-          <ul className="space-y-3">
-            {[
-              ['/packages', 'الباقات الفاخرة'],
-              ['/branches', 'فروع الجمعية (13 فرعاً)'],
-              ['/#vip', 'خدمات VIP'],
-              ['/#testimonials', 'آراء الضيوف'],
-              ['/contact', 'تواصل معنا'],
-            ].map(([h, l]) => (
-              <li key={h}>
-                <Link href={h} className="transition hover:text-gold-300">
-                  {l}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <button
+            type="button"
+            onClick={() => setQuickOpen((prev) => !prev)}
+            className="flex w-full items-center justify-between border-b border-white/10 pb-3 font-display text-lg font-bold text-gold-300 transition-colors md:cursor-default md:border-b-0 md:pb-0 md:mb-5 hover:text-gold-200 md:hover:text-gold-300"
+            aria-expanded={quickOpen}
+          >
+            <span>روابط سريعة</span>
+            <ChevronDown
+              size={18}
+              className={clsx(
+                'text-gold-400 transition-transform duration-300 md:hidden',
+                quickOpen && 'rotate-180'
+              )}
+            />
+          </button>
+          <div
+            className={clsx(
+              'transition-all duration-300 ease-in-out md:block',
+              quickOpen
+                ? 'mt-3 max-h-96 opacity-100 md:mt-0'
+                : 'max-h-0 overflow-hidden opacity-0 md:max-h-none md:overflow-visible md:opacity-100'
+            )}
+          >
+            <ul className="space-y-3 pt-1 md:pt-0">
+              {[
+                ['/packages', 'الباقات الفاخرة'],
+                ['/branches', 'فروع الجمعية (13 فرعاً)'],
+                ['/#vip', 'خدمات VIP'],
+                ['/#testimonials', 'آراء الضيوف'],
+                ['/contact', 'تواصل معنا'],
+              ].map(([h, l]) => (
+                <li key={h}>
+                  <Link href={h} className="transition hover:text-gold-300">
+                    {l}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
+        {/* الوجهات (Collapsible on Mobile) */}
         <div>
-          <h4 className="mb-5 font-display text-lg font-bold text-gold-300">الوجهات</h4>
-          <ul className="space-y-3">
-            {[
-              ['alula', 'العلا'],
-              ['red-sea', 'البحر الأحمر'],
-              ['diriyah', 'الدرعية'],
-              ['asir', 'عسير'],
-            ].map(([s, l]) => (
-              <li key={s}>
-                <Link href={`/packages?destination=${s}`} className="transition hover:text-gold-300">
-                  {l}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <button
+            type="button"
+            onClick={() => setDestinationsOpen((prev) => !prev)}
+            className="flex w-full items-center justify-between border-b border-white/10 pb-3 font-display text-lg font-bold text-gold-300 transition-colors md:cursor-default md:border-b-0 md:pb-0 md:mb-5 hover:text-gold-200 md:hover:text-gold-300"
+            aria-expanded={destinationsOpen}
+          >
+            <span>الوجهات</span>
+            <ChevronDown
+              size={18}
+              className={clsx(
+                'text-gold-400 transition-transform duration-300 md:hidden',
+                destinationsOpen && 'rotate-180'
+              )}
+            />
+          </button>
+          <div
+            className={clsx(
+              'transition-all duration-300 ease-in-out md:block',
+              destinationsOpen
+                ? 'mt-3 max-h-96 opacity-100 md:mt-0'
+                : 'max-h-0 overflow-hidden opacity-0 md:max-h-none md:overflow-visible md:opacity-100'
+            )}
+          >
+            <ul className="space-y-3 pt-1 md:pt-0">
+              {[
+                ['alula', 'العلا'],
+                ['red-sea', 'البحر الأحمر'],
+                ['diriyah', 'الدرعية'],
+                ['asir', 'عسير'],
+              ].map(([s, l]) => (
+                <li key={s}>
+                  <Link href={`/packages?destination=${s}`} className="transition hover:text-gold-300">
+                    {l}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <div>
