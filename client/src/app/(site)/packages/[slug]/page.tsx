@@ -42,14 +42,14 @@ export async function generateMetadata({
       pkg.destination.name,
       'سياحة فاخرة السعودية',
       'باقات سياحية VIP',
-      'SA للسياحة',
+      'جمعية نجوم السياحة',
       'رحلات سياحية راقية',
     ],
     alternates: {
       canonical: pageUrl,
     },
     openGraph: {
-      title: `${pkg.title} | SA للسياحة`,
+      title: `${pkg.title} | جمعية نجوم السياحة`,
       description: pkg.summary || pkg.description.slice(0, 160),
       url: pageUrl,
       type: 'article',
@@ -64,7 +64,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${pkg.title} | SA للسياحة`,
+      title: `${pkg.title} | جمعية نجوم السياحة`,
       description: pkg.summary || pkg.description.slice(0, 160),
       images: [image],
     },
@@ -113,7 +113,7 @@ export default async function PackagePage({
         },
         provider: {
           '@type': 'TravelAgency',
-          name: 'SA للسياحة',
+          name: 'جمعية نجوم السياحة',
           url: BASE_URL,
         },
         aggregateRating: {
