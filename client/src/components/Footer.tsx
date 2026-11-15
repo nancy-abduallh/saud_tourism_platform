@@ -39,21 +39,21 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
       <div className="h-1 bg-gold-gradient" />
       <div className="container-x relative grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="SA للسياحة" className="h-16 w-16 rounded-full ring-2 ring-gold-500/60" />
-            <div className="flex flex-col text-start leading-none">
-              <span
-                className="allura-regular font-allura text-5xl leading-none text-gold-gradient drop-shadow-[0_2px_12px_rgba(243,211,122,0.45)]"
-                style={{ fontFamily: '"Allura", cursive' }}
-                dir="ltr"
-              >
-                SA
+          <Link href="/" className="group inline-flex items-center gap-3.5 transition-transform hover:opacity-95">
+            <img
+              src="/footer-logo.png"
+              alt="جمعية نجوم السياحة"
+              className="h-16 w-16 rounded-full object-contain ring-2 ring-gold-400/50 shadow-lg shadow-black/40 transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="flex flex-col text-start leading-tight">
+              <span className="font-display text-xl font-black text-white sm:text-2xl">
+                جمعية نجوم السياحة
               </span>
-              <span className="font-display text-xs font-bold tracking-[0.25em] text-white leading-tight mt-0.5">
-                للسياحة
+              <span className="font-display text-[11px] font-semibold tracking-wider text-gold-400">
+                TOURISM STARS ASSOCIATION
               </span>
             </div>
-          </div>
+          </Link>
           <p className="mt-5 leading-7 text-white/60">
             {currentSettings.footerDescription || DEFAULT_SETTINGS.footerDescription}
           </p>
@@ -175,7 +175,7 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
         </div>
       </div>
       <div className="relative border-t border-white/10 py-5 text-center text-sm text-white/50">
-        {currentSettings.copyrightText || `© ${new Date().getFullYear()} SA للسياحة. جميع الحقوق محفوظة.`}
+        {currentSettings.copyrightText || `© ${new Date().getFullYear()} جمعية نجوم السياحة. جميع الحقوق محفوظة.`}
       </div>
     </footer>
   );
