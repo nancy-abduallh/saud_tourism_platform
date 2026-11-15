@@ -20,10 +20,22 @@ export default function NewsletterForm() {
   }
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} suppressHydrationWarning>
       <div className="relative">
-        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="بريدك الإلكتروني" className="field-dark !pe-14" />
-        <button className="absolute inset-y-1.5 end-1.5 grid w-11 place-items-center rounded-lg bg-gold-gradient text-navy-950" aria-label="اشتراك">
+        <input
+          suppressHydrationWarning
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="بريدك الإلكتروني"
+          className="field-dark !pe-14"
+        />
+        <button
+          suppressHydrationWarning
+          className="absolute inset-y-1.5 end-1.5 grid w-11 place-items-center rounded-lg bg-gold-gradient text-navy-950"
+          aria-label="اشتراك"
+        >
           {state === 'loading' ? <Loader2 size={18} className="animate-spin" /> : <ArrowLeft size={18} />}
         </button>
       </div>

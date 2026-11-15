@@ -39,13 +39,33 @@ export default function Testimonials({ reviews }: { reviews: Review[] }) {
             </AnimatePresence>
           </div>
           <div className="mt-8 flex items-center justify-center gap-5">
-            <button onClick={() => setI((i - 1 + n) % n)} className="glass grid h-11 w-11 place-items-center rounded-full text-white hover:bg-gold-400 hover:text-navy-950" aria-label="السابق"><ChevronRight /></button>
+            <button
+              suppressHydrationWarning
+              onClick={() => setI((i - 1 + n) % n)}
+              className="glass grid h-11 w-11 place-items-center rounded-full text-white hover:bg-gold-400 hover:text-navy-950"
+              aria-label="السابق"
+            >
+              <ChevronRight />
+            </button>
             <div className="flex gap-2">
               {reviews.map((_, k) => (
-                <button key={k} onClick={() => setI(k)} aria-label={`تقييم ${k + 1}`} className={clsx('h-2 rounded-full transition-all', k === i ? 'w-8 bg-gold-400' : 'w-2 bg-white/30')} />
+                <button
+                  suppressHydrationWarning
+                  key={k}
+                  onClick={() => setI(k)}
+                  aria-label={`تقييم ${k + 1}`}
+                  className={clsx('h-2 rounded-full transition-all', k === i ? 'w-8 bg-gold-400' : 'w-2 bg-white/30')}
+                />
               ))}
             </div>
-            <button onClick={() => setI((i + 1) % n)} className="glass grid h-11 w-11 place-items-center rounded-full text-white hover:bg-gold-400 hover:text-navy-950" aria-label="التالي"><ChevronLeft /></button>
+            <button
+              suppressHydrationWarning
+              onClick={() => setI((i + 1) % n)}
+              className="glass grid h-11 w-11 place-items-center rounded-full text-white hover:bg-gold-400 hover:text-navy-950"
+              aria-label="التالي"
+            >
+              <ChevronLeft />
+            </button>
           </div>
         </div>
       </div>

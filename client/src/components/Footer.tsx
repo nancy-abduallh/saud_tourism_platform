@@ -78,6 +78,7 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
         {/* روابط سريعة (Collapsible on Mobile) */}
         <div>
           <button
+            suppressHydrationWarning
             type="button"
             onClick={() => setQuickOpen((prev) => !prev)}
             className="flex w-full items-center justify-between border-b border-white/10 pb-3 font-display text-lg font-bold text-gold-300 transition-colors md:cursor-default md:border-b-0 md:pb-0 md:mb-5 hover:text-gold-200 md:hover:text-gold-300"
@@ -121,6 +122,7 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
         {/* الوجهات (Collapsible on Mobile) */}
         <div>
           <button
+            suppressHydrationWarning
             type="button"
             onClick={() => setDestinationsOpen((prev) => !prev)}
             className="flex w-full items-center justify-between border-b border-white/10 pb-3 font-display text-lg font-bold text-gold-300 transition-colors md:cursor-default md:border-b-0 md:pb-0 md:mb-5 hover:text-gold-200 md:hover:text-gold-300"
