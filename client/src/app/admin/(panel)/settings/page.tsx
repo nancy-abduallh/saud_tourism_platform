@@ -22,6 +22,9 @@ import {
   Clock,
   FileText,
   AlertCircle,
+  Quote,
+  User,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { api } from '@/lib/client-api';
 import { DEFAULT_SETTINGS } from '@/lib/default-data';
@@ -57,6 +60,10 @@ export default function SettingsPage() {
           workingHours: data.workingHours ?? DEFAULT_SETTINGS.workingHours,
           footerDescription: data.footerDescription ?? DEFAULT_SETTINGS.footerDescription,
           copyrightText: data.copyrightText ?? DEFAULT_SETTINGS.copyrightText,
+          ownerName: data.ownerName ?? DEFAULT_SETTINGS.ownerName,
+          ownerTitle: data.ownerTitle ?? DEFAULT_SETTINGS.ownerTitle,
+          ownerMessage: data.ownerMessage ?? DEFAULT_SETTINGS.ownerMessage,
+          ownerImage: data.ownerImage ?? DEFAULT_SETTINGS.ownerImage,
         });
       }
     } catch (err: any) {
@@ -179,6 +186,119 @@ export default function SettingsPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Section 0: كلمة المالك والمؤسس (الأستاذ / سعود الشمري) */}
+        <div className="rounded-2xl border-2 border-gold-500/40 bg-white p-6 shadow-sm">
+          <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-gold-50 text-gold-600 ring-1 ring-gold-300">
+                <Quote size={22} />
+              </span>
+              <div>
+                <h2 className="font-display text-lg font-bold text-navy-900 flex items-center gap-2">
+                  كلمة المالك والمؤسس (في الصفحة الرئيسية)
+                  <span className="rounded-full bg-gold-100 px-2.5 py-0.5 text-[10px] font-bold text-gold-800">
+                    قسم رسمي مميز
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-500">
+                  تظهر في الصفحة الرئيسية تحت عنوان "كلمة الأستاذ / سعود الشمري - المالك"
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-12">
+            <div className="space-y-4 lg:col-span-8">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold text-navy-900">
+                    اسم المالك / القيادة <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={form.ownerName ?? ''}
+                    onChange={(e) => handleChange('ownerName', e.target.value)}
+                    placeholder="سعود الشمري"
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-xs font-bold text-navy-900">
+                    المنصب أو الصفة <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={form.ownerTitle ?? ''}
+                    onChange={(e) => handleChange('ownerTitle', e.target.value)}
+                    placeholder="المالك"
+                    className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-navy-900">
+                  نص كلمة المالك <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={8}
+                  value={form.ownerMessage ?? ''}
+                  onChange={(e) => handleChange('ownerMessage', e.target.value)}
+                  placeholder="اكتب كلمة ورؤية المالك هنا..."
+                  className="w-full rounded-xl border border-slate-200 p-4 text-sm leading-relaxed text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20 font-sans"
+                />
+                <p className="mt-1 text-[11px] text-slate-400">
+                  يمكنك استخدام أسطر فارغة للفصل بين الفقرات لعرضها بشكل منسق وفاخر.
+                </p>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-navy-900">
+                  رابط صورة المالك الرسمية (URL)
+                </label>
+                <input
+                  type="text"
+                  dir="ltr"
+                  value={form.ownerImage ?? ''}
+                  onChange={(e) => handleChange('ownerImage', e.target.value)}
+                  placeholder="https://... أو /images/owner.jpg"
+                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-xs text-slate-800 transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+                />
+                <p className="mt-1 text-[11px] text-slate-500">
+                  في حال ترك الحقل فارغاً، يظهر الختم القيادي الملكي الفاخر لشعار المنصة تلقائياً حتى تقوم بإضافة الصورة في أي وقت.
+                </p>
+              </div>
+            </div>
+
+            {/* Preview Box on the Right */}
+            <div className="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-navy-950 text-white border border-gold-500/30">
+              <span className="text-[11px] font-bold text-gold-400 mb-3">معاينة بطاقة المالك بالموقع:</span>
+              <div className="relative aspect-[4/5] w-full max-w-[200px] rounded-2xl overflow-hidden border border-gold-500/40 bg-navy-900 flex flex-col items-center justify-center p-4 text-center">
+                {form.ownerImage ? (
+                  <img
+                    src={form.ownerImage}
+                    alt="صورة المالك"
+                    className="h-full w-full object-cover object-top"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <div className="h-16 w-16 rounded-full border-2 border-gold-500/60 flex items-center justify-center bg-gold-500/10 mb-2">
+                      <span className="font-serif text-xl font-bold text-gold-300">SA</span>
+                    </div>
+                    <span className="text-xs font-bold text-white mt-1">{form.ownerName || 'سعود الشمري'}</span>
+                    <span className="text-[10px] text-gold-400 font-semibold">{form.ownerTitle || 'المالك'}</span>
+                    <span className="mt-2 text-[9px] text-white/50">الختم القيادي مفعل</span>
+                  </div>
+                )}
+              </div>
+              <p className="mt-3 text-[11px] text-center text-white/60">
+                {form.ownerImage ? '✓ تم ضبط صورة المالك' : 'سيظهر الختم القيادي حتى رفع الصورة'}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Section 1: WhatsApp Configuration */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
           <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">

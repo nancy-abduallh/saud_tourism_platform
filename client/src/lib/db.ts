@@ -978,6 +978,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
           workingHours: map.working_hours ?? DEFAULT_SETTINGS.workingHours,
           footerDescription: map.footer_description ?? DEFAULT_SETTINGS.footerDescription,
           copyrightText: map.copyright_text ?? DEFAULT_SETTINGS.copyrightText,
+          ownerName: map.owner_name ?? DEFAULT_SETTINGS.ownerName,
+          ownerTitle: map.owner_title ?? DEFAULT_SETTINGS.ownerTitle,
+          ownerMessage: map.owner_message ?? DEFAULT_SETTINGS.ownerMessage,
+          ownerImage: map.owner_image ?? DEFAULT_SETTINGS.ownerImage,
         };
       }
     } catch (e) {
@@ -1014,6 +1018,10 @@ export async function updateSiteSettings(settings: Partial<SiteSettings>): Promi
         workingHours: 'working_hours',
         footerDescription: 'footer_description',
         copyrightText: 'copyright_text',
+        ownerName: 'owner_name',
+        ownerTitle: 'owner_title',
+        ownerMessage: 'owner_message',
+        ownerImage: 'owner_image',
       };
 
       for (const [prop, val] of Object.entries(settings)) {

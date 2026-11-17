@@ -10,8 +10,9 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import CtaBanner from '@/components/CtaBanner';
 import BranchesHomeSection from '@/components/BranchesHomeSection';
+import OwnerMessage from '@/components/OwnerMessage';
 import { serverFetch } from '@/lib/api';
-import { getBranches } from '@/lib/db';
+import { getBranches, getSiteSettings } from '@/lib/db';
 import type { Destination, HeroSlide, PackageSummary, PublicStats, Review, VipService } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -62,7 +63,7 @@ const homeJsonLd = {
 };
 
 export default async function HomePage() {
-  const [slides, destinations, packages, services, reviews, stats, branches] = await Promise.all([
+  const [slides, destinations, packages, services, reviews, stats, branches, settings] = await Promise.all([
     serverFetch<HeroSlide[]>('/hero', []),
     serverFetch<Destination[]>('/destinations', []),
     serverFetch<PackageSummary[]>('/packages?featured=1&limit=6', []),
@@ -70,6 +71,7 @@ export default async function HomePage() {
     serverFetch<Review[]>('/reviews', []),
     serverFetch<PublicStats | undefined>('/stats', undefined),
     getBranches(),
+    getSiteSettings(),
   ]);
 
   const marqueeItems = [
@@ -95,6 +97,7 @@ export default async function HomePage() {
       <FeaturedPackages packages={packages} />
       <Stats data={stats} />
       <VipServices services={services} />
+      <OwnerMessage settings={settings} />
       <BranchesHomeSection branches={branches} />
       <WhyUs />
       <HowItWorks />

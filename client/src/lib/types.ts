@@ -44,6 +44,10 @@ export interface SiteSettings {
   workingHours: string;
   footerDescription: string;
   copyrightText: string;
+  ownerName?: string;
+  ownerTitle?: string;
+  ownerMessage?: string;
+  ownerImage?: string;
 }
 
 export interface Branch {
