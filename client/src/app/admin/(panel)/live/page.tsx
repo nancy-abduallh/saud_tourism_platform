@@ -72,10 +72,10 @@ export default function AdminLivePage() {
       .then((data) => {
         if (data.settings) {
           const s = { ...data.settings };
-          if (!s.streamUrl || s.streamUrl.includes('3nQ6L8bQeYc')) {
+          if (s.streamUrl && s.streamUrl.includes('3nQ6L8bQeYc')) {
             s.streamUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
           }
-          if (!s.recordingUrl || s.recordingUrl.includes('3nQ6L8bQeYc')) {
+          if (s.recordingUrl && s.recordingUrl.includes('3nQ6L8bQeYc')) {
             s.recordingUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
           }
           setSettings(s);

@@ -1393,12 +1393,12 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
       );
       if (rows && rows.length > 0) {
         const r = rows[0];
-        let streamUrl = r.streamUrl;
-        let recordingUrl = r.recordingUrl;
-        if (!streamUrl || streamUrl.includes('3nQ6L8bQeYc')) {
+        let streamUrl = r.streamUrl ?? '';
+        let recordingUrl = r.recordingUrl ?? '';
+        if (streamUrl && streamUrl.includes('3nQ6L8bQeYc')) {
           streamUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
         }
-        if (!recordingUrl || recordingUrl.includes('3nQ6L8bQeYc')) {
+        if (recordingUrl && recordingUrl.includes('3nQ6L8bQeYc')) {
           recordingUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
         }
         const res: LiveStreamSettings = {
