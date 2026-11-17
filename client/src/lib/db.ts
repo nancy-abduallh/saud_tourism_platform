@@ -937,6 +937,9 @@ async function ensureBranchesTable(p: mysql.Pool) {
           ]
         );
       }
+    } else {
+      // Ensure all existing branches are updated to the unified phone number
+      await p.query("UPDATE branches SET phone = '+966 57 171 3078', whatsapp = '966571713078'");
     }
     branchesTableChecked = true;
   } catch (err) {

@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUp, MessageCircle } from 'lucide-react';
-import { DEFAULT_SETTINGS } from '@/lib/default-data';
+import { ArrowUp } from 'lucide-react';
 import type { SiteSettings } from '@/lib/types';
 
-export default function FloatingActions({ settings = DEFAULT_SETTINGS }: { settings?: SiteSettings }) {
+export default function FloatingActions({ settings }: { settings?: SiteSettings } = {}) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -14,14 +13,6 @@ export default function FloatingActions({ settings = DEFAULT_SETTINGS }: { setti
     window.addEventListener('scroll', on, { passive: true });
     return () => window.removeEventListener('scroll', on);
   }, []);
-
-  const currentSettings = settings || DEFAULT_SETTINGS;
-  const rawNumber = currentSettings.whatsappNumber || DEFAULT_SETTINGS.whatsappNumber;
-  const cleanNumber = rawNumber.replace(/[^0-9]/g, '');
-  const message = currentSettings.whatsappMessage || DEFAULT_SETTINGS.whatsappMessage || '';
-  const waUrl = cleanNumber
-    ? `https://wa.me/${cleanNumber}${message ? `?text=${encodeURIComponent(message)}` : ''}`
-    : 'https://wa.me/966500000000';
 
   return (
     <div className="fixed bottom-6 start-6 z-40 flex flex-col gap-3">
@@ -39,18 +30,6 @@ export default function FloatingActions({ settings = DEFAULT_SETTINGS }: { setti
           </motion.button>
         )}
       </AnimatePresence>
-
-      <a
-        href={waUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="relative grid h-14 w-14 place-items-center rounded-full bg-green-500 text-white shadow-xl hover:bg-green-600 transition-colors"
-        aria-label="تواصل عبر واتساب"
-        title="تواصل معنا عبر واتساب"
-      >
-        <span className="absolute inset-0 animate-ring rounded-full bg-green-500" />
-        <MessageCircle className="relative" size={26} />
-      </a>
     </div>
   );
 }

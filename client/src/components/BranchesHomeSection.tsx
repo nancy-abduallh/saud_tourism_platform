@@ -64,12 +64,8 @@ export default function BranchesHomeSection({ branches }: Props) {
         {/* Featured Branch Cards Grid */}
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {displayBranches.map((branch) => {
-            const cleanWa = branch.whatsapp ? branch.whatsapp.replace(/\D/g, '') : '';
-            const waUrl = cleanWa
-              ? `https://wa.me/${cleanWa}?text=${encodeURIComponent(
-                  `مرحباً SA للسياحة - ${branch.name}، أود الاستفسار عن خدمات الفرع.`
-                )}`
-              : '#';
+            const branchPhone = branch.phone || '+966 57 171 3078';
+            const cleanPhone = branchPhone.replace(/[^0-9+]/g, '');
 
             return (
               <div
@@ -106,16 +102,13 @@ export default function BranchesHomeSection({ branches }: Props) {
 
                 <div className="mt-5 border-t border-white/10 pt-3">
                   <div className="flex items-center justify-between gap-2">
-                    {cleanWa && (
-                      <a
-                        href={waUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600/90 py-2 text-xs font-bold text-white shadow transition hover:bg-emerald-500"
-                      >
-                        <MessageCircle size={14} /> واتساب الفرع
-                      </a>
-                    )}
+                    <a
+                      href={`tel:${cleanPhone}`}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-gold-gradient py-2 text-xs font-black text-navy-950 shadow-gold transition hover:opacity-90"
+                      dir="ltr"
+                    >
+                      <Phone size={13} /> {branchPhone}
+                    </a>
                     <Link
                       href="/branches"
                       className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-white/80 transition hover:bg-white/10 hover:text-gold-300"
