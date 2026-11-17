@@ -17,6 +17,13 @@ export function parseVideoUrl(rawUrl: string): { type: 'youtube' | 'vimeo' | 'di
   }
 
   let url = rawUrl.trim();
+
+  // If user pasted an entire <iframe>...</iframe> snippet
+  const iframeMatch = url.match(/src=["']([^"']+)["']/i);
+  if (iframeMatch && iframeMatch[1]) {
+    url = iframeMatch[1];
+  }
+
   if (url.includes('3nQ6L8bQeYc')) {
     url = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
   }
@@ -29,8 +36,8 @@ export function parseVideoUrl(rawUrl: string): { type: 'youtube' | 'vimeo' | 'di
     };
   }
 
-  // Standard YouTube watch: youtube.com/watch?v=ID
-  const ytWatchMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  // Standard YouTube watch / live / short url: youtube.com/watch?v=ID or /live/ID or youtu.be/ID
+  const ytWatchMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|live\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   if (ytWatchMatch && ytWatchMatch[1]) {
     const videoId = ytWatchMatch[1];
     return {
@@ -40,7 +47,7 @@ export function parseVideoUrl(rawUrl: string): { type: 'youtube' | 'vimeo' | 'di
   }
 
   // Vimeo
-  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (vimeoMatch && vimeoMatch[1]) {
     return {
       type: 'vimeo',
@@ -48,7 +55,34 @@ export function parseVideoUrl(rawUrl: string): { type: 'youtube' | 'vimeo' | 'di
     };
   }
 
-  // Direct video file (mp4 / webm)
+  // Facebook Live / Videos
+  if (url.includes('facebook.com') || url.includes('fb.watch')) {
+    return {
+      type: 'custom',
+      embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=0&autoplay=1`,
+    };
+  }
+
+  // Twitch Stream
+  const twitchMatch = url.match(/twitch\.tv\/([a-zA-Z0-9_]+)/);
+  if (twitchMatch && twitchMatch[1] && !['directory', 'videos', 'p'].includes(twitchMatch[1].toLowerCase())) {
+    const parentHost = typeof window !== 'undefined' ? window.location.hostname : 'saudtourism.ksaplatforms.com';
+    return {
+      type: 'custom',
+      embedUrl: `https://player.twitch.tv/?channel=${twitchMatch[1]}&parent=${parentHost}&parent=localhost&autoplay=true`,
+    };
+  }
+
+  // Dailymotion
+  const dailyMatch = url.match(/dailymotion\.com\/(?:video\/|embed\/video\/)([a-zA-Z0-9]+)/);
+  if (dailyMatch && dailyMatch[1]) {
+    return {
+      type: 'custom',
+      embedUrl: `https://www.dailymotion.com/embed/video/${dailyMatch[1]}?autoplay=1`,
+    };
+  }
+
+  // Direct video stream / HLS (mp4, webm, m3u8)
   if (/\.(mp4|webm|m3u8)(\?.*)?$/i.test(url)) {
     return {
       type: 'direct',
@@ -56,6 +90,7 @@ export function parseVideoUrl(rawUrl: string): { type: 'youtube' | 'vimeo' | 'di
     };
   }
 
+  // Any other direct embed URL or provider
   return {
     type: 'custom',
     embedUrl: url,

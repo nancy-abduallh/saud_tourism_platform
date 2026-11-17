@@ -485,16 +485,18 @@ export default function AdminLivePage() {
             {/* Video Stream URL with Quick Presets */}
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                رابط البث المباشر (YouTube Live / Vimeo / Embed) <span className="text-red-500">*</span>
+                رابط البث المباشر (YouTube / Vimeo / Facebook / Twitch / Embed / HLS) <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                required
-                placeholder="https://www.youtube.com/watch?v=..."
+                placeholder="https://www.youtube.com/watch?v=... أو فيميو أو تويتش أو كود iframe"
                 value={settings.streamUrl}
                 onChange={(e) => setSettings({ ...settings, streamUrl: e.target.value })}
                 className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none font-mono"
               />
+              <p className="mt-1 text-[11px] text-slate-500">
+                يقبل كافة المنصات: يوتيوب (Live أو عادي)، فيميو (Vimeo)، فيسبوك لايف، تويتش (Twitch)، روابط البث المباشر (m3u8)، أو كود التضمين الكامل &lt;iframe&gt;.
+              </p>
 
               {/* Quick Preset Buttons */}
               <div className="mt-2.5 flex flex-wrap gap-2">
