@@ -524,6 +524,7 @@ export async function getPackageByIdAdmin(id: number) {
           isFeatured: Boolean(pkg.is_featured),
           isActive: Boolean(pkg.is_active),
           gallery: images ? images.map((img) => img.url) : [],
+          images: images || [],
           inclusions: inclusions ? inclusions.map((inc) => inc.text) : [],
           itinerary: itinerary || [],
         };
@@ -534,6 +535,159 @@ export async function getPackageByIdAdmin(id: number) {
   }
   const fallback = DEFAULT_PACKAGES.find((pkg) => pkg.id === id);
   return fallback || null;
+}
+
+export async function createPackageAdmin(data: any) {
+  const p = getPool();
+  if (!p) throw new Error('Database connection not available');
+
+  const slug =
+    data.slug && data.slug.trim()
+      ? data.slug.trim()
+      : (data.title || 'package')
+          .toLowerCase()
+          .replace(/[^\w\u0621-\u064A-]+/g, '-')
+          .replace(/^-+|-+$/g, '') + '-' + Date.now();
+
+  const [res]: any = await p.query(
+    `INSERT INTO packages (
+      slug, title, title_en, summary, description, destination_id, category,
+      price_sar, days, nights, rating, max_guests, cover_image, badges,
+      is_featured, is_active, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+    [
+      slug,
+      data.title,
+      data.titleEn || null,
+      data.summary || '',
+      data.description || '',
+      Number(data.destinationId) || 1,
+      data.category || 'LUXURY',
+      Number(data.priceSar) || 0,
+      Number(data.days) || 1,
+      Number(data.nights) || 0,
+      Number(data.rating) || 5,
+      Number(data.maxGuests) || 6,
+      data.coverImage || '',
+      data.badges || '',
+      data.isFeatured ? 1 : 0,
+      data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1,
+    ]
+  );
+  const pkgId = res.insertId;
+
+  if (Array.isArray(data.gallery) && data.gallery.length > 0) {
+    for (let i = 0; i < data.gallery.length; i++) {
+      const url = typeof data.gallery[i] === 'string' ? data.gallery[i] : data.gallery[i]?.url;
+      if (url) {
+        await p.query('INSERT INTO package_images (package_id, url, sort_order) VALUES (?, ?, ?)', [pkgId, url, i]);
+      }
+    }
+  }
+
+  if (Array.isArray(data.inclusions) && data.inclusions.length > 0) {
+    for (let i = 0; i < data.inclusions.length; i++) {
+      const text = typeof data.inclusions[i] === 'string' ? data.inclusions[i] : data.inclusions[i]?.text;
+      if (text) {
+        await p.query('INSERT INTO package_inclusions (package_id, text, sort_order) VALUES (?, ?, ?)', [pkgId, text, i]);
+      }
+    }
+  }
+
+  if (Array.isArray(data.itinerary) && data.itinerary.length > 0) {
+    for (let i = 0; i < data.itinerary.length; i++) {
+      const it = data.itinerary[i];
+      if (it) {
+        await p.query(
+          'INSERT INTO itinerary_days (package_id, day_number, title, description) VALUES (?, ?, ?, ?)',
+          [pkgId, i + 1, it.title || `اليوم ${i + 1}`, it.description || '']
+        );
+      }
+    }
+  }
+
+  return { id: pkgId, slug, ...data };
+}
+
+export async function updatePackageAdmin(id: number, data: any) {
+  const p = getPool();
+  if (!p) throw new Error('Database connection not available');
+
+  await p.query(
+    `UPDATE packages SET
+      slug = COALESCE(?, slug),
+      title = COALESCE(?, title),
+      title_en = COALESCE(?, title_en),
+      summary = COALESCE(?, summary),
+      description = COALESCE(?, description),
+      destination_id = COALESCE(?, destination_id),
+      category = COALESCE(?, category),
+      price_sar = COALESCE(?, price_sar),
+      days = COALESCE(?, days),
+      nights = COALESCE(?, nights),
+      rating = COALESCE(?, rating),
+      max_guests = COALESCE(?, max_guests),
+      cover_image = COALESCE(?, cover_image),
+      badges = COALESCE(?, badges),
+      is_featured = COALESCE(?, is_featured),
+      is_active = COALESCE(?, is_active),
+      updated_at = NOW()
+     WHERE id = ?`,
+    [
+      data.slug ?? null,
+      data.title ?? null,
+      data.titleEn ?? null,
+      data.summary ?? null,
+      data.description ?? null,
+      data.destinationId !== undefined ? Number(data.destinationId) : null,
+      data.category ?? null,
+      data.priceSar !== undefined ? Number(data.priceSar) : null,
+      data.days !== undefined ? Number(data.days) : null,
+      data.nights !== undefined ? Number(data.nights) : null,
+      data.rating !== undefined ? Number(data.rating) : null,
+      data.maxGuests !== undefined ? Number(data.maxGuests) : null,
+      data.coverImage ?? null,
+      data.badges ?? null,
+      data.isFeatured !== undefined ? (data.isFeatured ? 1 : 0) : null,
+      data.isActive !== undefined ? (data.isActive ? 1 : 0) : null,
+      id,
+    ]
+  );
+
+  if (Array.isArray(data.gallery)) {
+    await p.query('DELETE FROM package_images WHERE package_id = ?', [id]);
+    for (let i = 0; i < data.gallery.length; i++) {
+      const url = typeof data.gallery[i] === 'string' ? data.gallery[i] : data.gallery[i]?.url;
+      if (url) {
+        await p.query('INSERT INTO package_images (package_id, url, sort_order) VALUES (?, ?, ?)', [id, url, i]);
+      }
+    }
+  }
+
+  if (Array.isArray(data.inclusions)) {
+    await p.query('DELETE FROM package_inclusions WHERE package_id = ?', [id]);
+    for (let i = 0; i < data.inclusions.length; i++) {
+      const text = typeof data.inclusions[i] === 'string' ? data.inclusions[i] : data.inclusions[i]?.text;
+      if (text) {
+        await p.query('INSERT INTO package_inclusions (package_id, text, sort_order) VALUES (?, ?, ?)', [id, text, i]);
+      }
+    }
+  }
+
+  if (Array.isArray(data.itinerary)) {
+    await p.query('DELETE FROM itinerary_days WHERE package_id = ?', [id]);
+    for (let i = 0; i < data.itinerary.length; i++) {
+      const it = data.itinerary[i];
+      if (it) {
+        await p.query(
+          'INSERT INTO itinerary_days (package_id, day_number, title, description) VALUES (?, ?, ?, ?)',
+          [id, i + 1, it.title || `اليوم ${i + 1}`, it.description || '']
+        );
+      }
+    }
+  }
+
+  return { id, ...data };
 }
 
 export async function deletePackageAdmin(id: number) {
@@ -1183,6 +1337,18 @@ async function ensureLiveTables(p: mysql.Pool) {
       }
     }
 
+    // Update any old broken placeholder stream_url in existing rows
+    try {
+      await p.query(`
+        UPDATE live_stream_settings
+        SET stream_url = 'https://www.youtube.com/watch?v=R6D7jQI4BD0',
+            recording_url = 'https://www.youtube.com/watch?v=R6D7jQI4BD0'
+        WHERE stream_url LIKE '%3nQ6L8bQeYc%' OR recording_url LIKE '%3nQ6L8bQeYc%'
+      `);
+    } catch {
+      // Ignore if table schema variations occur
+    }
+
     liveTablesChecked = true;
   } catch (err) {
     console.warn('ensureLiveTables warning:', err);
@@ -1205,16 +1371,24 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
       );
       if (rows && rows.length > 0) {
         const r = rows[0];
+        let streamUrl = r.streamUrl;
+        let recordingUrl = r.recordingUrl;
+        if (!streamUrl || streamUrl.includes('3nQ6L8bQeYc')) {
+          streamUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
+        }
+        if (!recordingUrl || recordingUrl.includes('3nQ6L8bQeYc')) {
+          recordingUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
+        }
         const res: LiveStreamSettings = {
           id: r.id,
           isLive: Boolean(r.isLive),
-          status: r.status || 'LIVE',
+          status: r.status || 'UPCOMING',
           title: r.title,
           subtitle: r.subtitle,
           scheduledAt: r.scheduledAt,
-          streamUrl: r.streamUrl,
+          streamUrl,
           streamPlatform: r.streamPlatform || 'youtube',
-          recordingUrl: r.recordingUrl,
+          recordingUrl,
           bannerEnabled: Boolean(r.bannerEnabled),
           bannerText: r.bannerText,
           allowComments: Boolean(r.allowComments),

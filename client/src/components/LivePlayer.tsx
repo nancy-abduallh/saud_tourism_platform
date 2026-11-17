@@ -12,11 +12,10 @@ interface LivePlayerProps {
 }
 
 export function parseVideoUrl(rawUrl: string): { type: 'youtube' | 'vimeo' | 'direct' | 'custom'; embedUrl: string } {
-  if (!rawUrl || !rawUrl.trim()) {
-    return { type: 'custom', embedUrl: '' };
+  let url = (rawUrl || '').trim();
+  if (!url || url.includes('3nQ6L8bQeYc')) {
+    url = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
   }
-
-  const url = rawUrl.trim();
 
   // If already an embed url
   if (url.includes('youtube.com/embed/')) {

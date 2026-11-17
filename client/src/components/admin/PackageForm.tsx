@@ -25,9 +25,12 @@ export default function PackageForm({ id }: { id: string }) {
     if (!isNew) {
       api<Row>(`/admin/packages/${id}`, { auth: true }).then((p) => {
         setF(p);
-        setGallery(p.images.map((i: Row) => i.url));
-        setInc(p.inclusions.map((i: Row) => i.text).join('\n'));
-        setItin(p.itinerary.map((d: Row) => `${d.title} | ${d.description}`).join('\n'));
+        const imgs = Array.isArray(p.images) ? p.images : (Array.isArray(p.gallery) ? p.gallery.map((u: string) => ({ url: u })) : []);
+        setGallery(imgs.map((i: any) => i?.url || i).filter(Boolean));
+        const incs = Array.isArray(p.inclusions) ? p.inclusions : [];
+        setInc(incs.map((i: any) => typeof i === 'string' ? i : (i?.text || '')).filter(Boolean).join('\n'));
+        const itinList = Array.isArray(p.itinerary) ? p.itinerary : [];
+        setItin(itinList.map((d: Row) => `${d.title || ''} | ${d.description || ''}`).join('\n'));
         setLoading(false);
       });
     }

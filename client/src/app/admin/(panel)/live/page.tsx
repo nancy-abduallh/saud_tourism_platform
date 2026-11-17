@@ -65,7 +65,16 @@ export default function AdminLivePage() {
     fetch('/api/admin/live')
       .then((res) => res.json())
       .then((data) => {
-        if (data.settings) setSettings(data.settings);
+        if (data.settings) {
+          const s = { ...data.settings };
+          if (!s.streamUrl || s.streamUrl.includes('3nQ6L8bQeYc')) {
+            s.streamUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
+          }
+          if (!s.recordingUrl || s.recordingUrl.includes('3nQ6L8bQeYc')) {
+            s.recordingUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
+          }
+          setSettings(s);
+        }
         if (data.congratulations) setCongratulations(data.congratulations);
         if (data.agenda) setAgenda(data.agenda);
         setLoading(false);

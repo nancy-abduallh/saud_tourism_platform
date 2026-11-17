@@ -11,7 +11,8 @@ import { serverFetch } from '@/lib/api';
 import { splitBadges } from '@/lib/format';
 import type { PackageDetail, PackageSummary } from '@/lib/types';
 
-export const revalidate = 30;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const BASE_URL = 'https://saudtourism.ksaplatforms.com';
 
