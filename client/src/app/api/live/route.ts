@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server';
-import { getLiveCongratulations, getLiveSettings } from '@/lib/db';
+import { getLiveAgenda, getLiveCongratulations, getLiveSettings } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET() {
   try {
-    const [settings, congratulations] = await Promise.all([
+    const [settings, congratulations, agenda] = await Promise.all([
       getLiveSettings(),
       getLiveCongratulations(50),
+      getLiveAgenda(),
     ]);
     return NextResponse.json(
-      { settings, congratulations },
+      { settings, congratulations, agenda },
       {
         headers: {
           'Cache-Control': 'no-store, max-age=0',

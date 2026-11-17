@@ -5,7 +5,7 @@ import LivePlayer from '@/components/LivePlayer';
 import LiveCountdown from '@/components/LiveCountdown';
 import LiveFeed from '@/components/LiveFeed';
 import LiveCeremonyProgram from '@/components/LiveCeremonyProgram';
-import { getBranches, getLiveCongratulations, getLiveSettings } from '@/lib/db';
+import { getBranches, getLiveAgenda, getLiveCongratulations, getLiveSettings } from '@/lib/db';
 
 const BASE_URL = 'https://saudtourism.ksaplatforms.com';
 
@@ -50,10 +50,11 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function LivePage() {
-  const [liveSettings, congratulations, branches] = await Promise.all([
+  const [liveSettings, congratulations, branches, agenda] = await Promise.all([
     getLiveSettings(),
     getLiveCongratulations(50),
     getBranches(),
+    getLiveAgenda(),
   ]);
 
   const activeStreamUrl =
@@ -183,7 +184,7 @@ export default async function LivePage() {
 
           {/* Right Column: Ceremony Program & Kingdom Network */}
           <div className="space-y-8 lg:col-span-5">
-            <LiveCeremonyProgram />
+            <LiveCeremonyProgram agenda={agenda} />
 
             {/* Participating Branches Card */}
             <div className="rounded-3xl border border-white/10 bg-navy-900/80 p-6 shadow-xl backdrop-blur-xl">

@@ -21,10 +21,10 @@ import type { PublicStats } from '@/lib/types';
 
 export default function Stats({ data }: { data?: PublicStats }) {
   const items = [
-    { to: data?.happyGuests ?? 12000, suffix: '+', label: 'ضيف سعيد' },
-    { to: data?.exclusiveExperiences ?? 7, suffix: '+', label: 'تجربة حصرية' },
-    { to: data?.averageRating ?? 4.9, decimals: 1, suffix: '', label: 'متوسط التقييم' },
-    { to: 24, suffix: '/7', label: 'كونسيرج VIP' },
+    { to: 13, suffix: '', label: 'فرعاً ومكتباً بالمملكة' },
+    { to: data?.exclusiveExperiences ?? 7, suffix: '+', label: 'وجهات وتجارب حصرية' },
+    { to: data?.averageRating ?? 4.9, decimals: 1, suffix: '', label: 'متوسط تقييم الضيوف' },
+    { to: 24, suffix: '/7', label: 'دعم وكونسيرج ميداني' },
   ];
 
   return (

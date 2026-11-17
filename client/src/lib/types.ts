@@ -101,3 +101,11 @@ export interface LiveCongratulation {
   createdAt: string;
   isApproved: boolean;
 }
+
+export interface LiveAgendaItem {
+  id: number;
+  time: string;
+  title: string;
+  description: string;
+  sortOrder: number;
+}

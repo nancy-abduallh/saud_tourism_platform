@@ -6,8 +6,11 @@ import {
   Building2,
   Calendar,
   Check,
+  Clock,
   Eye,
+  ListPlus,
   MessageSquare,
+  Plus,
   Radio,
   Save,
   Sparkles,
@@ -15,15 +18,48 @@ import {
   Tv,
   Video,
 } from 'lucide-react';
-import type { LiveCongratulation, LiveStreamSettings, LiveStreamStatus } from '@/lib/types';
+import type { LiveAgendaItem, LiveCongratulation, LiveStreamSettings, LiveStreamStatus } from '@/lib/types';
 import { parseVideoUrl } from '@/components/LivePlayer';
+
+const PRESET_VIDEOS = [
+  {
+    name: '🇸🇦 فيديو "This Land Is Calling" (Visit Saudi - جودة فائقة)',
+    url: 'https://www.youtube.com/watch?v=R6D7jQI4BD0',
+  },
+  {
+    name: '🇸🇦 فيديو "Welcome to Arabia" (الترويج الرسمي للسياحة)',
+    url: 'https://www.youtube.com/watch?v=kDqTPT1SQbU',
+  },
+  {
+    name: '🇸🇦 فيديو العاصمة الرياض (Riyadh Directors Cut)',
+    url: 'https://www.youtube.com/watch?v=35g7UMVbfPc',
+  },
+];
+
+const toLocalInputFormat = (dateStr?: string) => {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  } catch {
+    return '';
+  }
+};
 
 export default function AdminLivePage() {
   const [settings, setSettings] = useState<LiveStreamSettings | null>(null);
   const [congratulations, setCongratulations] = useState<LiveCongratulation[]>([]);
+  const [agenda, setAgenda] = useState<LiveAgendaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // New agenda form state
+  const [newTime, setNewTime] = useState('');
+  const [newTitle, setNewTitle] = useState('');
+  const [newDesc, setNewDesc] = useState('');
 
   useEffect(() => {
     fetch('/api/admin/live')
@@ -31,6 +67,7 @@ export default function AdminLivePage() {
       .then((data) => {
         if (data.settings) setSettings(data.settings);
         if (data.congratulations) setCongratulations(data.congratulations);
+        if (data.agenda) setAgenda(data.agenda);
         setLoading(false);
       })
       .catch((err) => {
@@ -39,9 +76,13 @@ export default function AdminLivePage() {
       });
   }, []);
 
-  const handleSave = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!settings) return;
+  const saveAll = async (
+    customSettings?: LiveStreamSettings,
+    customAgenda?: LiveAgendaItem[]
+  ) => {
+    const targetSettings = customSettings || settings;
+    const targetAgenda = customAgenda || agenda;
+    if (!targetSettings) return;
 
     setSaving(true);
     setMessage(null);
@@ -50,7 +91,10 @@ export default function AdminLivePage() {
       const res = await fetch('/api/admin/live', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
+        body: JSON.stringify({
+          ...targetSettings,
+          agenda: targetAgenda,
+        }),
       });
 
       if (!res.ok) {
@@ -58,15 +102,70 @@ export default function AdminLivePage() {
         throw new Error(err.message || 'فشل حفظ الإعدادات');
       }
 
-      const updated = await res.json();
-      setSettings(updated);
-      setMessage({ type: 'success', text: 'تم حفظ وتحديث إعدادات البث المباشر بنجاح!' });
+      const data = await res.json();
+      if (data.settings) setSettings(data.settings);
+      if (data.agenda) setAgenda(data.agenda);
+
+      setMessage({ type: 'success', text: '✓ تم حفظ وتحديث كافة بيانات البث المباشر والفعاليات بنجاح!' });
       setTimeout(() => setMessage(null), 4000);
     } catch (err: any) {
       setMessage({ type: 'error', text: err?.message || 'حدث خطأ أثناء الحفظ' });
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleStatusChange = (newStatus: LiveStreamStatus) => {
+    if (!settings) return;
+    const updated: LiveStreamSettings = {
+      ...settings,
+      status: newStatus,
+      isLive: newStatus === 'LIVE',
+      bannerEnabled: newStatus === 'LIVE' ? true : settings.bannerEnabled,
+    };
+    setSettings(updated);
+    // Persist immediately on click!
+    saveAll(updated, agenda);
+  };
+
+  const handleAddAgendaItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTime.trim() || !newTitle.trim()) {
+      alert('يرجى إدخال الوقت وعنوان الفقرة');
+      return;
+    }
+
+    const newItem: LiveAgendaItem = {
+      id: Date.now(),
+      time: newTime.trim(),
+      title: newTitle.trim(),
+      description: newDesc.trim(),
+      sortOrder: agenda.length + 1,
+    };
+
+    const updatedAgenda = [...agenda, newItem];
+    setAgenda(updatedAgenda);
+    setNewTime('');
+    setNewTitle('');
+    setNewDesc('');
+    saveAll(settings || undefined, updatedAgenda);
+  };
+
+  const handleDeleteAgendaItem = (id: number) => {
+    if (!confirm('هل أنت متأكد من حذف هذه الفقرة من برنامج الحفل؟')) return;
+    const updatedAgenda = agenda.filter((a) => a.id !== id);
+    setAgenda(updatedAgenda);
+    saveAll(settings || undefined, updatedAgenda);
+  };
+
+  const handleUpdateAgendaField = (id: number, field: keyof LiveAgendaItem, val: string) => {
+    const updated = agenda.map((item) => {
+      if (item.id === id) {
+        return { ...item, [field]: val };
+      }
+      return item;
+    });
+    setAgenda(updated);
   };
 
   const handleDeleteCongratulation = async (id: number) => {
@@ -94,15 +193,16 @@ export default function AdminLivePage() {
     );
   }
 
-  const preview = parseVideoUrl(
+  const activeVideoUrl =
     settings.status === 'ENDED' && settings.recordingUrl
       ? settings.recordingUrl
-      : settings.streamUrl
-  );
+      : settings.streamUrl;
+
+  const preview = parseVideoUrl(activeVideoUrl);
 
   return (
-    <div className="space-y-8 pb-12">
-      {/* Header Banner */}
+    <div className="space-y-8 pb-16">
+      {/* Top Banner */}
       <div className="rounded-2xl bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800 p-6 text-white shadow-xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -113,7 +213,7 @@ export default function AdminLivePage() {
               التحكم في البث المباشر والتدشين الوطني
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-white/70">
-              إدارة وقائع البث المباشر لحفل تدشين منصة SA للسياحة وفروع المملكة الـ 13، التحكم برابط البث والعد التنازلي والشريط التنبيهي العلوي والتبريكات المباشرة.
+              إدارة وقائع البث المباشر لحفل تدشين منصة SA للسياحة وفروع المملكة الـ 13، التحكم الفوري برابط البث والعد التنازلي وبرنامج فعاليات الحفل.
             </p>
           </div>
 
@@ -129,12 +229,12 @@ export default function AdminLivePage() {
 
             <button
               type="button"
-              onClick={() => handleSave()}
+              onClick={() => saveAll()}
               disabled={saving}
-              className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-5 py-2 text-xs font-black text-navy-950 shadow-gold transition hover:opacity-90 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-6 py-2.5 text-xs font-black text-navy-950 shadow-gold transition hover:opacity-90 disabled:opacity-50"
             >
               <Save size={15} />
-              <span>{saving ? 'جاري الحفظ...' : 'حفظ التعديلات'}</span>
+              <span>{saving ? 'جاري الحفظ...' : 'حفظ كافة التعديلات'}</span>
             </button>
           </div>
         </div>
@@ -142,10 +242,10 @@ export default function AdminLivePage() {
 
       {message && (
         <div
-          className={`flex items-center gap-3 rounded-2xl p-4 text-sm font-semibold ${
+          className={`flex items-center gap-3 rounded-2xl p-4 text-sm font-semibold transition-all ${
             message.type === 'success'
-              ? 'border border-emerald-500/40 bg-emerald-50 text-emerald-800'
-              : 'border border-red-500/40 bg-red-50 text-red-800'
+              ? 'border border-emerald-500/40 bg-emerald-50 text-emerald-800 shadow-sm'
+              : 'border border-red-500/40 bg-red-50 text-red-800 shadow-sm'
           }`}
         >
           {message.type === 'success' ? <Check size={18} /> : <AlertCircle size={18} />}
@@ -153,78 +253,98 @@ export default function AdminLivePage() {
         </div>
       )}
 
-      {/* Quick Status Control Bar */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        {/* Status: UPCOMING */}
-        <button
-          type="button"
-          onClick={() => {
-            setSettings({ ...settings, status: 'UPCOMING', isLive: false });
-          }}
-          className={`flex flex-col items-start rounded-2xl border p-5 text-start transition ${
-            settings.status === 'UPCOMING'
-              ? 'border-amber-500 bg-amber-50/70 shadow-md ring-2 ring-amber-500/30'
-              : 'border-slate-200 bg-white hover:border-slate-300'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <span className="flex h-3 w-3 rounded-full bg-amber-500" />
-            <span className="font-bold text-slate-800">قريباً (بث مجدول) ⏳</span>
-          </div>
-          <p className="mt-2 text-xs text-slate-500">
-            يُظهر للزوار عداداً تنازلياً أنيقاً باليوم والساعة لموعد انطلاق الحفل مع جدول الفعاليات.
-          </p>
-        </button>
+      {/* 3 Status Selector Cards (Immediate Click Action) */}
+      <div>
+        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+          اختر حالة البث الحالية (الضغط يُطبق التغيير فوراً على الموقع):
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {/* Status: UPCOMING */}
+          <button
+            type="button"
+            onClick={() => handleStatusChange('UPCOMING')}
+            className={`flex flex-col items-start rounded-2xl border p-5 text-start transition cursor-pointer ${
+              settings.status === 'UPCOMING'
+                ? 'border-amber-500 bg-amber-50/80 shadow-md ring-2 ring-amber-500/50'
+                : 'border-slate-200 bg-white hover:border-slate-300'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <span className="flex h-3 w-3 rounded-full bg-amber-500" />
+                <span className="font-bold text-slate-900">قريباً (بث مجدول) ⏳</span>
+              </div>
+              {settings.status === 'UPCOMING' && (
+                <span className="rounded-full bg-amber-600 text-white px-2 py-0.5 text-[10px] font-bold">
+                  مفعل الآن
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-xs text-slate-600">
+              يُظهر للزوار شاشة عد تنازلي فخمة حتى موعد التدشين (الخميس 03:00 م) مع برنامج الفعاليات وإمكانية الإضافة لتقويم Google.
+            </p>
+          </button>
 
-        {/* Status: LIVE */}
-        <button
-          type="button"
-          onClick={() => {
-            setSettings({ ...settings, status: 'LIVE', isLive: true, bannerEnabled: true });
-          }}
-          className={`flex flex-col items-start rounded-2xl border p-5 text-start transition ${
-            settings.status === 'LIVE'
-              ? 'border-red-500 bg-red-50/70 shadow-md ring-2 ring-red-500/30'
-              : 'border-slate-200 bg-white hover:border-slate-300'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-red-600" />
-            </span>
-            <span className="font-bold text-red-900">مباشر الآن (LIVE) 🔴</span>
-          </div>
-          <p className="mt-2 text-xs text-slate-500">
-            الحفل يُبث لايف الآن! تفعيل المشغل الفوري وتفعيل شريط التنبيه العلوي وتفاعل الفروع.
-          </p>
-        </button>
+          {/* Status: LIVE */}
+          <button
+            type="button"
+            onClick={() => handleStatusChange('LIVE')}
+            className={`flex flex-col items-start rounded-2xl border p-5 text-start transition cursor-pointer ${
+              settings.status === 'LIVE'
+                ? 'border-red-500 bg-red-50/80 shadow-md ring-2 ring-red-500/50'
+                : 'border-slate-200 bg-white hover:border-slate-300'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-red-600" />
+                </span>
+                <span className="font-bold text-red-900">مباشر الآن (LIVE) 🔴</span>
+              </div>
+              {settings.status === 'LIVE' && (
+                <span className="rounded-full bg-red-600 text-white px-2 py-0.5 text-[10px] font-bold">
+                  مفعل الآن
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-xs text-slate-600">
+              الحفل يُبث لايف الآن! تفعيل المشغل الفوري المباشر والشريط التنبيهي الأحمر وتفاعل وتبريكات الفروع الحية.
+            </p>
+          </button>
 
-        {/* Status: ENDED */}
-        <button
-          type="button"
-          onClick={() => {
-            setSettings({ ...settings, status: 'ENDED', isLive: false });
-          }}
-          className={`flex flex-col items-start rounded-2xl border p-5 text-start transition ${
-            settings.status === 'ENDED'
-              ? 'border-blue-500 bg-blue-50/70 shadow-md ring-2 ring-blue-500/30'
-              : 'border-slate-200 bg-white hover:border-slate-300'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <span className="flex h-3 w-3 rounded-full bg-blue-500" />
-            <span className="font-bold text-slate-800">انتهى البث (تسجيل الحفل) 🎬</span>
-          </div>
-          <p className="mt-2 text-xs text-slate-500">
-            انتهت الفعاليات ويُعرض التسجيل الكامل للحفل للزوار والمتابعين لمشاهدته في أي وقت.
-          </p>
-        </button>
+          {/* Status: ENDED */}
+          <button
+            type="button"
+            onClick={() => handleStatusChange('ENDED')}
+            className={`flex flex-col items-start rounded-2xl border p-5 text-start transition cursor-pointer ${
+              settings.status === 'ENDED'
+                ? 'border-blue-500 bg-blue-50/80 shadow-md ring-2 ring-blue-500/50'
+                : 'border-slate-200 bg-white hover:border-slate-300'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <span className="flex h-3 w-3 rounded-full bg-blue-500" />
+                <span className="font-bold text-slate-900">انتهى البث (تسجيل الحفل) 🎬</span>
+              </div>
+              {settings.status === 'ENDED' && (
+                <span className="rounded-full bg-blue-600 text-white px-2 py-0.5 text-[10px] font-bold">
+                  مفعل الآن
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-xs text-slate-600">
+              انتهت الفعاليات ويُعرض التسجيل الكامل للحفل للزوار والمتابعين لمشاهدته وإعادته في أي وقت.
+            </p>
+          </button>
+        </div>
       </div>
 
-      {/* Main Form */}
-      <form onSubmit={handleSave} className="grid gap-8 lg:grid-cols-12">
-        {/* Left Column: Settings Fields */}
+      {/* Main Settings & Video Grid */}
+      <div className="grid gap-8 lg:grid-cols-12">
+        {/* Left 7 Columns: Core Settings */}
         <div className="space-y-6 lg:col-span-7">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
             <h2 className="font-display text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -256,35 +376,35 @@ export default function AdminLivePage() {
               />
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  رابط البث المباشر (YouTube / Vimeo / Embed) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  value={settings.streamUrl}
-                  onChange={(e) => setSettings({ ...settings, streamUrl: e.target.value })}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none"
-                />
-                <p className="mt-1 text-[11px] text-slate-500">
-                  يقبل روابط يوتيوب العادية، روابط البث Live، أو كود التضمين.
-                </p>
-              </div>
+            {/* Video Stream URL with Quick Presets */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                رابط البث المباشر (YouTube Live / Vimeo / Embed) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={settings.streamUrl}
+                onChange={(e) => setSettings({ ...settings, streamUrl: e.target.value })}
+                className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none font-mono"
+              />
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  رابط تسجيل الحفل (بعد الانتهاء)
-                </label>
-                <input
-                  type="text"
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  value={settings.recordingUrl || ''}
-                  onChange={(e) => setSettings({ ...settings, recordingUrl: e.target.value })}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none"
-                />
+              {/* Quick Preset Buttons */}
+              <div className="mt-2.5 flex flex-wrap gap-2">
+                <span className="text-[11px] font-bold text-slate-500 self-center">فيديوهات جاهزة للتجربة:</span>
+                {PRESET_VIDEOS.map((p, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setSettings({ ...settings, streamUrl: p.url, recordingUrl: p.url });
+                    }}
+                    className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700 transition hover:bg-gold-50 hover:border-gold-400 hover:text-gold-900"
+                  >
+                    {p.name}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -295,19 +415,20 @@ export default function AdminLivePage() {
                 </label>
                 <input
                   type="datetime-local"
-                  value={
-                    settings.scheduledAt
-                      ? new Date(settings.scheduledAt).toISOString().slice(0, 16)
-                      : ''
-                  }
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      scheduledAt: new Date(e.target.value).toISOString(),
-                    })
-                  }
+                  value={toLocalInputFormat(settings.scheduledAt)}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      setSettings({
+                        ...settings,
+                        scheduledAt: e.target.value,
+                      });
+                    }
+                  }}
                   className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none"
                 />
+                <p className="mt-1 text-[11px] text-slate-500">
+                  مضبوط على الخميس القادم 03:00 م (15:00).
+                </p>
               </div>
 
               <div>
@@ -323,6 +444,19 @@ export default function AdminLivePage() {
                   className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                رابط تسجيل الحفل (بعد الانتهاء)
+              </label>
+              <input
+                type="text"
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={settings.recordingUrl || ''}
+                onChange={(e) => setSettings({ ...settings, recordingUrl: e.target.value })}
+                className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none font-mono"
+              />
             </div>
           </div>
 
@@ -344,8 +478,12 @@ export default function AdminLivePage() {
               <input
                 type="checkbox"
                 checked={settings.bannerEnabled}
-                onChange={(e) => setSettings({ ...settings, bannerEnabled: e.target.checked })}
-                className="h-5 w-5 rounded text-gold-500 focus:ring-gold-400"
+                onChange={(e) => {
+                  const updated = { ...settings, bannerEnabled: e.target.checked };
+                  setSettings(updated);
+                  saveAll(updated, agenda);
+                }}
+                className="h-5 w-5 rounded text-gold-500 focus:ring-gold-400 cursor-pointer"
               />
             </div>
 
@@ -373,14 +511,18 @@ export default function AdminLivePage() {
               <input
                 type="checkbox"
                 checked={settings.allowComments}
-                onChange={(e) => setSettings({ ...settings, allowComments: e.target.checked })}
-                className="h-5 w-5 rounded text-gold-500 focus:ring-gold-400"
+                onChange={(e) => {
+                  const updated = { ...settings, allowComments: e.target.checked };
+                  setSettings(updated);
+                  saveAll(updated, agenda);
+                }}
+                className="h-5 w-5 rounded text-gold-500 focus:ring-gold-400 cursor-pointer"
               />
             </div>
           </div>
         </div>
 
-        {/* Right Column: Live Video Preview & Congratulations Management */}
+        {/* Right 5 Columns: Video Live Preview & Congratulations */}
         <div className="space-y-6 lg:col-span-5">
           {/* Live Preview Card */}
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -388,7 +530,7 @@ export default function AdminLivePage() {
               <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
                 <Video size={16} className="text-gold-600" /> معاينة المشغل الفورية
               </h3>
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
+              <span className="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[11px] font-semibold">
                 {preview.type}
               </span>
             </div>
@@ -414,7 +556,7 @@ export default function AdminLivePage() {
             </div>
 
             <p className="mt-2 text-[11px] text-slate-500">
-              تأكد من أن الفيديو أو البث يعمل بشكل صحيح قبل حفظ الإعدادات للعامة.
+              هذه المعاينة توضح تماماً كيف سيشاهد الزوار الفيديو على صفحة البث.
             </p>
           </div>
 
@@ -427,7 +569,7 @@ export default function AdminLivePage() {
               </h3>
             </div>
 
-            <div className="space-y-3 max-h-[380px] overflow-y-auto pe-1">
+            <div className="space-y-3 max-h-[300px] overflow-y-auto pe-1">
               {congratulations.map((c) => (
                 <div
                   key={c.id}
@@ -462,7 +604,152 @@ export default function AdminLivePage() {
             </div>
           </div>
         </div>
-      </form>
+      </div>
+
+      {/* =========================================================================
+          AGENDA & CEREMONY EVENTS PROGRAM (برنامج فعاليات الحفل)
+          ========================================================================= */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-4 mb-6">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gold-600">
+              <ListPlus size={16} /> برنامج فعاليات الحفل (الأجندة)
+            </div>
+            <h2 className="mt-1 font-display text-xl font-bold text-slate-900">
+              إدارة وتعديل فقرات حفل التدشين الرسمي
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              تظهر هذه الفقرات في صفحة البث للزوار لتوضيح جدول ومواعيد فعاليات حفل التدشين.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => saveAll(settings || undefined, agenda)}
+            disabled={saving}
+            className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-5 py-2 text-xs font-black text-navy-950 shadow-gold transition hover:opacity-90"
+          >
+            <Save size={14} />
+            <span>حفظ جدول الفعاليات</span>
+          </button>
+        </div>
+
+        {/* Add New Agenda Item Form */}
+        <form
+          onSubmit={handleAddAgendaItem}
+          className="mb-8 rounded-xl border border-gold-400/40 bg-gold-50/40 p-4 space-y-3"
+        >
+          <div className="text-xs font-bold text-gold-900 flex items-center gap-1.5">
+            <Plus size={15} /> إضافة فقرة جديدة إلى برنامج الحفل:
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">
+                وقت الفقرة <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="مثال: 03:00 م أو 03:15 م"
+                value={newTime}
+                onChange={(e) => setNewTime(e.target.value)}
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs focus:border-gold-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-700 mb-1">
+                عنوان الفقرة <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="مثال: الافتتاح والسلام الملكي السعودي"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs focus:border-gold-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">
+              تفاصيل ووصف الفقرة
+            </label>
+            <input
+              type="text"
+              placeholder="مثال: استقبال ضيوف الشرف وممثلي فروع المملكة وانطلاق مراسم الحفل."
+              value={newDesc}
+              onChange={(e) => setNewDesc(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs focus:border-gold-500 focus:outline-none"
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-navy-950 text-white px-4 py-2 text-xs font-bold hover:bg-navy-900 transition"
+            >
+              <Plus size={14} /> إضافة الفقرة
+            </button>
+          </div>
+        </form>
+
+        {/* Existing Agenda Items List */}
+        <div className="space-y-3">
+          {agenda.map((item, idx) => (
+            <div
+              key={item.id || idx}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-4 transition hover:bg-slate-50"
+            >
+              <div className="flex items-center gap-3">
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-gold-500/20 text-gold-800 text-xs font-black shrink-0">
+                  {idx + 1}
+                </span>
+
+                <div className="grid gap-2 sm:grid-cols-3 flex-1">
+                  <input
+                    type="text"
+                    value={item.time}
+                    onChange={(e) => handleUpdateAgendaField(item.id, 'time', e.target.value)}
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 focus:border-gold-500"
+                  />
+                  <input
+                    type="text"
+                    value={item.title}
+                    onChange={(e) => handleUpdateAgendaField(item.id, 'title', e.target.value)}
+                    className="sm:col-span-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-900 focus:border-gold-500"
+                  />
+                  <input
+                    type="text"
+                    value={item.description}
+                    onChange={(e) => handleUpdateAgendaField(item.id, 'description', e.target.value)}
+                    className="sm:col-span-3 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:border-gold-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteAgendaItem(item.id)}
+                  className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 transition"
+                  title="حذف الفقرة"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {agenda.length === 0 && (
+            <div className="py-8 text-center text-xs text-slate-400">
+              لا توجد فقرات مسجلة في برنامج الحفل. أضف فقرة جديدة من النموذج أعلاه.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

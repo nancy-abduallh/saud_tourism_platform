@@ -49,8 +49,8 @@ export default function WhyUs() {
           </motion.div>
           <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
             <div className="animate-float rounded-2xl border-2 border-gold-400 bg-navy-900 px-6 py-4 text-center shadow-2xl shadow-navy-950/80">
-              <div className="font-display text-3xl font-black text-gold-gradient" dir="ltr">15+</div>
-              <div className="mt-1 whitespace-nowrap text-sm font-medium text-white/90">عاماً من التميّز</div>
+              <div className="font-display text-3xl font-black text-gold-gradient" dir="ltr">13</div>
+              <div className="mt-1 whitespace-nowrap text-sm font-medium text-white/90">فرعاً يغطي المملكة</div>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import type { Branch, Destination, HeroSlide, LiveCongratulation, LiveStreamSettings, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
+import type { Branch, Destination, HeroSlide, LiveAgendaItem, LiveCongratulation, LiveStreamSettings, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 
 export const DEFAULT_SLIDES: HeroSlide[] = [
   {
@@ -116,13 +116,13 @@ export const DEFAULT_SERVICES: VipService[] = [
 
 export const DEFAULT_REVIEWS: Review[] = [
   { id: 1, name: 'عبدالله القحطاني', location: 'الرياض', rating: 5, comment: 'تجربة تفوق الخيال. فيلا العلا ومسار حافة العالم والعشاء تحت النجوم من أجمل لحظات حياتي، والخدمة ملكية بكل المعايير.' },
-  { id: 2, name: 'Sarah Whitfield', location: 'London', rating: 5, comment: 'Impeccable service from arrival to departure. The yacht days in the Red Sea and Edge of the World sunset were absolute magic.' },
+  { id: 2, name: 'د. منيرة السالم', location: 'الخبر', rating: 5, comment: 'تنظيم استثنائي وخدمة ضيافة رفيعة المستوى في رحلة العلا وجزر البحر الأحمر. تجربة وطنية تفوق التوقعات بكل المقاييس.' },
   { id: 3, name: 'نورة العتيبي', location: 'جدة', rating: 5, comment: 'تنظيم راقٍ واهتمام مذهل بأدق التفاصيل. أنصح بها بشدة لكل من يبحث عن رحلة عائلية تجمع الفخامة بالخصوصية التامة.' },
   { id: 4, name: 'خالد الشمري', location: 'الدمام', rating: 5, comment: 'خدمة احترافية من أول لحظة، طاقم عمل ودود ومرشدون على أعلى مستوى من المعرفة والثقافة.' },
 ];
 
 export const DEFAULT_STATS: PublicStats = {
-  happyGuests: 12450,
+  happyGuests: 1300,
   exclusiveExperiences: 7,
   averageRating: 4.9,
   vipConcierge: '24/7',
@@ -553,21 +553,59 @@ export const DEFAULT_BRANCHES: Branch[] = [
 
 export const DEFAULT_LIVE_SETTINGS: LiveStreamSettings = {
   id: 1,
-  isLive: true,
-  status: 'LIVE',
+  isLive: false,
+  status: 'UPCOMING',
   title: 'حفل التدشين الرسمي لمنصة SA للسياحة وإطلاق شبكة فروع المملكة (13 فرعاً)',
   subtitle: 'بث حي ومباشر يجمع قيادات السياحة وضيوف الشرف، وربط تفاعلي مباشر مع كافة فروع ومناطق المملكة العربية السعودية',
-  scheduledAt: '2026-11-20T19:30:00',
-  // Official high-res Saudi Tourism video demonstration
-  streamUrl: 'https://www.youtube.com/watch?v=3nQ6L8bQeYc',
+  scheduledAt: '2026-11-19T15:00:00',
+  // Official high-res Saudi Tourism video
+  streamUrl: 'https://www.youtube.com/watch?v=R6D7jQI4BD0',
   streamPlatform: 'youtube',
-  recordingUrl: 'https://www.youtube.com/watch?v=3nQ6L8bQeYc',
+  recordingUrl: 'https://www.youtube.com/watch?v=R6D7jQI4BD0',
   bannerEnabled: true,
-  bannerText: '🔴 بث مباشر الآن: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13',
+  bannerText: '🔴 موعدنا الخميس 03:00 م: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13',
   allowComments: true,
   viewerCount: 1420,
-  heroBadge: 'بث مباشر حي عبر المملكة',
+  heroBadge: 'الحدث الرسمي للتدشين',
 };
+
+export const DEFAULT_AGENDA_ITEMS: LiveAgendaItem[] = [
+  {
+    id: 1,
+    time: '03:00 م',
+    title: 'الافتتاح والسلام الملكي السعودي',
+    description: 'استقبال ضيوف الشرف وممثلي فروع المملكة الـ 13 وانطلاق مراسم الحفل بالسلام الملكي.',
+    sortOrder: 1,
+  },
+  {
+    id: 2,
+    time: '03:15 م',
+    title: 'الكلمة الافتتاحية لرئاسة الجمعية',
+    description: 'تسليط الضوء على الرؤية الطموحة لقطاع السياحة الفاخرة ومواءمة المنصة مع مستهدفات رؤية السعودية 2030.',
+    sortOrder: 2,
+  },
+  {
+    id: 3,
+    time: '03:35 م',
+    title: 'العرض المرئي للتدشين الرسمي لمنصة SA للسياحة',
+    description: 'استعراض واجهات المنصة الرقمية، نظام حجز الباقات VIP، وتجارب العلا والبحر الأحمر وطويق والدرعية.',
+    sortOrder: 3,
+  },
+  {
+    id: 4,
+    time: '04:00 م',
+    title: 'إطلاق شبكة التمثيل الميداني بالمملكة (13 فرعاً)',
+    description: 'ربط البث مع مديري وممثلي فروع الرياض، القصيم، حائل، العلا، تبوك، عسير، والشرقية للإعلان الميداني.',
+    sortOrder: 4,
+  },
+  {
+    id: 5,
+    time: '04:30 م',
+    title: 'توقيع مذكرات التفاهم وتكريم الشركاء',
+    description: 'إعلان الشراكات الاستراتيجية مع مشغلي الفنادق العالمية وخطوط الطيران، والتقاط الصور التذكارية.',
+    sortOrder: 5,
+  },
+];
 
 export const DEFAULT_CONGRATULATIONS: LiveCongratulation[] = [
   {

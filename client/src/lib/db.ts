@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import {
+  DEFAULT_AGENDA_ITEMS,
   DEFAULT_BRANCHES,
   DEFAULT_CONGRATULATIONS,
   DEFAULT_DESTINATIONS,
@@ -11,7 +12,7 @@ import {
   DEFAULT_SLIDES,
   DEFAULT_STATS,
 } from './default-data';
-import type { Branch, Destination, HeroSlide, LiveCongratulation, LiveStreamSettings, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
+import type { Branch, Destination, HeroSlide, LiveAgendaItem, LiveCongratulation, LiveStreamSettings, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 
 let pool: mysql.Pool | null = null;
 
@@ -1118,6 +1119,19 @@ async function ensureLiveTables(p: mysql.Pool) {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
+    // 3. Live ceremony agenda items table
+    await p.query(`
+      CREATE TABLE IF NOT EXISTS live_agenda_items (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        time VARCHAR(50) NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        sort_order INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
     // Seed default settings if empty
     const [settingsRows]: any = await p.query('SELECT COUNT(*) as count FROM live_stream_settings');
     if (settingsRows && settingsRows[0] && settingsRows[0].count === 0) {
@@ -1154,6 +1168,18 @@ async function ensureLiveTables(p: mysql.Pool) {
       }
     }
 
+    // Seed default agenda items if empty
+    const [agendaRows]: any = await p.query('SELECT COUNT(*) as count FROM live_agenda_items');
+    if (agendaRows && agendaRows[0] && agendaRows[0].count === 0) {
+      for (const a of DEFAULT_AGENDA_ITEMS) {
+        await p.query(
+          `INSERT INTO live_agenda_items (id, time, title, description, sort_order)
+           VALUES (?, ?, ?, ?, ?)`,
+          [a.id, a.time, a.title, a.description, a.sortOrder]
+        );
+      }
+    }
+
     liveTablesChecked = true;
   } catch (err) {
     console.warn('ensureLiveTables warning:', err);
@@ -1176,7 +1202,7 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
       );
       if (rows && rows.length > 0) {
         const r = rows[0];
-        return {
+        const res: LiveStreamSettings = {
           id: r.id,
           isLive: Boolean(r.isLive),
           status: r.status || 'LIVE',
@@ -1192,6 +1218,8 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
           viewerCount: Number(r.viewerCount) || 1420,
           heroBadge: r.heroBadge,
         };
+        Object.assign(DEFAULT_LIVE_SETTINGS, res);
+        return res;
       }
     } catch (e) {
       console.warn('MySQL getLiveSettings error, using fallback:', e);
@@ -1201,59 +1229,158 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
 }
 
 export async function updateLiveSettings(s: Partial<LiveStreamSettings>): Promise<LiveStreamSettings> {
+  // Always update in-memory fallback so changes take effect immediately
+  Object.assign(DEFAULT_LIVE_SETTINGS, s);
+
   const p = getPool();
+  if (p) {
+    try {
+      await ensureLiveTables(p);
+      await p.query(
+        `INSERT INTO live_stream_settings (
+          id, is_live, status, title, subtitle, scheduled_at, stream_url, stream_platform,
+          recording_url, banner_enabled, banner_text, allow_comments, viewer_count, hero_badge
+        ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+          is_live = VALUES(is_live),
+          status = VALUES(status),
+          title = VALUES(title),
+          subtitle = VALUES(subtitle),
+          scheduled_at = VALUES(scheduled_at),
+          stream_url = VALUES(stream_url),
+          stream_platform = VALUES(stream_platform),
+          recording_url = VALUES(recording_url),
+          banner_enabled = VALUES(banner_enabled),
+          banner_text = VALUES(banner_text),
+          allow_comments = VALUES(allow_comments),
+          viewer_count = VALUES(viewer_count),
+          hero_badge = VALUES(hero_badge)`,
+        [
+          DEFAULT_LIVE_SETTINGS.isLive ? 1 : 0,
+          DEFAULT_LIVE_SETTINGS.status,
+          DEFAULT_LIVE_SETTINGS.title,
+          DEFAULT_LIVE_SETTINGS.subtitle || null,
+          DEFAULT_LIVE_SETTINGS.scheduledAt,
+          DEFAULT_LIVE_SETTINGS.streamUrl,
+          DEFAULT_LIVE_SETTINGS.streamPlatform || 'youtube',
+          DEFAULT_LIVE_SETTINGS.recordingUrl || null,
+          DEFAULT_LIVE_SETTINGS.bannerEnabled ? 1 : 0,
+          DEFAULT_LIVE_SETTINGS.bannerText || null,
+          DEFAULT_LIVE_SETTINGS.allowComments ? 1 : 0,
+          Number(DEFAULT_LIVE_SETTINGS.viewerCount) || 1420,
+          DEFAULT_LIVE_SETTINGS.heroBadge || null,
+        ]
+      );
+    } catch (err) {
+      console.warn('MySQL updateLiveSettings warning:', err);
+    }
+  }
+  return { ...DEFAULT_LIVE_SETTINGS };
+}
+
+/* ==========================================================================
+   CEREMONY AGENDA (برنامج فعاليات الحفل)
+   ========================================================================== */
+
+export async function getLiveAgenda(): Promise<LiveAgendaItem[]> {
+  const p = getPool();
+  if (p) {
+    try {
+      await ensureLiveTables(p);
+      const [rows] = await p.query<any[]>(
+        `SELECT id, time, title, description, sort_order as sortOrder
+         FROM live_agenda_items
+         ORDER BY sort_order ASC, id ASC`
+      );
+      if (rows && rows.length > 0) {
+        return rows.map((r) => ({
+          id: r.id,
+          time: r.time,
+          title: r.title,
+          description: r.description,
+          sortOrder: Number(r.sortOrder) || 0,
+        }));
+      }
+    } catch (e) {
+      console.warn('MySQL getLiveAgenda error, using fallback:', e);
+    }
+  }
+  return DEFAULT_AGENDA_ITEMS;
+}
+
+export async function saveLiveAgenda(items: LiveAgendaItem[]): Promise<LiveAgendaItem[]> {
+  // Update in-memory fallback
+  DEFAULT_AGENDA_ITEMS.length = 0;
+  DEFAULT_AGENDA_ITEMS.push(...items);
+
+  const p = getPool();
+  if (p) {
+    try {
+      await ensureLiveTables(p);
+      await p.query('DELETE FROM live_agenda_items');
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        await p.query(
+          `INSERT INTO live_agenda_items (time, title, description, sort_order)
+           VALUES (?, ?, ?, ?)`,
+          [item.time, item.title, item.description, i + 1]
+        );
+      }
+      return getLiveAgenda();
+    } catch (err) {
+      console.warn('MySQL saveLiveAgenda warning:', err);
+    }
+  }
+  return DEFAULT_AGENDA_ITEMS;
+}
+
+export async function addLiveAgendaItem(item: {
+  time: string;
+  title: string;
+  description: string;
+}): Promise<LiveAgendaItem> {
+  const p = getPool();
+  const nextOrder = DEFAULT_AGENDA_ITEMS.length + 1;
   if (!p) {
-    return { ...DEFAULT_LIVE_SETTINGS, ...s };
+    const newItem: LiveAgendaItem = {
+      id: Date.now(),
+      time: item.time,
+      title: item.title,
+      description: item.description,
+      sortOrder: nextOrder,
+    };
+    DEFAULT_AGENDA_ITEMS.push(newItem);
+    return newItem;
   }
   await ensureLiveTables(p);
-  await p.query(
-    `INSERT INTO live_stream_settings (id, is_live, status, title, subtitle, scheduled_at, stream_url, stream_platform, recording_url, banner_enabled, banner_text, allow_comments, viewer_count, hero_badge)
-     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-     ON DUPLICATE KEY UPDATE
-       is_live = COALESCE(?, is_live),
-       status = COALESCE(?, status),
-       title = COALESCE(?, title),
-       subtitle = COALESCE(?, subtitle),
-       scheduled_at = COALESCE(?, scheduled_at),
-       stream_url = COALESCE(?, stream_url),
-       stream_platform = COALESCE(?, stream_platform),
-       recording_url = COALESCE(?, recording_url),
-       banner_enabled = COALESCE(?, banner_enabled),
-       banner_text = COALESCE(?, banner_text),
-       allow_comments = COALESCE(?, allow_comments),
-       viewer_count = COALESCE(?, viewer_count),
-       hero_badge = COALESCE(?, hero_badge)`,
-    [
-      s.isLive !== undefined ? (s.isLive ? 1 : 0) : 1,
-      s.status || 'LIVE',
-      s.title || DEFAULT_LIVE_SETTINGS.title,
-      s.subtitle !== undefined ? s.subtitle : DEFAULT_LIVE_SETTINGS.subtitle,
-      s.scheduledAt !== undefined ? s.scheduledAt : DEFAULT_LIVE_SETTINGS.scheduledAt,
-      s.streamUrl || DEFAULT_LIVE_SETTINGS.streamUrl,
-      s.streamPlatform || 'youtube',
-      s.recordingUrl !== undefined ? s.recordingUrl : null,
-      s.bannerEnabled !== undefined ? (s.bannerEnabled ? 1 : 0) : 1,
-      s.bannerText || DEFAULT_LIVE_SETTINGS.bannerText,
-      s.allowComments !== undefined ? (s.allowComments ? 1 : 0) : 1,
-      s.viewerCount !== undefined ? Number(s.viewerCount) : 1420,
-      s.heroBadge !== undefined ? s.heroBadge : DEFAULT_LIVE_SETTINGS.heroBadge,
-      // ON DUPLICATE KEY values:
-      s.isLive !== undefined ? (s.isLive ? 1 : 0) : null,
-      s.status || null,
-      s.title || null,
-      s.subtitle !== undefined ? s.subtitle : null,
-      s.scheduledAt !== undefined ? s.scheduledAt : null,
-      s.streamUrl || null,
-      s.streamPlatform || null,
-      s.recordingUrl !== undefined ? s.recordingUrl : null,
-      s.bannerEnabled !== undefined ? (s.bannerEnabled ? 1 : 0) : null,
-      s.bannerText || null,
-      s.allowComments !== undefined ? (s.allowComments ? 1 : 0) : null,
-      s.viewerCount !== undefined ? Number(s.viewerCount) : null,
-      s.heroBadge !== undefined ? s.heroBadge : null,
-    ]
+  const [res]: any = await p.query(
+    `INSERT INTO live_agenda_items (time, title, description, sort_order)
+     VALUES (?, ?, ?, ?)`,
+    [item.time, item.title, item.description, nextOrder]
   );
-  return getLiveSettings();
+  return {
+    id: res.insertId,
+    time: item.time,
+    title: item.title,
+    description: item.description,
+    sortOrder: nextOrder,
+  };
+}
+
+export async function deleteLiveAgendaItem(id: number): Promise<{ ok: boolean }> {
+  const idx = DEFAULT_AGENDA_ITEMS.findIndex((a) => a.id === id);
+  if (idx !== -1) DEFAULT_AGENDA_ITEMS.splice(idx, 1);
+
+  const p = getPool();
+  if (p) {
+    try {
+      await ensureLiveTables(p);
+      await p.query('DELETE FROM live_agenda_items WHERE id = ?', [id]);
+    } catch (err) {
+      console.warn('deleteLiveAgendaItem error:', err);
+    }
+  }
+  return { ok: true };
 }
 
 export async function getLiveCongratulations(limit = 50): Promise<LiveCongratulation[]> {
