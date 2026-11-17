@@ -1268,6 +1268,7 @@ async function ensureLiveTables(p: mysql.Pool) {
         banner_text VARCHAR(255) NULL,
         allow_comments TINYINT(1) DEFAULT 1,
         viewer_count INT DEFAULT 1420,
+        auto_detect_viewers TINYINT(1) DEFAULT 1,
         hero_badge VARCHAR(100) NULL,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1367,6 +1368,13 @@ async function ensureLiveTables(p: mysql.Pool) {
       ).catch(() => {});
     }
 
+    // Ensure auto_detect_viewers column exists
+    try {
+      await p.query('ALTER TABLE live_stream_settings ADD COLUMN auto_detect_viewers TINYINT(1) DEFAULT 1');
+    } catch {
+      // Column already exists
+    }
+
     // Update any old broken placeholder stream_url in existing rows
     try {
       await p.query(`
@@ -1394,7 +1402,7 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
         `SELECT id, is_live as isLive, status, title, subtitle, scheduled_at as scheduledAt,
                 stream_url as streamUrl, stream_platform as streamPlatform, recording_url as recordingUrl,
                 banner_enabled as bannerEnabled, banner_text as bannerText, allow_comments as allowComments,
-                viewer_count as viewerCount, hero_badge as heroBadge
+                viewer_count as viewerCount, auto_detect_viewers as autoDetectViewers, hero_badge as heroBadge
          FROM live_stream_settings
          WHERE id = 1
          LIMIT 1`
@@ -1454,6 +1462,7 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
           bannerText,
           allowComments: Boolean(r.allowComments),
           viewerCount: Number(r.viewerCount) || 1420,
+          autoDetectViewers: r.autoDetectViewers !== undefined ? Boolean(r.autoDetectViewers) : true,
           heroBadge,
         };
         Object.assign(DEFAULT_LIVE_SETTINGS, res);
@@ -1486,8 +1495,8 @@ export async function updateLiveSettings(s: Partial<LiveStreamSettings>): Promis
       await p.query(
         `INSERT INTO live_stream_settings (
           id, is_live, status, title, subtitle, scheduled_at, stream_url, stream_platform,
-          recording_url, banner_enabled, banner_text, allow_comments, viewer_count, hero_badge
-        ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          recording_url, banner_enabled, banner_text, allow_comments, viewer_count, auto_detect_viewers, hero_badge
+        ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
           is_live = VALUES(is_live),
           status = VALUES(status),
@@ -1501,6 +1510,7 @@ export async function updateLiveSettings(s: Partial<LiveStreamSettings>): Promis
           banner_text = VALUES(banner_text),
           allow_comments = VALUES(allow_comments),
           viewer_count = VALUES(viewer_count),
+          auto_detect_viewers = VALUES(auto_detect_viewers),
           hero_badge = VALUES(hero_badge)`,
         [
           DEFAULT_LIVE_SETTINGS.isLive ? 1 : 0,
@@ -1515,6 +1525,7 @@ export async function updateLiveSettings(s: Partial<LiveStreamSettings>): Promis
           DEFAULT_LIVE_SETTINGS.bannerText || null,
           DEFAULT_LIVE_SETTINGS.allowComments ? 1 : 0,
           Number(DEFAULT_LIVE_SETTINGS.viewerCount) || 1420,
+          DEFAULT_LIVE_SETTINGS.autoDetectViewers !== false ? 1 : 0,
           DEFAULT_LIVE_SETTINGS.heroBadge || null,
         ]
       );

@@ -94,6 +94,7 @@ export interface LiveStreamSettings {
   bannerText: string;
   allowComments: boolean;
   viewerCount?: number;
+  autoDetectViewers?: boolean;
   heroBadge?: string | null;
 }
 

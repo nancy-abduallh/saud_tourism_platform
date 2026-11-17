@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Plus,
   Radio,
+  RefreshCw,
   Save,
   Sparkles,
   Trash2,
@@ -83,6 +84,10 @@ export default function AdminLivePage() {
   const [newCongratsName, setNewCongratsName] = useState('');
   const [newCongratsBranch, setNewCongratsBranch] = useState('');
   const [newCongratsMsg, setNewCongratsMsg] = useState('');
+
+  // Viewer auto-detection state
+  const [detectingViewers, setDetectingViewers] = useState(false);
+  const [detectedNotice, setDetectedNotice] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/admin/live')
@@ -161,6 +166,40 @@ export default function AdminLivePage() {
     setSettings(updated);
     // Persist immediately on click!
     saveAll(updated, agenda);
+  };
+
+  const handleDetectLiveViewers = async () => {
+    if (!settings || !settings.streamUrl) {
+      alert('يرجى إدخال رابط البث المباشر أولاً');
+      return;
+    }
+    setDetectingViewers(true);
+    setDetectedNotice(null);
+    try {
+      const res = await fetch(`/api/live/viewers?url=${encodeURIComponent(settings.streamUrl)}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (data?.count) {
+        const updated: LiveStreamSettings = {
+          ...settings,
+          viewerCount: data.count,
+          autoDetectViewers: true,
+        };
+        setSettings(updated);
+        saveAll(updated, agenda);
+        if (data.source === 'youtube_live') {
+          setDetectedNotice(`✓ تم الكشف بنجاح من يوتيوب لايف: ${Number(data.count).toLocaleString('ar-SA')} مشاهد متواجد الآن`);
+        } else if (data.source === 'youtube_views') {
+          setDetectedNotice(`✓ تم فحص الفيديو: ${Number(data.count).toLocaleString('ar-SA')} مشاهدة مسجلة`);
+        } else {
+          setDetectedNotice(`✓ تم ضبط الحضور المباشر: ${Number(data.count).toLocaleString('ar-SA')} مشاهد`);
+        }
+      }
+    } catch {
+      setDetectedNotice('تعذر الاتصال برابط البث لجلب المشاهدين');
+    } finally {
+      setDetectingViewers(false);
+      setTimeout(() => setDetectedNotice(null), 6000);
+    }
   };
 
   const handleAddAgendaItem = (e: React.FormEvent) => {
@@ -498,18 +537,62 @@ export default function AdminLivePage() {
                 </p>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  عدّاد المشاهدين الحاضرين
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold text-slate-700">
+                    عدّاد المشاهدين الحاضرين
+                  </label>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      settings.autoDetectViewers !== false
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-slate-100 text-slate-600'
+                    }`}
+                  >
+                    {settings.autoDetectViewers !== false ? '🟢 كشف تلقائي نشط' : 'يدوي'}
+                  </span>
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    value={settings.viewerCount || 1420}
+                    onChange={(e) =>
+                      setSettings({ ...settings, viewerCount: Number(e.target.value) || 0 })
+                    }
+                    className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-bold focus:border-gold-500 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleDetectLiveViewers}
+                    disabled={detectingViewers || !settings.streamUrl}
+                    className="shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-50 cursor-pointer"
+                    title="فحص وجلب عدد المشاهدين الحقيقيين الآن من رابط البث"
+                  >
+                    <RefreshCw size={13} className={detectingViewers ? 'animate-spin' : ''} />
+                    <span>{detectingViewers ? 'جاري الفحص...' : 'فحص الرابط'}</span>
+                  </button>
+                </div>
+
+                {detectedNotice && (
+                  <p className="text-[11px] font-bold text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
+                    {detectedNotice}
+                  </p>
+                )}
+
+                <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer pt-0.5">
+                  <input
+                    type="checkbox"
+                    checked={settings.autoDetectViewers !== false}
+                    onChange={(e) => {
+                      const updated = { ...settings, autoDetectViewers: e.target.checked };
+                      setSettings(updated);
+                      saveAll(updated, agenda);
+                    }}
+                    className="h-4 w-4 rounded text-gold-500 focus:ring-gold-400 cursor-pointer"
+                  />
+                  <span>تحديث تلقائي مستمر لعدد المشاهدين من رابط البث (YouTube Live Sync)</span>
                 </label>
-                <input
-                  type="number"
-                  value={settings.viewerCount || 1420}
-                  onChange={(e) =>
-                    setSettings({ ...settings, viewerCount: Number(e.target.value) || 0 })
-                  }
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none"
-                />
               </div>
             </div>
 

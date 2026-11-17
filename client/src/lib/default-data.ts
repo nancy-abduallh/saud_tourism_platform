@@ -576,6 +576,7 @@ export const DEFAULT_LIVE_SETTINGS: LiveStreamSettings = {
   bannerText: '⏳ ترقبوا: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13',
   allowComments: true,
   viewerCount: 1420,
+  autoDetectViewers: true,
   heroBadge: 'الحدث الرسمي للتدشين',
 };
 

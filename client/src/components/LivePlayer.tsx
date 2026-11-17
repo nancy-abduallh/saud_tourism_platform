@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Maximize2, Minimize2, Radio, Volume2, ShieldCheck, Sparkles, Tv } from 'lucide-react';
 
 interface LivePlayerProps {
@@ -70,7 +70,36 @@ export default function LivePlayer({
   viewerCount = 1420,
 }: LivePlayerProps) {
   const [theaterMode, setTheaterMode] = useState(false);
+  const [currentViewers, setCurrentViewers] = useState<number>(viewerCount);
   const parsed = useMemo(() => parseVideoUrl(streamUrl), [streamUrl]);
+
+  useEffect(() => {
+    setCurrentViewers(viewerCount);
+  }, [viewerCount]);
+
+  // Live auto-detection polling when stream is active
+  useEffect(() => {
+    if (status !== 'LIVE') return;
+
+    let isMounted = true;
+    const fetchLiveViewers = () => {
+      fetch(`/api/live/viewers?url=${encodeURIComponent(streamUrl || '')}`, { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (isMounted && data?.count && typeof data.count === 'number') {
+            setCurrentViewers(data.count);
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchLiveViewers();
+    const interval = setInterval(fetchLiveViewers, 15000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [status, streamUrl]);
 
   return (
     <div
@@ -112,9 +141,9 @@ export default function LivePlayer({
           <div className="flex items-center gap-4">
             {status === 'LIVE' && (
               <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="font-bold text-gold-300">
-                  {viewerCount.toLocaleString('ar-SA')}
+                  {currentViewers.toLocaleString('ar-SA')}
                 </span>
                 <span className="text-[11px] text-white/60">يشاهدون الآن</span>
               </div>
