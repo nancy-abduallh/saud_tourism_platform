@@ -73,3 +73,31 @@ export const BRANCH_REGIONS = [
   'المنطقة الجنوبية',
   'المنطقة الشرقية',
 ] as const;
+
+export type LiveStreamStatus = 'UPCOMING' | 'LIVE' | 'ENDED';
+
+export interface LiveStreamSettings {
+  id?: number;
+  isLive: boolean;
+  status: LiveStreamStatus;
+  title: string;
+  subtitle?: string | null;
+  scheduledAt: string;
+  streamUrl: string;
+  streamPlatform: 'youtube' | 'vimeo' | 'custom';
+  recordingUrl?: string | null;
+  bannerEnabled: boolean;
+  bannerText: string;
+  allowComments: boolean;
+  viewerCount?: number;
+  heroBadge?: string | null;
+}
+
+export interface LiveCongratulation {
+  id: number;
+  senderName: string;
+  branchOrCity: string;
+  message: string;
+  createdAt: string;
+  isApproved: boolean;
+}

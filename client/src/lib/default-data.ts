@@ -1,4 +1,4 @@
-import type { Branch, Destination, HeroSlide, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
+import type { Branch, Destination, HeroSlide, LiveCongratulation, LiveStreamSettings, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 
 export const DEFAULT_SLIDES: HeroSlide[] = [
   {
@@ -548,5 +548,74 @@ export const DEFAULT_BRANCHES: Branch[] = [
     isMain: false,
     isActive: true,
     sortOrder: 13,
+  },
+];
+
+export const DEFAULT_LIVE_SETTINGS: LiveStreamSettings = {
+  id: 1,
+  isLive: true,
+  status: 'LIVE',
+  title: 'حفل التدشين الرسمي لمنصة SA للسياحة وإطلاق شبكة فروع المملكة (13 فرعاً)',
+  subtitle: 'بث حي ومباشر يجمع قيادات السياحة وضيوف الشرف، وربط تفاعلي مباشر مع كافة فروع ومناطق المملكة العربية السعودية',
+  scheduledAt: '2026-11-20T19:30:00',
+  // Official high-res Saudi Tourism video demonstration
+  streamUrl: 'https://www.youtube.com/watch?v=3nQ6L8bQeYc',
+  streamPlatform: 'youtube',
+  recordingUrl: 'https://www.youtube.com/watch?v=3nQ6L8bQeYc',
+  bannerEnabled: true,
+  bannerText: '🔴 بث مباشر الآن: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13',
+  allowComments: true,
+  viewerCount: 1420,
+  heroBadge: 'بث مباشر حي عبر المملكة',
+};
+
+export const DEFAULT_CONGRATULATIONS: LiveCongratulation[] = [
+  {
+    id: 1,
+    senderName: 'فهد السبيعي',
+    branchOrCity: 'فرع الرياض (الرئيسي)',
+    message: 'ألف مبروك التدشين الرسمي للمنصة! انطلاقة مباركة نحو آفاق سياحية سعودية بمعايير عالمية تليق بالمملكة.',
+    createdAt: '2026-11-17T10:00:00.000Z',
+    isApproved: true,
+  },
+  {
+    id: 2,
+    senderName: 'د. سلطان الشمري',
+    branchOrCity: 'فرع حايل',
+    message: 'تهانينا القلبية من عروس الشمال حايل لكافة فريق العمل والشركاء بمناسبة التدشين المبارك، متفائلون بمستقبل سياحي باهر.',
+    createdAt: '2026-11-17T10:05:00.000Z',
+    isApproved: true,
+  },
+  {
+    id: 3,
+    senderName: 'م. خالد الشهري',
+    branchOrCity: 'فرع عسير',
+    message: 'من قمم عسير وأبها البهية نبارك لكم هذا الإنجاز السياحي الرائد لخدمة ضيوف المملكة وتقديم تجارب لا تُنسى.',
+    createdAt: '2026-11-17T10:12:00.000Z',
+    isApproved: true,
+  },
+  {
+    id: 4,
+    senderName: 'عبدالرحمن العتيبي',
+    branchOrCity: 'فرع القصيم',
+    message: 'مبارك التدشين، خطوة عملاقة ونوعية لتنشيط التجارب السياحية الفاخرة وربط مكاتب المملكة بشبكة واحدة متكاملة.',
+    createdAt: '2026-11-17T10:20:00.000Z',
+    isApproved: true,
+  },
+  {
+    id: 5,
+    senderName: 'سارة الدوسري',
+    branchOrCity: 'فرع الدمام والشرقية',
+    message: 'فخورون بهذا التدشين المتميز وشبكة فروعنا الممتدة، كل التوفيق والنجاح لـ SA للسياحة في رحلتها القادمة.',
+    createdAt: '2026-11-17T10:28:00.000Z',
+    isApproved: true,
+  },
+  {
+    id: 6,
+    senderName: 'ياسر الأحمدي',
+    branchOrCity: 'فرع المدينة المنورة والعلا',
+    message: 'نبارك لجميع منسوبي وضيوف المنصة، جاهزون لتقديم أبهى استقبال في طيبة الطيبة والعلا الساحرة.',
+    createdAt: '2026-11-17T10:35:00.000Z',
+    isApproved: true,
   },
 ];

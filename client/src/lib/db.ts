@@ -1,7 +1,9 @@
 import mysql from 'mysql2/promise';
 import {
   DEFAULT_BRANCHES,
+  DEFAULT_CONGRATULATIONS,
   DEFAULT_DESTINATIONS,
+  DEFAULT_LIVE_SETTINGS,
   DEFAULT_PACKAGES,
   DEFAULT_REVIEWS,
   DEFAULT_SERVICES,
@@ -9,7 +11,7 @@ import {
   DEFAULT_SLIDES,
   DEFAULT_STATS,
 } from './default-data';
-import type { Branch, Destination, HeroSlide, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
+import type { Branch, Destination, HeroSlide, LiveCongratulation, LiveStreamSettings, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 
 let pool: mysql.Pool | null = null;
 
@@ -1071,5 +1073,259 @@ export async function deleteBranch(id: number): Promise<{ ok: boolean }> {
   if (!p) throw new Error('Database connection not available');
   await ensureBranchesTable(p);
   await p.query('DELETE FROM branches WHERE id = ?', [id]);
+  return { ok: true };
+}
+
+/* ==========================================================================
+   LIVE STREAM & LAUNCH CEREMONY
+   ========================================================================== */
+
+let liveTablesChecked = false;
+
+async function ensureLiveTables(p: mysql.Pool) {
+  if (liveTablesChecked) return;
+  try {
+    // 1. Live stream settings table
+    await p.query(`
+      CREATE TABLE IF NOT EXISTS live_stream_settings (
+        id INT PRIMARY KEY DEFAULT 1,
+        is_live TINYINT(1) DEFAULT 1,
+        status VARCHAR(20) DEFAULT 'LIVE',
+        title VARCHAR(255) NOT NULL,
+        subtitle VARCHAR(500) NULL,
+        scheduled_at VARCHAR(50) NULL,
+        stream_url TEXT NOT NULL,
+        stream_platform VARCHAR(50) DEFAULT 'youtube',
+        recording_url TEXT NULL,
+        banner_enabled TINYINT(1) DEFAULT 1,
+        banner_text VARCHAR(255) NULL,
+        allow_comments TINYINT(1) DEFAULT 1,
+        viewer_count INT DEFAULT 1420,
+        hero_badge VARCHAR(100) NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // 2. Live congratulations table
+    await p.query(`
+      CREATE TABLE IF NOT EXISTS live_congratulations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sender_name VARCHAR(100) NOT NULL,
+        branch_or_city VARCHAR(100) NOT NULL,
+        message TEXT NOT NULL,
+        is_approved TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Seed default settings if empty
+    const [settingsRows]: any = await p.query('SELECT COUNT(*) as count FROM live_stream_settings');
+    if (settingsRows && settingsRows[0] && settingsRows[0].count === 0) {
+      await p.query(
+        `INSERT INTO live_stream_settings (id, is_live, status, title, subtitle, scheduled_at, stream_url, stream_platform, recording_url, banner_enabled, banner_text, allow_comments, viewer_count, hero_badge)
+         VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          DEFAULT_LIVE_SETTINGS.isLive ? 1 : 0,
+          DEFAULT_LIVE_SETTINGS.status,
+          DEFAULT_LIVE_SETTINGS.title,
+          DEFAULT_LIVE_SETTINGS.subtitle,
+          DEFAULT_LIVE_SETTINGS.scheduledAt,
+          DEFAULT_LIVE_SETTINGS.streamUrl,
+          DEFAULT_LIVE_SETTINGS.streamPlatform,
+          DEFAULT_LIVE_SETTINGS.recordingUrl,
+          DEFAULT_LIVE_SETTINGS.bannerEnabled ? 1 : 0,
+          DEFAULT_LIVE_SETTINGS.bannerText,
+          DEFAULT_LIVE_SETTINGS.allowComments ? 1 : 0,
+          DEFAULT_LIVE_SETTINGS.viewerCount || 1420,
+          DEFAULT_LIVE_SETTINGS.heroBadge,
+        ]
+      );
+    }
+
+    // Seed default congratulations if empty
+    const [congratsRows]: any = await p.query('SELECT COUNT(*) as count FROM live_congratulations');
+    if (congratsRows && congratsRows[0] && congratsRows[0].count === 0) {
+      for (const c of DEFAULT_CONGRATULATIONS) {
+        await p.query(
+          `INSERT INTO live_congratulations (sender_name, branch_or_city, message, is_approved)
+           VALUES (?, ?, ?, ?)`,
+          [c.senderName, c.branchOrCity, c.message, c.isApproved ? 1 : 0]
+        );
+      }
+    }
+
+    liveTablesChecked = true;
+  } catch (err) {
+    console.warn('ensureLiveTables warning:', err);
+  }
+}
+
+export async function getLiveSettings(): Promise<LiveStreamSettings> {
+  const p = getPool();
+  if (p) {
+    try {
+      await ensureLiveTables(p);
+      const [rows] = await p.query<any[]>(
+        `SELECT id, is_live as isLive, status, title, subtitle, scheduled_at as scheduledAt,
+                stream_url as streamUrl, stream_platform as streamPlatform, recording_url as recordingUrl,
+                banner_enabled as bannerEnabled, banner_text as bannerText, allow_comments as allowComments,
+                viewer_count as viewerCount, hero_badge as heroBadge
+         FROM live_stream_settings
+         WHERE id = 1
+         LIMIT 1`
+      );
+      if (rows && rows.length > 0) {
+        const r = rows[0];
+        return {
+          id: r.id,
+          isLive: Boolean(r.isLive),
+          status: r.status || 'LIVE',
+          title: r.title,
+          subtitle: r.subtitle,
+          scheduledAt: r.scheduledAt,
+          streamUrl: r.streamUrl,
+          streamPlatform: r.streamPlatform || 'youtube',
+          recordingUrl: r.recordingUrl,
+          bannerEnabled: Boolean(r.bannerEnabled),
+          bannerText: r.bannerText,
+          allowComments: Boolean(r.allowComments),
+          viewerCount: Number(r.viewerCount) || 1420,
+          heroBadge: r.heroBadge,
+        };
+      }
+    } catch (e) {
+      console.warn('MySQL getLiveSettings error, using fallback:', e);
+    }
+  }
+  return DEFAULT_LIVE_SETTINGS;
+}
+
+export async function updateLiveSettings(s: Partial<LiveStreamSettings>): Promise<LiveStreamSettings> {
+  const p = getPool();
+  if (!p) {
+    return { ...DEFAULT_LIVE_SETTINGS, ...s };
+  }
+  await ensureLiveTables(p);
+  await p.query(
+    `INSERT INTO live_stream_settings (id, is_live, status, title, subtitle, scheduled_at, stream_url, stream_platform, recording_url, banner_enabled, banner_text, allow_comments, viewer_count, hero_badge)
+     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       is_live = COALESCE(?, is_live),
+       status = COALESCE(?, status),
+       title = COALESCE(?, title),
+       subtitle = COALESCE(?, subtitle),
+       scheduled_at = COALESCE(?, scheduled_at),
+       stream_url = COALESCE(?, stream_url),
+       stream_platform = COALESCE(?, stream_platform),
+       recording_url = COALESCE(?, recording_url),
+       banner_enabled = COALESCE(?, banner_enabled),
+       banner_text = COALESCE(?, banner_text),
+       allow_comments = COALESCE(?, allow_comments),
+       viewer_count = COALESCE(?, viewer_count),
+       hero_badge = COALESCE(?, hero_badge)`,
+    [
+      s.isLive !== undefined ? (s.isLive ? 1 : 0) : 1,
+      s.status || 'LIVE',
+      s.title || DEFAULT_LIVE_SETTINGS.title,
+      s.subtitle !== undefined ? s.subtitle : DEFAULT_LIVE_SETTINGS.subtitle,
+      s.scheduledAt !== undefined ? s.scheduledAt : DEFAULT_LIVE_SETTINGS.scheduledAt,
+      s.streamUrl || DEFAULT_LIVE_SETTINGS.streamUrl,
+      s.streamPlatform || 'youtube',
+      s.recordingUrl !== undefined ? s.recordingUrl : null,
+      s.bannerEnabled !== undefined ? (s.bannerEnabled ? 1 : 0) : 1,
+      s.bannerText || DEFAULT_LIVE_SETTINGS.bannerText,
+      s.allowComments !== undefined ? (s.allowComments ? 1 : 0) : 1,
+      s.viewerCount !== undefined ? Number(s.viewerCount) : 1420,
+      s.heroBadge !== undefined ? s.heroBadge : DEFAULT_LIVE_SETTINGS.heroBadge,
+      // ON DUPLICATE KEY values:
+      s.isLive !== undefined ? (s.isLive ? 1 : 0) : null,
+      s.status || null,
+      s.title || null,
+      s.subtitle !== undefined ? s.subtitle : null,
+      s.scheduledAt !== undefined ? s.scheduledAt : null,
+      s.streamUrl || null,
+      s.streamPlatform || null,
+      s.recordingUrl !== undefined ? s.recordingUrl : null,
+      s.bannerEnabled !== undefined ? (s.bannerEnabled ? 1 : 0) : null,
+      s.bannerText || null,
+      s.allowComments !== undefined ? (s.allowComments ? 1 : 0) : null,
+      s.viewerCount !== undefined ? Number(s.viewerCount) : null,
+      s.heroBadge !== undefined ? s.heroBadge : null,
+    ]
+  );
+  return getLiveSettings();
+}
+
+export async function getLiveCongratulations(limit = 50): Promise<LiveCongratulation[]> {
+  const p = getPool();
+  if (p) {
+    try {
+      await ensureLiveTables(p);
+      const [rows] = await p.query<any[]>(
+        `SELECT id, sender_name as senderName, branch_or_city as branchOrCity, message,
+                created_at as createdAt, is_approved as isApproved
+         FROM live_congratulations
+         WHERE is_approved = 1
+         ORDER BY id DESC
+         LIMIT ?`,
+        [limit]
+      );
+      if (rows && rows.length > 0) {
+        return rows.map((r) => ({
+          ...r,
+          isApproved: Boolean(r.isApproved),
+          createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : new Date().toISOString(),
+        }));
+      }
+    } catch (e) {
+      console.warn('MySQL getLiveCongratulations error, using fallback:', e);
+    }
+  }
+  return DEFAULT_CONGRATULATIONS;
+}
+
+export async function addLiveCongratulation(data: {
+  senderName: string;
+  branchOrCity: string;
+  message: string;
+}): Promise<LiveCongratulation> {
+  const p = getPool();
+  if (!p) {
+    const item: LiveCongratulation = {
+      id: Date.now(),
+      senderName: data.senderName,
+      branchOrCity: data.branchOrCity,
+      message: data.message,
+      createdAt: new Date().toISOString(),
+      isApproved: true,
+    };
+    DEFAULT_CONGRATULATIONS.unshift(item);
+    return item;
+  }
+  await ensureLiveTables(p);
+  const [res]: any = await p.query(
+    `INSERT INTO live_congratulations (sender_name, branch_or_city, message, is_approved)
+     VALUES (?, ?, ?, 1)`,
+    [data.senderName, data.branchOrCity, data.message]
+  );
+  return {
+    id: res.insertId,
+    senderName: data.senderName,
+    branchOrCity: data.branchOrCity,
+    message: data.message,
+    createdAt: new Date().toISOString(),
+    isApproved: true,
+  };
+}
+
+export async function deleteLiveCongratulation(id: number): Promise<{ ok: boolean }> {
+  const p = getPool();
+  if (!p) {
+    const idx = DEFAULT_CONGRATULATIONS.findIndex((c) => c.id === id);
+    if (idx !== -1) DEFAULT_CONGRATULATIONS.splice(idx, 1);
+    return { ok: true };
+  }
+  await ensureLiveTables(p);
+  await p.query('DELETE FROM live_congratulations WHERE id = ?', [id]);
   return { ok: true };
 }

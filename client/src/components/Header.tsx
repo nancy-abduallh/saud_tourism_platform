@@ -6,8 +6,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import clsx from 'clsx';
 import { EASE } from '@/lib/motion';
+import LiveBanner from './LiveBanner';
 
 const links = [
+  { href: '/live', label: 'حفل التدشين 🔴', highlight: true },
   { href: '/#destinations', label: 'الوجهات' },
   { href: '/packages', label: 'الباقات الفاخرة' },
   { href: '/branches', label: 'فروعنا' },
@@ -41,6 +43,7 @@ export default function Header() {
         solid ? 'border-b border-gold-500/20 bg-navy-950/90 shadow-lg shadow-black/20 backdrop-blur-xl' : 'bg-gradient-to-b from-navy-950/80 to-transparent',
       )}
     >
+      <LiveBanner />
       <div className="container-x flex h-20 items-center justify-between gap-6">
         <Link href="/" className="group flex items-center gap-3">
           <img src="/logo.png" alt="SA للسياحة" className="h-12 w-12 rounded-full ring-2 ring-gold-500/60 transition-transform duration-300 group-hover:scale-105" />
@@ -58,11 +61,22 @@ export default function Header() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        <nav className="hidden items-center gap-7 lg:flex">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className="group relative py-2 text-sm font-medium text-white/85 transition-colors hover:text-gold-300">
+            <Link
+              key={l.href}
+              href={l.href}
+              className={clsx(
+                'group relative py-2 text-sm font-medium transition-colors',
+                l.highlight
+                  ? 'flex items-center gap-1.5 rounded-full border border-gold-500/40 bg-gold-500/10 px-3.5 py-1 text-gold-300 hover:bg-gold-500 hover:text-navy-950 shadow-gold'
+                  : 'text-white/85 hover:text-gold-300'
+              )}
+            >
               {l.label}
-              <span className="absolute inset-x-0 -bottom-0.5 h-px origin-center scale-x-0 bg-gold-gradient transition-transform duration-300 group-hover:scale-x-100" />
+              {!l.highlight && (
+                <span className="absolute inset-x-0 -bottom-0.5 h-px origin-center scale-x-0 bg-gold-gradient transition-transform duration-300 group-hover:scale-x-100" />
+              )}
             </Link>
           ))}
         </nav>
