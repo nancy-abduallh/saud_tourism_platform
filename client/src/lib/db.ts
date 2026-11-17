@@ -13,6 +13,7 @@ import {
   DEFAULT_STATS,
 } from './default-data';
 import type { Branch, Destination, HeroSlide, LiveAgendaItem, LiveCongratulation, LiveStreamSettings, LiveStreamStatus, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
+import { parseScheduledDate } from './date-utils';
 
 let pool: mysql.Pool | null = null;
 
@@ -1424,7 +1425,7 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
 
         // Auto-promote to LIVE when scheduled time is reached!
         if (status === 'UPCOMING' && r.scheduledAt) {
-          const scheduledTime = new Date(r.scheduledAt).getTime();
+          const scheduledTime = parseScheduledDate(r.scheduledAt);
           if (!isNaN(scheduledTime) && Date.now() >= scheduledTime) {
             status = 'LIVE';
             isLive = true;
@@ -1473,7 +1474,7 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
     }
   }
   if (DEFAULT_LIVE_SETTINGS.status === 'UPCOMING' && DEFAULT_LIVE_SETTINGS.scheduledAt) {
-    const scheduledTime = new Date(DEFAULT_LIVE_SETTINGS.scheduledAt).getTime();
+    const scheduledTime = parseScheduledDate(DEFAULT_LIVE_SETTINGS.scheduledAt);
     if (!isNaN(scheduledTime) && Date.now() >= scheduledTime) {
       DEFAULT_LIVE_SETTINGS.status = 'LIVE';
       DEFAULT_LIVE_SETTINGS.isLive = true;

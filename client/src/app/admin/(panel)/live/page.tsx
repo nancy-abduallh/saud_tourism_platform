@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import type { LiveAgendaItem, LiveCongratulation, LiveStreamSettings, LiveStreamStatus } from '@/lib/types';
 import { parseVideoUrl } from '@/components/LivePlayer';
+import { isScheduledTimeReached, parseScheduledDate } from '@/lib/date-utils';
 
 const PRESET_VIDEOS = [
   {
@@ -58,8 +59,9 @@ const STATUS_BANNER_PRESETS: Record<LiveStreamStatus, { bannerText: string; hero
 const toLocalInputFormat = (dateStr?: string) => {
   if (!dateStr) return '';
   try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return '';
+    const t = parseScheduledDate(dateStr);
+    if (isNaN(t)) return '';
+    const d = new Date(t);
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   } catch {
@@ -101,6 +103,22 @@ export default function AdminLivePage() {
           if (s.recordingUrl && s.recordingUrl.includes('3nQ6L8bQeYc')) {
             s.recordingUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
           }
+
+          // Auto-promote to LIVE if scheduled time is reached!
+          if (s.status === 'UPCOMING' && isScheduledTimeReached(s.scheduledAt)) {
+            s.status = 'LIVE';
+            s.isLive = true;
+            s.bannerEnabled = true;
+            s.bannerText = STATUS_BANNER_PRESETS.LIVE.bannerText;
+            s.heroBadge = STATUS_BANNER_PRESETS.LIVE.heroBadge;
+            // Persist immediately so everything stays synced
+            fetch('/api/admin/live', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...s, agenda: data.agenda }),
+            }).catch(() => {});
+          }
+
           setSettings(s);
         }
         if (data.congratulations) setCongratulations(data.congratulations);
@@ -112,6 +130,33 @@ export default function AdminLivePage() {
         setLoading(false);
       });
   }, []);
+
+  // Real-time listener: while admin is on the page, as soon as timeline arrives, auto-flip to LIVE!
+  useEffect(() => {
+    if (!settings || settings.status !== 'UPCOMING' || !settings.scheduledAt) return;
+
+    const checkAutoTransition = () => {
+      if (settings.status === 'UPCOMING' && isScheduledTimeReached(settings.scheduledAt)) {
+        const updated: LiveStreamSettings = {
+          ...settings,
+          status: 'LIVE',
+          isLive: true,
+          bannerEnabled: true,
+          bannerText: STATUS_BANNER_PRESETS.LIVE.bannerText,
+          heroBadge: STATUS_BANNER_PRESETS.LIVE.heroBadge,
+        };
+        setSettings(updated);
+        saveAll(updated, agenda);
+        setMessage({
+          type: 'success',
+          text: '🔴 حان موعد البث المباشر الآن! تم تحويل الحالة تلقائياً إلى [مباشر الآن] وتحديث المنصة بالكامل.',
+        });
+      }
+    };
+
+    const interval = setInterval(checkAutoTransition, 1000);
+    return () => clearInterval(interval);
+  }, [settings?.status, settings?.scheduledAt, agenda]);
 
   const saveAll = async (
     customSettings?: LiveStreamSettings,
@@ -525,18 +570,34 @@ export default function AdminLivePage() {
                   type="datetime-local"
                   value={toLocalInputFormat(settings.scheduledAt)}
                   onChange={(e) => {
-                    if (e.target.value) {
+                    const val = e.target.value;
+                    if (val) {
+                      const parsedMs = new Date(val).getTime();
+                      const iso = !isNaN(parsedMs) ? new Date(val).toISOString() : val;
                       setSettings({
                         ...settings,
-                        scheduledAt: e.target.value,
+                        scheduledAt: iso,
                       });
                     }
                   }}
                   className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none"
                 />
-                <p className="mt-1 text-[11px] text-slate-500">
-                  مضبوط على الخميس القادم 03:00 م (15:00).
-                </p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px]">
+                  {isScheduledTimeReached(settings.scheduledAt) ? (
+                    <span className="inline-flex items-center gap-1 font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-lg">
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                      </span>
+                      حان موعد البث بالفعل (يتم التحويل التلقائي لمباشر الآن)
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-slate-600 font-medium bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg">
+                      <Clock size={12} className="text-amber-500" />
+                      مجدول وسيتحول تلقائياً إلى مباشر (LIVE) لحظة وصول الموعد
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-1.5">

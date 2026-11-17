@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Bell, Calendar, Check, Copy, Radio, Share2 } from 'lucide-react';
+import { parseScheduledDate } from '@/lib/date-utils';
 
 interface LiveCountdownProps {
   targetDate: string;
@@ -28,7 +29,12 @@ export default function LiveCountdown({ targetDate, title }: LiveCountdownProps)
 
   useEffect(() => {
     function calculate() {
-      const difference = +new Date(targetDate) - +new Date();
+      const targetTime = parseScheduledDate(targetDate);
+      if (isNaN(targetTime)) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isReady: false });
+        return;
+      }
+      const difference = targetTime - Date.now();
       if (difference <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isReady: true });
         return;
@@ -47,14 +53,16 @@ export default function LiveCountdown({ targetDate, title }: LiveCountdownProps)
     return () => clearInterval(interval);
   }, [targetDate]);
 
-  // When timer hits zero, automatically refresh page to show LIVE stream
+  // When timer hits zero, trigger server update and refresh page to show LIVE stream
   useEffect(() => {
     if (timeLeft.isReady) {
+      // Ping /api/live to force server transition in DB
+      fetch('/api/live', { cache: 'no-store' }).catch(() => {});
       const timer = setTimeout(() => {
         if (typeof window !== 'undefined') {
           window.location.reload();
         }
-      }, 2500);
+      }, 1800);
       return () => clearTimeout(timer);
     }
   }, [timeLeft.isReady]);
@@ -78,8 +86,10 @@ export default function LiveCountdown({ targetDate, title }: LiveCountdownProps)
 
   // Google Calendar event URL generator
   const getGoogleCalendarUrl = () => {
-    const startTime = new Date(targetDate).toISOString().replace(/-|:|\.\d\d\d/g, '');
-    const endTime = new Date(new Date(targetDate).getTime() + 2 * 60 * 60 * 1000)
+    const targetTime = parseScheduledDate(targetDate);
+    const dateObj = !isNaN(targetTime) ? new Date(targetTime) : new Date();
+    const startTime = dateObj.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const endTime = new Date(dateObj.getTime() + 2 * 60 * 60 * 1000)
       .toISOString()
       .replace(/-|:|\.\d\d\d/g, '');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(

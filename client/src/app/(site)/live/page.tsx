@@ -6,6 +6,7 @@ import LiveCountdown from '@/components/LiveCountdown';
 import LiveFeed from '@/components/LiveFeed';
 import LiveCeremonyProgram from '@/components/LiveCeremonyProgram';
 import { getBranches, getLiveAgenda, getLiveCongratulations, getLiveSettings } from '@/lib/db';
+import { parseScheduledDate } from '@/lib/date-utils';
 
 const BASE_URL = 'https://saudtourism.ksaplatforms.com';
 
@@ -56,6 +57,17 @@ export default async function LivePage() {
     getBranches(),
     getLiveAgenda(),
   ]);
+
+  // Ensure scheduled date arrival promotes to LIVE in SSR as well
+  if (liveSettings.status === 'UPCOMING' && liveSettings.scheduledAt) {
+    const targetTime = parseScheduledDate(liveSettings.scheduledAt);
+    if (!isNaN(targetTime) && Date.now() >= targetTime) {
+      liveSettings.status = 'LIVE';
+      liveSettings.isLive = true;
+      liveSettings.bannerText = '🔴 بث مباشر الآن: انطلاق وقائع حفل التدشين الرسمي لمنصة SA للسياحة وإطلاق شبكة فروع المملكة (13 فرعاً)';
+      liveSettings.heroBadge = 'بث مباشر حي عبر المملكة';
+    }
+  }
 
   const activeStreamUrl =
     liveSettings.status === 'ENDED' && liveSettings.recordingUrl
