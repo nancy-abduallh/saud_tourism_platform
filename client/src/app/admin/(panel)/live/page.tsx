@@ -61,6 +61,11 @@ export default function AdminLivePage() {
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
 
+  // New congratulation form state
+  const [newCongratsName, setNewCongratsName] = useState('');
+  const [newCongratsBranch, setNewCongratsBranch] = useState('');
+  const [newCongratsMsg, setNewCongratsMsg] = useState('');
+
   useEffect(() => {
     fetch('/api/admin/live')
       .then((res) => res.json())
@@ -187,10 +192,42 @@ export default function AdminLivePage() {
       if (!res.ok) throw new Error('فشل حذف التهنئة');
 
       setCongratulations(congratulations.filter((c) => c.id !== id));
-      setMessage({ type: 'success', text: 'تم حذف التهنئة بنجاح' });
+      setMessage({ type: 'success', text: 'تم حذف التهنئة بنجاح من قاعدة البيانات والموقع' });
       setTimeout(() => setMessage(null), 3000);
     } catch (err: any) {
       alert(err?.message || 'حدث خطأ');
+    }
+  };
+
+  const handleAddCongratulation = async () => {
+    if (!newCongratsName.trim() || !newCongratsBranch.trim() || !newCongratsMsg.trim()) {
+      alert('يرجى ملء جميع حقول التهنئة');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/live/congratulations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          senderName: newCongratsName.trim(),
+          branchOrCity: newCongratsBranch.trim(),
+          message: newCongratsMsg.trim(),
+        }),
+      });
+
+      if (!res.ok) throw new Error('فشل إضافة التهنئة');
+      const data = await res.json();
+      if (data.congratulation) {
+        setCongratulations([data.congratulation, ...congratulations]);
+        setNewCongratsName('');
+        setNewCongratsBranch('');
+        setNewCongratsMsg('');
+        setMessage({ type: 'success', text: 'تمت إضافة التهنئة وحفظها في قاعدة البيانات بنجاح' });
+        setTimeout(() => setMessage(null), 3000);
+      }
+    } catch (err: any) {
+      alert(err?.message || 'حدث خطأ أثناء إضافة التهنئة');
     }
   };
 
@@ -610,6 +647,47 @@ export default function AdminLivePage() {
                   لا توجد تهاني مسجلة حالياً
                 </div>
               )}
+            </div>
+
+            {/* Quick Add Congratulation Form */}
+            <div className="mt-4 border-t border-slate-100 pt-3">
+              <details className="group">
+                <summary className="cursor-pointer text-xs font-bold text-gold-700 hover:text-gold-900 flex items-center gap-1 select-none">
+                  <Plus size={14} /> إضافة تهنئة جديدة يدوياً
+                </summary>
+                <div className="mt-2 space-y-2 text-xs">
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="اسم المهنئ *"
+                      value={newCongratsName}
+                      onChange={(e) => setNewCongratsName(e.target.value)}
+                      className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none focus:border-gold-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="الفرع أو المدينة *"
+                      value={newCongratsBranch}
+                      onChange={(e) => setNewCongratsBranch(e.target.value)}
+                      className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none focus:border-gold-500"
+                    />
+                  </div>
+                  <textarea
+                    placeholder="نص التهنئة والتبريك *"
+                    rows={2}
+                    value={newCongratsMsg}
+                    onChange={(e) => setNewCongratsMsg(e.target.value)}
+                    className="w-full rounded-lg border border-slate-200 p-2 text-xs outline-none focus:border-gold-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddCongratulation}
+                    className="w-full rounded-lg bg-gold-gradient py-1.5 font-bold text-navy-950 shadow-sm hover:opacity-90 transition"
+                  >
+                    حفظ التهنئة في قاعدة البيانات
+                  </button>
+                </div>
+              </details>
             </div>
           </div>
         </div>

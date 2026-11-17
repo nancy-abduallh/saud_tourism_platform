@@ -65,7 +65,7 @@ export async function getDestinations(): Promise<Destination[]> {
       const [rows] = await p.query<any[]>(
         'SELECT id, slug, name, name_en, tagline, description, image FROM destinations WHERE is_active = 1 ORDER BY sort_order ASC, id ASC'
       );
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           id: r.id,
           slug: r.slug,
@@ -90,7 +90,7 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
       const [rows] = await p.query<any[]>(
         'SELECT id, title, title_en, subtitle, image, cta_text, cta_link FROM hero_slides WHERE is_active = 1 ORDER BY sort_order ASC, id ASC'
       );
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           id: r.id,
           title: r.title,
@@ -115,7 +115,7 @@ export async function getVipServices(): Promise<VipService[]> {
       const [rows] = await p.query<any[]>(
         'SELECT id, title, description, icon FROM vip_services WHERE is_active = 1 ORDER BY sort_order ASC, id ASC'
       );
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           id: r.id,
           title: r.title,
@@ -137,7 +137,7 @@ export async function getReviews(): Promise<Review[]> {
       const [rows] = await p.query<any[]>(
         'SELECT id, name, location, rating, comment FROM reviews WHERE is_approved = 1 ORDER BY created_at DESC LIMIT 10'
       );
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           id: r.id,
           name: r.name,
@@ -178,7 +178,7 @@ export async function getPackages(filter?: { destination?: string; featuredOnly?
       }
 
       const [rows] = await p.query<any[]>(query, params);
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           id: r.id,
           slug: r.slug,
@@ -296,7 +296,7 @@ export async function getAllDestinationsAdmin() {
       const [rows] = await p.query<any[]>(
         'SELECT id, slug, name, name_en as nameEn, tagline, description, image, sort_order as sortOrder, is_active as isActive FROM destinations ORDER BY sort_order ASC, id ASC'
       );
-      if (rows && rows.length > 0) return rows.map((r) => ({ ...r, isActive: Boolean(r.isActive) }));
+      if (Array.isArray(rows)) return rows.map((r) => ({ ...r, isActive: Boolean(r.isActive) }));
     } catch (e) {
       console.error('getAllDestinationsAdmin error:', e);
     }
@@ -339,7 +339,7 @@ export async function getAllHeroSlidesAdmin() {
       const [rows] = await p.query<any[]>(
         'SELECT id, title, title_en as titleEn, subtitle, image, cta_text as ctaText, cta_link as ctaLink, sort_order as sortOrder, is_active as isActive FROM hero_slides ORDER BY sort_order ASC, id ASC'
       );
-      if (rows && rows.length > 0) return rows.map((r) => ({ ...r, isActive: Boolean(r.isActive) }));
+      if (Array.isArray(rows)) return rows.map((r) => ({ ...r, isActive: Boolean(r.isActive) }));
     } catch (e) {
       console.error('getAllHeroSlidesAdmin error:', e);
     }
@@ -382,7 +382,7 @@ export async function getAllVipServicesAdmin() {
       const [rows] = await p.query<any[]>(
         'SELECT id, title, description, icon, sort_order as sortOrder, is_active as isActive FROM vip_services ORDER BY sort_order ASC, id ASC'
       );
-      if (rows && rows.length > 0) return rows.map((r) => ({ ...r, isActive: Boolean(r.isActive) }));
+      if (Array.isArray(rows)) return rows.map((r) => ({ ...r, isActive: Boolean(r.isActive) }));
     } catch (e) {
       console.error('getAllVipServicesAdmin error:', e);
     }
@@ -425,7 +425,7 @@ export async function getAllReviewsAdmin() {
       const [rows] = await p.query<any[]>(
         'SELECT id, name, location, rating, comment, is_approved as isApproved, created_at as createdAt FROM reviews ORDER BY created_at DESC'
       );
-      if (rows && rows.length > 0) return rows.map((r) => ({ ...r, isApproved: Boolean(r.isApproved) }));
+      if (Array.isArray(rows)) return rows.map((r) => ({ ...r, isApproved: Boolean(r.isApproved) }));
     } catch (e) {
       console.error('getAllReviewsAdmin error:', e);
     }
@@ -474,7 +474,7 @@ export async function getAllPackagesAdmin() {
         LEFT JOIN destinations d ON p.destination_id = d.id
         ORDER BY p.id DESC
       `);
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           ...r,
           isFeatured: Boolean(r.isFeatured),
@@ -1069,7 +1069,8 @@ async function ensureBranchesTable(p: mysql.Pool) {
 
     // Check if table is empty, if so, seed DEFAULT_BRANCHES
     const [rows]: any = await p.query('SELECT COUNT(*) as count FROM branches');
-    if (rows && rows[0] && rows[0].count === 0) {
+    const branchCount = Number(rows?.[0]?.count ?? 0);
+    if (branchCount === 0) {
       for (const b of DEFAULT_BRANCHES) {
         await p.query(
           `INSERT INTO branches (name, name_en, city, region, address, phone, whatsapp, email, working_hours, description, is_main, is_active, sort_order)
@@ -1114,7 +1115,7 @@ export async function getBranches(): Promise<Branch[]> {
          WHERE is_active = 1
          ORDER BY sort_order ASC, id ASC`
       );
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           ...r,
           isMain: Boolean(r.isMain),
@@ -1140,7 +1141,7 @@ export async function getAllBranchesAdmin(): Promise<Branch[]> {
          FROM branches
          ORDER BY sort_order ASC, id ASC`
       );
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           ...r,
           isMain: Boolean(r.isMain),
@@ -1291,7 +1292,8 @@ async function ensureLiveTables(p: mysql.Pool) {
 
     // Seed default settings if empty
     const [settingsRows]: any = await p.query('SELECT COUNT(*) as count FROM live_stream_settings');
-    if (settingsRows && settingsRows[0] && settingsRows[0].count === 0) {
+    const settingsCount = Number(settingsRows?.[0]?.count ?? 0);
+    if (settingsCount === 0) {
       await p.query(
         `INSERT INTO live_stream_settings (id, is_live, status, title, subtitle, scheduled_at, stream_url, stream_platform, recording_url, banner_enabled, banner_text, allow_comments, viewer_count, hero_badge)
          VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -1313,28 +1315,48 @@ async function ensureLiveTables(p: mysql.Pool) {
       );
     }
 
-    // Seed default congratulations if empty
-    const [congratsRows]: any = await p.query('SELECT COUNT(*) as count FROM live_congratulations');
-    if (congratsRows && congratsRows[0] && congratsRows[0].count === 0) {
-      for (const c of DEFAULT_CONGRATULATIONS) {
-        await p.query(
-          `INSERT INTO live_congratulations (sender_name, branch_or_city, message, is_approved)
-           VALUES (?, ?, ?, ?)`,
-          [c.senderName, c.branchOrCity, c.message, c.isApproved ? 1 : 0]
-        );
+    // Seed default congratulations once into DB if table has never been populated
+    const [[congratsSeedSetting]]: any = await p.query(
+      "SELECT setting_value FROM site_settings WHERE setting_key = 'live_congrats_initialized'"
+    ).catch(() => [[null]]);
+
+    if (!congratsSeedSetting || congratsSeedSetting.setting_value !== '1') {
+      const [congratsRows]: any = await p.query('SELECT COUNT(*) as count FROM live_congratulations');
+      const congratsCount = Number(congratsRows?.[0]?.count ?? 0);
+      if (congratsCount === 0) {
+        for (const c of DEFAULT_CONGRATULATIONS) {
+          await p.query(
+            `INSERT INTO live_congratulations (sender_name, branch_or_city, message, is_approved)
+             VALUES (?, ?, ?, ?)`,
+            [c.senderName, c.branchOrCity, c.message, c.isApproved ? 1 : 0]
+          );
+        }
       }
+      await p.query(
+        "INSERT INTO site_settings (setting_key, setting_value) VALUES ('live_congrats_initialized', '1') ON DUPLICATE KEY UPDATE setting_value = '1'"
+      ).catch(() => {});
     }
 
-    // Seed default agenda items if empty
-    const [agendaRows]: any = await p.query('SELECT COUNT(*) as count FROM live_agenda_items');
-    if (agendaRows && agendaRows[0] && agendaRows[0].count === 0) {
-      for (const a of DEFAULT_AGENDA_ITEMS) {
-        await p.query(
-          `INSERT INTO live_agenda_items (id, time, title, description, sort_order)
-           VALUES (?, ?, ?, ?, ?)`,
-          [a.id, a.time, a.title, a.description, a.sortOrder]
-        );
+    // Seed default agenda items once into DB if table has never been populated
+    const [[agendaSeedSetting]]: any = await p.query(
+      "SELECT setting_value FROM site_settings WHERE setting_key = 'live_agenda_initialized'"
+    ).catch(() => [[null]]);
+
+    if (!agendaSeedSetting || agendaSeedSetting.setting_value !== '1') {
+      const [agendaRows]: any = await p.query('SELECT COUNT(*) as count FROM live_agenda_items');
+      const agendaCount = Number(agendaRows?.[0]?.count ?? 0);
+      if (agendaCount === 0) {
+        for (const a of DEFAULT_AGENDA_ITEMS) {
+          await p.query(
+            `INSERT INTO live_agenda_items (id, time, title, description, sort_order)
+             VALUES (?, ?, ?, ?, ?)`,
+            [a.id, a.time, a.title, a.description, a.sortOrder]
+          );
+        }
       }
+      await p.query(
+        "INSERT INTO site_settings (setting_key, setting_value) VALUES ('live_agenda_initialized', '1') ON DUPLICATE KEY UPDATE setting_value = '1'"
+      ).catch(() => {});
     }
 
     // Update any old broken placeholder stream_url in existing rows
@@ -1469,7 +1491,7 @@ export async function getLiveAgenda(): Promise<LiveAgendaItem[]> {
          FROM live_agenda_items
          ORDER BY sort_order ASC, id ASC`
       );
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           id: r.id,
           time: r.time,
@@ -1574,7 +1596,7 @@ export async function getLiveCongratulations(limit = 50): Promise<LiveCongratula
          LIMIT ?`,
         [limit]
       );
-      if (rows && rows.length > 0) {
+      if (Array.isArray(rows)) {
         return rows.map((r) => ({
           ...r,
           isApproved: Boolean(r.isApproved),
@@ -1623,13 +1645,13 @@ export async function addLiveCongratulation(data: {
 }
 
 export async function deleteLiveCongratulation(id: number): Promise<{ ok: boolean }> {
+  const idx = DEFAULT_CONGRATULATIONS.findIndex((c) => c.id === id);
+  if (idx !== -1) DEFAULT_CONGRATULATIONS.splice(idx, 1);
+
   const p = getPool();
-  if (!p) {
-    const idx = DEFAULT_CONGRATULATIONS.findIndex((c) => c.id === id);
-    if (idx !== -1) DEFAULT_CONGRATULATIONS.splice(idx, 1);
-    return { ok: true };
+  if (p) {
+    await ensureLiveTables(p);
+    await p.query('DELETE FROM live_congratulations WHERE id = ?', [id]);
   }
-  await ensureLiveTables(p);
-  await p.query('DELETE FROM live_congratulations WHERE id = ?', [id]);
   return { ok: true };
 }
