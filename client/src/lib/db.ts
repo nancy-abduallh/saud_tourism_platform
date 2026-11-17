@@ -1401,6 +1401,14 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
         if (recordingUrl && recordingUrl.includes('3nQ6L8bQeYc')) {
           recordingUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
         }
+        let bannerText = r.bannerText || '';
+        if (r.status === 'UPCOMING' && bannerText.includes('بث مباشر الآن')) {
+          bannerText = '⏳ ترقبوا: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13';
+        } else if (r.status === 'ENDED' && (bannerText.includes('بث مباشر الآن') || bannerText.includes('ترقبوا'))) {
+          bannerText = '🎬 انتهى البث المباشر: يمكنك الآن مشاهدة التسجيل الكامل لوقائع حفل التدشين الرسمي';
+        } else if (r.status === 'LIVE' && (bannerText.includes('ترقبوا') || bannerText.includes('انتهى البث'))) {
+          bannerText = '🔴 بث مباشر الآن: انطلاق وقائع حفل التدشين الرسمي لمنصة SA للسياحة وإطلاق شبكة فروع المملكة (13 فرعاً)';
+        }
         const res: LiveStreamSettings = {
           id: r.id,
           isLive: Boolean(r.isLive),
@@ -1412,7 +1420,7 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
           streamPlatform: r.streamPlatform || 'youtube',
           recordingUrl,
           bannerEnabled: Boolean(r.bannerEnabled),
-          bannerText: r.bannerText,
+          bannerText,
           allowComments: Boolean(r.allowComments),
           viewerCount: Number(r.viewerCount) || 1420,
           heroBadge: r.heroBadge,

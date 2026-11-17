@@ -563,7 +563,7 @@ export const DEFAULT_LIVE_SETTINGS: LiveStreamSettings = {
   streamPlatform: 'youtube',
   recordingUrl: 'https://www.youtube.com/watch?v=R6D7jQI4BD0',
   bannerEnabled: true,
-  bannerText: '🔴 موعدنا الخميس 03:00 م: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13',
+  bannerText: '⏳ ترقبوا: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13',
   allowComments: true,
   viewerCount: 1420,
   heroBadge: 'الحدث الرسمي للتدشين',

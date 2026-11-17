@@ -36,6 +36,24 @@ const PRESET_VIDEOS = [
   },
 ];
 
+const STATUS_BANNER_PRESETS: Record<LiveStreamStatus, { bannerText: string; heroBadge: string; label: string }> = {
+  UPCOMING: {
+    bannerText: '⏳ ترقبوا: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13',
+    heroBadge: 'الحدث الرسمي للتدشين',
+    label: 'قريباً (بث مجدول)',
+  },
+  LIVE: {
+    bannerText: '🔴 بث مباشر الآن: انطلاق وقائع حفل التدشين الرسمي لمنصة SA للسياحة وإطلاق شبكة فروع المملكة (13 فرعاً)',
+    heroBadge: 'بث مباشر حي عبر المملكة',
+    label: 'مباشر الآن (LIVE)',
+  },
+  ENDED: {
+    bannerText: '🎬 انتهى البث المباشر: يمكنك الآن مشاهدة التسجيل الكامل لوقائع حفل التدشين الرسمي',
+    heroBadge: 'تسجيل وقائع الحفل',
+    label: 'انتهى البث (تسجيل الحفل)',
+  },
+};
+
 const toLocalInputFormat = (dateStr?: string) => {
   if (!dateStr) return '';
   try {
@@ -131,11 +149,14 @@ export default function AdminLivePage() {
 
   const handleStatusChange = (newStatus: LiveStreamStatus) => {
     if (!settings) return;
+    const preset = STATUS_BANNER_PRESETS[newStatus];
     const updated: LiveStreamSettings = {
       ...settings,
       status: newStatus,
       isLive: newStatus === 'LIVE',
-      bannerEnabled: newStatus === 'LIVE' ? true : settings.bannerEnabled,
+      bannerEnabled: true,
+      bannerText: preset?.bannerText || settings.bannerText,
+      heroBadge: preset?.heroBadge || settings.heroBadge,
     };
     setSettings(updated);
     // Persist immediately on click!
@@ -534,15 +555,64 @@ export default function AdminLivePage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                نص الشريط التنبيهي العلوي
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  نص الشريط التنبيهي العلوي بالموقع
+                </label>
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                    settings.status === 'LIVE'
+                      ? 'bg-red-100 text-red-700 ring-1 ring-red-400'
+                      : settings.status === 'ENDED'
+                      ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-400'
+                      : 'bg-amber-100 text-amber-800 ring-1 ring-amber-400'
+                  }`}
+                >
+                  الحالة المربوطة: {STATUS_BANNER_PRESETS[settings.status]?.label || settings.status}
+                </span>
+              </div>
               <input
                 type="text"
                 value={settings.bannerText}
                 onChange={(e) => setSettings({ ...settings, bannerText: e.target.value })}
                 className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs focus:border-gold-500 focus:outline-none"
               />
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="text-[11px] text-slate-500 font-medium">قوالب جاهزة:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = { ...settings, bannerText: STATUS_BANNER_PRESETS.UPCOMING.bannerText };
+                    setSettings(updated);
+                    saveAll(updated, agenda);
+                  }}
+                  className="rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-800 hover:bg-amber-100 transition"
+                >
+                  ⏳ قالب المجدول
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = { ...settings, bannerText: STATUS_BANNER_PRESETS.LIVE.bannerText };
+                    setSettings(updated);
+                    saveAll(updated, agenda);
+                  }}
+                  className="rounded-lg border border-red-300 bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-800 hover:bg-red-100 transition"
+                >
+                  🔴 قالب لايف الآن
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = { ...settings, bannerText: STATUS_BANNER_PRESETS.ENDED.bannerText };
+                    setSettings(updated);
+                    saveAll(updated, agenda);
+                  }}
+                  className="rounded-lg border border-blue-300 bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-800 hover:bg-blue-100 transition"
+                >
+                  🎬 قالب تسجيل الحفل
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4">

@@ -113,10 +113,15 @@ export default async function LivePage() {
                   </span>
                   <span>{liveSettings.heroBadge || 'بث مباشر حي عبر المملكة'}</span>
                 </>
+              ) : liveSettings.status === 'ENDED' ? (
+                <>
+                  <Tv size={14} className="text-blue-400" />
+                  <span>{liveSettings.heroBadge || 'تسجيل وقائع حفل التدشين'}</span>
+                </>
               ) : (
                 <>
                   <Radio size={14} className="text-gold-400" />
-                  <span>{liveSettings.heroBadge || 'الحدث الرسمي للتدشين'}</span>
+                  <span>{liveSettings.heroBadge || 'الحدث الرسمي للتدشين (بث مجدول)'}</span>
                 </>
               )}
             </div>
