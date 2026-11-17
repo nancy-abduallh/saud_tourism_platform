@@ -12,7 +12,7 @@ import {
   DEFAULT_SLIDES,
   DEFAULT_STATS,
 } from './default-data';
-import type { Branch, Destination, HeroSlide, LiveAgendaItem, LiveCongratulation, LiveStreamSettings, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
+import type { Branch, Destination, HeroSlide, LiveAgendaItem, LiveCongratulation, LiveStreamSettings, LiveStreamStatus, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 
 let pool: mysql.Pool | null = null;
 
@@ -1402,17 +1402,40 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
           recordingUrl = 'https://www.youtube.com/watch?v=R6D7jQI4BD0';
         }
         let bannerText = r.bannerText || '';
-        if (r.status === 'UPCOMING' && bannerText.includes('بث مباشر الآن')) {
+        let status: LiveStreamStatus = r.status || 'UPCOMING';
+        let isLive = Boolean(r.isLive);
+        let heroBadge = r.heroBadge;
+
+        // Auto-promote to LIVE when scheduled time is reached!
+        if (status === 'UPCOMING' && r.scheduledAt) {
+          const scheduledTime = new Date(r.scheduledAt).getTime();
+          if (!isNaN(scheduledTime) && Date.now() >= scheduledTime) {
+            status = 'LIVE';
+            isLive = true;
+            bannerText = '🔴 بث مباشر الآن: انطلاق وقائع حفل التدشين الرسمي لمنصة SA للسياحة وإطلاق شبكة فروع المملكة (13 فرعاً)';
+            heroBadge = 'بث مباشر حي عبر المملكة';
+
+            // Auto-persist in MySQL so the whole platform stays synced
+            p.query(
+              `UPDATE live_stream_settings 
+               SET status = 'LIVE', is_live = 1, banner_text = ?, hero_badge = ? 
+               WHERE id = 1 AND status = 'UPCOMING'`,
+              [bannerText, heroBadge]
+            ).catch((err) => console.warn('Auto live transition DB update warning:', err));
+          }
+        }
+
+        if (status === 'UPCOMING' && bannerText.includes('بث مباشر الآن')) {
           bannerText = '⏳ ترقبوا: انطلاق حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13';
-        } else if (r.status === 'ENDED' && (bannerText.includes('بث مباشر الآن') || bannerText.includes('ترقبوا'))) {
+        } else if (status === 'ENDED' && (bannerText.includes('بث مباشر الآن') || bannerText.includes('ترقبوا'))) {
           bannerText = '🎬 انتهى البث المباشر: يمكنك الآن مشاهدة التسجيل الكامل لوقائع حفل التدشين الرسمي';
-        } else if (r.status === 'LIVE' && (bannerText.includes('ترقبوا') || bannerText.includes('انتهى البث'))) {
+        } else if (status === 'LIVE' && (bannerText.includes('ترقبوا') || bannerText.includes('انتهى البث'))) {
           bannerText = '🔴 بث مباشر الآن: انطلاق وقائع حفل التدشين الرسمي لمنصة SA للسياحة وإطلاق شبكة فروع المملكة (13 فرعاً)';
         }
         const res: LiveStreamSettings = {
           id: r.id,
-          isLive: Boolean(r.isLive),
-          status: r.status || 'UPCOMING',
+          isLive,
+          status,
           title: r.title,
           subtitle: r.subtitle,
           scheduledAt: r.scheduledAt,
@@ -1423,13 +1446,22 @@ export async function getLiveSettings(): Promise<LiveStreamSettings> {
           bannerText,
           allowComments: Boolean(r.allowComments),
           viewerCount: Number(r.viewerCount) || 1420,
-          heroBadge: r.heroBadge,
+          heroBadge,
         };
         Object.assign(DEFAULT_LIVE_SETTINGS, res);
         return res;
       }
     } catch (e) {
       console.warn('MySQL getLiveSettings error, using fallback:', e);
+    }
+  }
+  if (DEFAULT_LIVE_SETTINGS.status === 'UPCOMING' && DEFAULT_LIVE_SETTINGS.scheduledAt) {
+    const scheduledTime = new Date(DEFAULT_LIVE_SETTINGS.scheduledAt).getTime();
+    if (!isNaN(scheduledTime) && Date.now() >= scheduledTime) {
+      DEFAULT_LIVE_SETTINGS.status = 'LIVE';
+      DEFAULT_LIVE_SETTINGS.isLive = true;
+      DEFAULT_LIVE_SETTINGS.bannerText = '🔴 بث مباشر الآن: انطلاق وقائع حفل التدشين الرسمي لمنصة SA للسياحة وإطلاق شبكة فروع المملكة (13 فرعاً)';
+      DEFAULT_LIVE_SETTINGS.heroBadge = 'بث مباشر حي عبر المملكة';
     }
   }
   return DEFAULT_LIVE_SETTINGS;

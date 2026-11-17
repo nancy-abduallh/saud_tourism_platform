@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Bell, Calendar, Check, Copy, Share2 } from 'lucide-react';
+import { Bell, Calendar, Check, Copy, Radio, Share2 } from 'lucide-react';
 
 interface LiveCountdownProps {
   targetDate: string;
@@ -47,6 +47,18 @@ export default function LiveCountdown({ targetDate, title }: LiveCountdownProps)
     return () => clearInterval(interval);
   }, [targetDate]);
 
+  // When timer hits zero, automatically refresh page to show LIVE stream
+  useEffect(() => {
+    if (timeLeft.isReady) {
+      const timer = setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          window.location.reload();
+        }
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [timeLeft.isReady]);
+
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
       navigator.clipboard.writeText(window.location.href);
@@ -76,6 +88,38 @@ export default function LiveCountdown({ targetDate, title }: LiveCountdownProps)
       'حفل التدشين الرسمي لمنصة SA للسياحة عبر الرابط: https://saudtourism.ksaplatforms.com/live'
     )}&location=${encodeURIComponent('المملكة العربية السعودية - بث مباشر')}`;
   };
+
+  // State when countdown reaches zero
+  if (timeLeft.isReady) {
+    return (
+      <div className="relative overflow-hidden rounded-3xl border border-red-500/50 bg-gradient-to-br from-navy-950 via-red-950/40 to-navy-900 p-8 sm:p-12 shadow-2xl text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-red-500/60 bg-red-500/20 px-4 py-1.5 text-xs font-black text-red-300 animate-pulse">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500" />
+          </span>
+          حان موعد انطلاق الحفل الرسمي الآن 🔴
+        </div>
+
+        <h3 className="mt-4 font-display text-2xl font-black text-white sm:text-4xl">
+          البث المباشر ينطلق الآن!
+        </h3>
+        <p className="mt-2 text-sm text-white/80 max-w-lg mx-auto leading-relaxed">
+          وصلنا بحمد الله إلى موعد حفل التدشين الرسمي لمنصة SA للسياحة وفروع المملكة الـ 13. جاري تحديث الشاشة لنقل البث المباشر فوراً...
+        </p>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-500 px-6 py-3 text-sm font-black text-white shadow-xl shadow-red-600/30 hover:scale-105 transition-all"
+          >
+            <span>انضم للبث المباشر الآن 🔴</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-gold-500/30 bg-gradient-to-br from-navy-900/90 via-navy-950 to-navy-900/90 p-6 sm:p-10 shadow-2xl backdrop-blur-xl text-center">
