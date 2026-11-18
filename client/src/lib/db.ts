@@ -964,6 +964,21 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         for (const r of rows) {
           map[r.setting_key] = r.setting_value ?? '';
         }
+        const isOldDefault =
+          !map.owner_message ||
+          map.owner_message.trim() === '' ||
+          map.owner_message.trim().startsWith('السياحة ليست مجرد رحلة');
+        const ownerMessage = isOldDefault ? DEFAULT_SETTINGS.ownerMessage : map.owner_message;
+
+        if (isOldDefault && p) {
+          p.query(
+            `INSERT INTO site_settings (setting_key, setting_value)
+             VALUES ('owner_message', ?)
+             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`,
+            [DEFAULT_SETTINGS.ownerMessage]
+          ).catch(() => {});
+        }
+
         return {
           instagramUrl: map.instagram_url ?? DEFAULT_SETTINGS.instagramUrl,
           twitterUrl: map.twitter_url ?? DEFAULT_SETTINGS.twitterUrl,
@@ -981,7 +996,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
           copyrightText: map.copyright_text ?? DEFAULT_SETTINGS.copyrightText,
           ownerName: map.owner_name ?? DEFAULT_SETTINGS.ownerName,
           ownerTitle: map.owner_title ?? DEFAULT_SETTINGS.ownerTitle,
-          ownerMessage: map.owner_message ?? DEFAULT_SETTINGS.ownerMessage,
+          ownerMessage,
           ownerImage: map.owner_image ?? DEFAULT_SETTINGS.ownerImage,
         };
       }

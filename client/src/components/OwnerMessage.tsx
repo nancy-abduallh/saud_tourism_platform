@@ -60,7 +60,7 @@ export default function OwnerMessage({ settings }: OwnerMessageProps) {
             transition={{ delay: 0.15 }}
             className="mt-3 text-sm text-gold-300/80 font-medium tracking-wide sm:text-base"
           >
-            {ownerTitle} والمؤسس لمنصة SA للسياحة
+            {ownerTitle} — الشركة السياحية (SA للسياحة)
           </motion.p>
         </div>
 
@@ -129,7 +129,7 @@ export default function OwnerMessage({ settings }: OwnerMessageProps) {
                             الأستاذ / {ownerName}
                           </h4>
                           <p className="text-xs font-bold text-gold-400 mt-0.5">
-                            {ownerTitle}
+                            {ownerTitle} — الشركة السياحية
                           </p>
                         </div>
                       </div>
@@ -150,7 +150,7 @@ export default function OwnerMessage({ settings }: OwnerMessageProps) {
                       <span className="font-bold text-white">{ownerName}</span>
                     </div>
                     <span className="rounded-md bg-gold-500/20 px-2 py-0.5 text-[11px] font-black text-gold-300">
-                      {ownerTitle}
+                      {ownerTitle} — الشركة السياحية
                     </span>
                   </div>
                 </div>
@@ -168,30 +168,129 @@ export default function OwnerMessage({ settings }: OwnerMessageProps) {
 
               {/* Editorial Paragraphs */}
               <div className="space-y-4 text-white/90 leading-relaxed font-sans text-sm sm:text-base lg:text-lg">
-                {paragraphs.map((para, i) => (
-                  <p
-                    key={i}
-                    className={
-                      i === 0
-                        ? 'font-medium text-white text-base sm:text-lg lg:text-xl leading-relaxed border-r-2 border-gold-500 pr-4'
-                        : i === paragraphs.length - 1
-                        ? 'font-bold text-gold-200 text-base sm:text-lg'
-                        : 'text-white/85 text-sm sm:text-base leading-loose'
-                    }
-                  >
-                    {para}
-                  </p>
-                ))}
+                {paragraphs.map((para, i) => {
+                  const hasBasmala = para.includes('بسم الله الرحمن الرحيم');
+                  const hasSalam = para.includes('السلام عليكم ورحمة الله وبركاته');
+                  const isIntro =
+                    para.includes('يسعدني ويشرفني') ||
+                    para.includes('اعرفكم بنفسي') ||
+                    para.includes('أعرفكم بنفسي');
+                  const isRoyalTribute =
+                    para.includes('خادم الحرمين') ||
+                    para.includes('سلمان بن عبدالعزيز') ||
+                    para.includes('محمد بن سلمان') ||
+                    para.includes('رؤية 2030');
+                  const isFarewell = para.trim() === 'والسلام عليكم ورحمة الله وبركاته';
+                  const isCallout = para.includes('السياحة ليست مجرد رحلة');
+                  const isWelcoming = para.includes('أرحب بكم');
+
+                  if (hasBasmala && hasSalam) {
+                    return (
+                      <div key={i} className="flex flex-col items-start gap-1 pb-3 border-b border-gold-500/20">
+                        <span className="font-display font-bold text-gold-400 text-base sm:text-lg tracking-wide">
+                          بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                        </span>
+                        <span className="text-white/85 font-medium text-xs sm:text-sm">
+                          السلام عليكم ورحمة الله وبركاته
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  if (hasBasmala) {
+                    return (
+                      <div key={i} className="font-display font-bold text-gold-400 text-base sm:text-lg tracking-wide pb-1">
+                        {para}
+                      </div>
+                    );
+                  }
+
+                  if (hasSalam && i <= 2) {
+                    return (
+                      <div key={i} className="text-white/85 font-medium text-xs sm:text-sm pb-2 border-b border-gold-500/20">
+                        {para}
+                      </div>
+                    );
+                  }
+
+                  if (isFarewell) {
+                    return (
+                      <div key={i} className="font-bold text-gold-300 text-sm sm:text-base pt-2">
+                        {para}
+                      </div>
+                    );
+                  }
+
+                  if (isIntro) {
+                    return (
+                      <div
+                        key={i}
+                        className="rounded-2xl border border-gold-500/35 bg-gradient-to-r from-gold-500/15 via-gold-500/5 to-transparent p-4 text-sm sm:text-base"
+                      >
+                        <p className="font-medium text-gold-200 leading-relaxed">
+                          {para}
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  if (isRoyalTribute) {
+                    return (
+                      <div
+                        key={i}
+                        className="relative overflow-hidden rounded-2xl border border-gold-500/40 bg-gradient-to-br from-navy-900/95 via-navy-950 to-navy-900/90 p-5 sm:p-6 shadow-xl backdrop-blur-md"
+                      >
+                        <div className="mb-3 flex items-center justify-between gap-2 border-b border-gold-500/20 pb-2.5">
+                          <div className="inline-flex items-center gap-2 text-xs font-bold text-gold-300">
+                            <ShieldCheck size={16} className="text-gold-400" />
+                            <span>في ظل القيادة الرشيدة ورؤية المملكة 2030</span>
+                          </div>
+                          <span className="rounded-full border border-emerald-500/40 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                            🇸🇦 وطن العطاء والنماء
+                          </span>
+                        </div>
+                        <p className="text-white/95 text-sm sm:text-base leading-loose font-normal">
+                          {para}
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  if (isCallout) {
+                    return (
+                      <p
+                        key={i}
+                        className="font-medium text-white text-base sm:text-lg lg:text-xl leading-relaxed border-r-2 border-gold-500 pr-4"
+                      >
+                        {para}
+                      </p>
+                    );
+                  }
+
+                  if (isWelcoming) {
+                    return (
+                      <p key={i} className="font-bold text-gold-200 text-base sm:text-lg pt-1">
+                        {para}
+                      </p>
+                    );
+                  }
+
+                  return (
+                    <p key={i} className="text-white/85 text-sm sm:text-base leading-loose">
+                      {para}
+                    </p>
+                  );
+                })}
               </div>
 
               {/* Signature & Official Accreditation Block */}
               <div className="pt-6 border-t border-gold-500/25 flex flex-wrap items-center justify-between gap-6">
                 <div>
                   <div className="font-display text-2xl font-black text-gold-gradient tracking-wide">
-                    {ownerName}
+                    أخوكم / {ownerName}
                   </div>
                   <div className="text-xs text-white/70 font-semibold mt-0.5">
-                    {ownerTitle} — SA للسياحة
+                    {ownerTitle} — الشركة السياحية
                   </div>
                 </div>
 
