@@ -19,6 +19,9 @@ const SnapchatIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
+const TOURISM_STARS_LINKTREE =
+  'https://linktr.ee/tourism.stars?utm_source=linktree_profile_share&ltsid=d2f8aaeb-a5c1-4f3a-8904-743f411c23b0';
+
 export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: SiteSettings }) {
   const currentSettings = settings || DEFAULT_SETTINGS;
   const [quickOpen, setQuickOpen] = useState(false);
@@ -33,27 +36,60 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
     { name: 'LinkedIn', href: currentSettings.linkedinUrl, icon: Linkedin },
   ].filter((s) => Boolean(s.href && s.href.trim() !== '' && s.href !== '#'));
 
+  const renderCopyright = () => {
+    const raw =
+      currentSettings.copyrightText ||
+      `© ${new Date().getFullYear()} جمعية نجوم السياحة. جميع الحقوق محفوظة.`;
+    const targetWords = ['جمعية نجوم السياحة', 'جمعية النجوم للسياحة'];
+    for (const word of targetWords) {
+      if (raw.includes(word)) {
+        const parts = raw.split(word);
+        return (
+          <span>
+            {parts[0]}
+            <a
+              href={TOURISM_STARS_LINKTREE}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-gold-400 transition hover:text-gold-300 hover:underline"
+            >
+              {word}
+            </a>
+            {parts.slice(1).join(word)}
+          </span>
+        );
+      }
+    }
+    return <span>{raw}</span>;
+  };
+
   return (
     <footer className="relative overflow-hidden bg-navy-950 text-white/80">
       <div className="absolute inset-0 bg-pattern opacity-40" />
       <div className="h-1 bg-gold-gradient" />
       <div className="container-x relative grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Link href="/" className="group inline-flex items-center gap-3.5 transition-transform hover:opacity-95">
+          <a
+            href={TOURISM_STARS_LINKTREE}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="رابط جمعية نجوم السياحة (Linktree)"
+            className="group inline-flex items-center gap-3.5 transition-transform hover:opacity-95"
+          >
             <img
               src="/footer-logo.png"
               alt="جمعية نجوم السياحة"
               className="h-16 w-16 rounded-full object-contain ring-2 ring-gold-400/50 shadow-lg shadow-black/40 transition-transform duration-300 group-hover:scale-105"
             />
             <div className="flex flex-col text-start leading-tight">
-              <span className="font-display text-xl font-black text-white sm:text-2xl">
+              <span className="font-display text-xl font-black text-white transition-colors group-hover:text-gold-300 sm:text-2xl">
                 جمعية نجوم السياحة
               </span>
               <span className="font-display text-[11px] font-semibold tracking-wider text-gold-400">
                 TOURISM STARS ASSOCIATION
               </span>
             </div>
-          </Link>
+          </a>
           <p className="mt-5 leading-7 text-white/60">
             {currentSettings.footerDescription || DEFAULT_SETTINGS.footerDescription}
           </p>
@@ -175,7 +211,7 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
         </div>
       </div>
       <div className="relative border-t border-white/10 py-5 text-center text-sm text-white/50">
-        {currentSettings.copyrightText || `© ${new Date().getFullYear()} جمعية نجوم السياحة. جميع الحقوق محفوظة.`}
+        {renderCopyright()}
       </div>
     </footer>
   );

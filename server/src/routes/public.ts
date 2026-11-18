@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { wrap } from '../lib/wrap';
+import { optionalAuth, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 export const VIP_ADDON_PRICE = 2500;
@@ -38,6 +39,20 @@ router.get('/hero', wrap(async (_req, res) => {
 
 router.get('/destinations', wrap(async (_req, res) => {
   res.json(await prisma.destination.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }));
+}));
+
+router.get('/destinations/:slug', wrap(async (req, res) => {
+  const destination = await prisma.destination.findFirst({
+    where: { slug: req.params.slug, isActive: true },
+    include: {
+      packages: {
+        where: { isActive: true },
+        orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+      },
+    },
+  });
+  if (!destination) return res.status(404).json({ message: 'الوجهة غير موجودة' });
+  res.json(destination);
 }));
 
 router.get('/services', wrap(async (_req, res) => {
@@ -107,6 +122,90 @@ router.post('/bookings', wrap(async (req, res) => {
   await prisma.booking.create({ data: { ...data, notes: data.notes || null, totalSar, reference } });
   res.status(201).json({ reference, total: totalSar });
 }));
+
+router.get(
+  '/bookings/my',
+  optionalAuth,
+  wrap(async (req: AuthRequest, res) => {
+    let email = typeof req.query.email === 'string' ? req.query.email.trim() : undefined;
+    if (req.user?.id) {
+      const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+      if (user?.email) email = user.email;
+    }
+    if (!email) {
+      return res.status(400).json({ message: 'يرجى تسجيل الدخول أو تمرير البريد الإلكتروني' });
+    }
+
+    const status = typeof req.query.status === 'string' ? req.query.status : undefined;
+
+    const bookings = await prisma.booking.findMany({
+      where: {
+        email,
+        ...(status ? { status: status as any } : {}),
+      },
+      include: {
+        package: {
+          select: {
+            id: true,
+            title: true,
+            titleEn: true,
+            slug: true,
+            coverImage: true,
+            days: true,
+            nights: true,
+            destination: { select: { id: true, name: true, nameEn: true, slug: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(bookings);
+  }),
+);
+
+router.get(
+  '/bookings/lookup/:reference',
+  wrap(async (req, res) => {
+    const booking = await prisma.booking.findUnique({
+      where: { reference: req.params.reference },
+      include: {
+        package: {
+          include: {
+            destination: { select: { id: true, name: true, nameEn: true, slug: true } },
+          },
+        },
+      },
+    });
+    if (!booking) return res.status(404).json({ message: 'الحجز غير موجود' });
+    res.json(booking);
+  }),
+);
+
+router.post(
+  '/bookings/:reference/cancel',
+  optionalAuth,
+  wrap(async (req, res) => {
+    const booking = await prisma.booking.findUnique({
+      where: { reference: req.params.reference },
+    });
+    if (!booking) return res.status(404).json({ message: 'الحجز غير موجود' });
+
+    if (booking.status !== 'PENDING') {
+      return res.status(400).json({
+        message: 'لا يمكن إلغاء الحجز إلا عندما تكون حالته معلقة (قيد المراجعة)',
+      });
+    }
+
+    const updated = await prisma.booking.update({
+      where: { reference: req.params.reference },
+      data: { status: 'CANCELLED' },
+      include: { package: { select: { title: true } } },
+    });
+
+    res.json({ ok: true, booking: updated, message: 'تم إلغاء الحجز بنجاح' });
+  }),
+);
 
 router.post('/contact', wrap(async (req, res) => {
   const data = z.object({
