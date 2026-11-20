@@ -235,12 +235,42 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
   },
 ];
 
+function getItemHref(item: PlannerItem): string {
+  if (item.id.startsWith('red-sea')) return '/packages?destination=red-sea';
+  if (item.id.startsWith('farasan')) return '/packages?destination=jazan';
+  if (item.id.startsWith('haql') || item.id.startsWith('disah')) return '/packages?destination=tabuk';
+  if (item.id.startsWith('jeddah')) return '/packages?destination=jeddah';
+  if (item.id.startsWith('asir') || item.id.startsWith('rijal-alma')) return '/packages?destination=asir';
+  if (item.id.startsWith('taif')) return '/packages?destination=taif';
+  if (item.id.startsWith('qassim')) return '/packages?destination=qassim';
+  if (item.id.startsWith('diriyah')) return '/packages?destination=diriyah';
+  if (item.id.startsWith('tuwaiq')) return '/packages?destination=tuwaiq';
+  if (item.id.startsWith('hegra')) return '/packages?destination=alula';
+  if (item.id.startsWith('hail') || item.id.startsWith('desert')) return '/packages?destination=hail';
+  if (item.id.startsWith('kharj')) return '/packages?destination=kharj';
+  if (item.id.startsWith('makkah') || item.id.startsWith('madinah')) return '/packages?destination=makkah';
+  return '/packages';
+}
+
 export default function QuickTripPlanner({ categories }: { categories?: TripPlannerCategory[] }) {
   const displayCategories = categories && categories.length > 0 ? categories : CATEGORIES;
   const [activeTab, setActiveTab] = useState(displayCategories[0]?.id || 'beach');
 
   const activeCategory =
     displayCategories.find((c) => c.id === activeTab) || displayCategories[0];
+
+  const categoryHeaderHref =
+    activeCategory?.id === 'beach'
+      ? '/packages?destination=red-sea'
+      : activeCategory?.id === 'nature'
+      ? '/packages?destination=asir'
+      : activeCategory?.id === 'heritage'
+      ? '/packages?destination=diriyah'
+      : activeCategory?.id === 'safari'
+      ? '/packages?destination=tuwaiq'
+      : activeCategory?.id === 'spiritual'
+      ? '/packages?category=UMRAH'
+      : '/packages';
 
   return (
     <section className="relative overflow-hidden bg-white py-16 sm:py-20 text-navy-950 border-t border-slate-200">
@@ -261,7 +291,7 @@ export default function QuickTripPlanner({ categories }: { categories?: TripPlan
           </div>
 
           <Link
-            href="/packages"
+            href={categoryHeaderHref}
             className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-700 hover:text-gold-800 transition-colors group"
           >
             <span>استكشف باقات {activeCategory?.label || ''}</span>
@@ -304,7 +334,7 @@ export default function QuickTripPlanner({ categories }: { categories?: TripPlan
             {activeCategory.items.map((item) => (
               <Link
                 key={item.id}
-                href="/packages"
+                href={getItemHref(item)}
                 className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-1.5 hover:border-gold-500/50 hover:shadow-xl"
               >
                 {/* Image */}

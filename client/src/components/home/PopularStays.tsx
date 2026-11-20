@@ -102,7 +102,15 @@ export default function PopularStays({ stays }: { stays?: PopularStayItem[] }) {
               transition={{ delay: idx * 0.1 }}
             >
               <Link
-                href="/packages"
+                href={
+                  stay.id === 1
+                    ? '/packages?destination=alula'
+                    : stay.id === 2
+                    ? '/packages?destination=red-sea'
+                    : stay.id === 3
+                    ? '/packages?destination=asir'
+                    : '/packages?destination=diriyah'
+                }
                 className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:border-gold-500/50 hover:shadow-xl"
               >
                 {/* Image */}

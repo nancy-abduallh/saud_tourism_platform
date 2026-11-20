@@ -87,7 +87,7 @@ const packagesJsonLd = {
 export default async function PackagesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ destination?: string; category?: string; guests?: string; date?: string }>;
+  searchParams: Promise<{ destination?: string; category?: string; guests?: string; date?: string; type?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
   const [packages, destinations] = await Promise.all([
@@ -126,6 +126,7 @@ export default async function PackagesPage({
           category: resolvedSearchParams.category,
           guests: Number(resolvedSearchParams.guests) || undefined,
           date: resolvedSearchParams.date,
+          type: resolvedSearchParams.type,
         }}
       />
     </>

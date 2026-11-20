@@ -53,7 +53,12 @@ export async function serverFetch<T>(path: string, fallback: T): Promise<T> {
       const destination = url.searchParams.get('destination') || undefined;
       const featured = url.searchParams.get('featured') === '1';
       const limit = url.searchParams.get('limit') ? Number(url.searchParams.get('limit')) : undefined;
-      return (await getPackages({ destination, featuredOnly: featured, limit })) as unknown as T;
+      const exclude = url.searchParams.get('exclude') ? Number(url.searchParams.get('exclude')) : undefined;
+      let pkgs = await getPackages({ destination, featuredOnly: featured, limit });
+      if (exclude) {
+        pkgs = pkgs.filter((p) => p.id !== exclude);
+      }
+      return pkgs as unknown as T;
     }
   } catch (err) {
     console.warn(`Error resolving ${path} internally:`, err);

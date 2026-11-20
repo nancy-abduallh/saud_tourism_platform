@@ -205,7 +205,17 @@ export async function getPackages(filter?: { destination?: string; featuredOnly?
 
   let list = DEFAULT_PACKAGES;
   if (filter?.destination) {
-    list = list.filter((pkg) => pkg.destination.slug === filter.destination);
+    if (filter.destination === 'riyadh') {
+      list = list.filter(
+        (pkg) =>
+          pkg.destination.slug === 'tuwaiq' ||
+          pkg.destination.slug === 'diriyah' ||
+          pkg.destination.slug === 'riyadh' ||
+          pkg.title.includes('الرياض')
+      );
+    } else {
+      list = list.filter((pkg) => pkg.destination.slug === filter.destination);
+    }
   }
   if (filter?.featuredOnly) {
     list = list.filter((pkg) => pkg.isFeatured);

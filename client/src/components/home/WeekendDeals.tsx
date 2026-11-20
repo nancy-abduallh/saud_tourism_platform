@@ -199,7 +199,15 @@ export default function WeekendDeals({ deals }: { deals?: WeekendDealItem[] }) {
                     </div>
 
                     <Link
-                      href="/packages"
+                      href={
+                        deal.id === 1
+                          ? '/packages?destination=alula'
+                          : deal.id === 2
+                          ? '/packages?destination=asir'
+                          : deal.id === 3
+                          ? '/packages?destination=red-sea'
+                          : '/packages?destination=diriyah'
+                      }
                       className="inline-flex items-center gap-1 rounded-xl bg-gold-gradient px-4 py-2 text-xs font-black text-navy-950 shadow-gold transition-transform hover:scale-105"
                     >
                       <span>احجز الآن</span>
