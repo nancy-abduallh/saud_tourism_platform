@@ -4,6 +4,7 @@ import {
   DEFAULT_BRANCHES,
   DEFAULT_CONGRATULATIONS,
   DEFAULT_DESTINATIONS,
+  DEFAULT_HOME_SECTIONS_DATA,
   DEFAULT_LIVE_SETTINGS,
   DEFAULT_PACKAGES,
   DEFAULT_REVIEWS,
@@ -12,7 +13,7 @@ import {
   DEFAULT_SLIDES,
   DEFAULT_STATS,
 } from './default-data';
-import type { Branch, Destination, HeroSlide, LiveAgendaItem, LiveCongratulation, LiveStreamSettings, LiveStreamStatus, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
+import type { Branch, Destination, HeroSlide, HomeSectionsData, LiveAgendaItem, LiveCongratulation, LiveStreamSettings, LiveStreamStatus, PackageDetail, PackageSummary, PublicStats, Review, SiteSettings, VipService } from './types';
 import { parseScheduledDate } from './date-utils';
 
 let pool: mysql.Pool | null = null;
@@ -1057,6 +1058,89 @@ export async function updateSiteSettings(settings: Partial<SiteSettings>): Promi
     }
   }
   return getSiteSettings();
+}
+
+/* ==========================================================================
+   HOMEPAGE SECTIONS CONFIGURATION (إدارة أقسام الصفحة الرئيسية)
+   ========================================================================== */
+
+export async function getHomeSectionsData(): Promise<HomeSectionsData> {
+  const p = getPool();
+  if (p) {
+    try {
+      await p.query(`
+        CREATE TABLE IF NOT EXISTS site_settings (
+          setting_key VARCHAR(80) NOT NULL PRIMARY KEY,
+          setting_value LONGTEXT NULL,
+          updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+
+      const [rows] = await p.query<any[]>(
+        "SELECT setting_value FROM site_settings WHERE setting_key = 'home_sections_config'"
+      );
+      if (rows && rows.length > 0 && rows[0].setting_value) {
+        try {
+          const parsed = JSON.parse(rows[0].setting_value);
+          return {
+            visibility: { ...DEFAULT_HOME_SECTIONS_DATA.visibility, ...(parsed.visibility || {}) },
+            valueProps: Array.isArray(parsed.valueProps) ? parsed.valueProps : DEFAULT_HOME_SECTIONS_DATA.valueProps,
+            stayTypes: Array.isArray(parsed.stayTypes) ? parsed.stayTypes : DEFAULT_HOME_SECTIONS_DATA.stayTypes,
+            exploreCities: Array.isArray(parsed.exploreCities) ? parsed.exploreCities : DEFAULT_HOME_SECTIONS_DATA.exploreCities,
+            weekendDeals: Array.isArray(parsed.weekendDeals) ? parsed.weekendDeals : DEFAULT_HOME_SECTIONS_DATA.weekendDeals,
+            popularStays: Array.isArray(parsed.popularStays) ? parsed.popularStays : DEFAULT_HOME_SECTIONS_DATA.popularStays,
+            tripPlanner: Array.isArray(parsed.tripPlanner) ? parsed.tripPlanner : DEFAULT_HOME_SECTIONS_DATA.tripPlanner,
+            travelRoutes: Array.isArray(parsed.travelRoutes) ? parsed.travelRoutes : DEFAULT_HOME_SECTIONS_DATA.travelRoutes,
+            vipBanner: { ...DEFAULT_HOME_SECTIONS_DATA.vipBanner, ...(parsed.vipBanner || {}) },
+          };
+        } catch (jsonErr) {
+          console.warn('Failed to parse home_sections_config JSON, falling back:', jsonErr);
+        }
+      }
+    } catch (e) {
+      console.warn('MySQL getHomeSectionsData error, using fallback:', e);
+    }
+  }
+  return DEFAULT_HOME_SECTIONS_DATA;
+}
+
+export async function updateHomeSectionsData(data: Partial<HomeSectionsData>): Promise<HomeSectionsData> {
+  const current = await getHomeSectionsData();
+  const merged: HomeSectionsData = {
+    visibility: { ...current.visibility, ...(data.visibility || {}) },
+    valueProps: data.valueProps || current.valueProps,
+    stayTypes: data.stayTypes || current.stayTypes,
+    exploreCities: data.exploreCities || current.exploreCities,
+    weekendDeals: data.weekendDeals || current.weekendDeals,
+    popularStays: data.popularStays || current.popularStays,
+    tripPlanner: data.tripPlanner || current.tripPlanner,
+    travelRoutes: data.travelRoutes || current.travelRoutes,
+    vipBanner: { ...current.vipBanner, ...(data.vipBanner || {}) },
+  };
+
+  const p = getPool();
+  if (p) {
+    try {
+      await p.query(`
+        CREATE TABLE IF NOT EXISTS site_settings (
+          setting_key VARCHAR(80) NOT NULL PRIMARY KEY,
+          setting_value LONGTEXT NULL,
+          updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+
+      await p.query(
+        `INSERT INTO site_settings (setting_key, setting_value)
+         VALUES ('home_sections_config', ?)
+         ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`,
+        [JSON.stringify(merged)]
+      );
+    } catch (e) {
+      console.error('MySQL updateHomeSectionsData error:', e);
+      throw new Error('فشل حفظ إعدادات أقسام الصفحة الرئيسية');
+    }
+  }
+  return merged;
 }
 
 /* ==========================================================================

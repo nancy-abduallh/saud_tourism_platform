@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Award, Castle, Heart, MapPin, Sparkles, Star, Trees } from 'lucide-react';
+import type { PopularStayItem } from '@/lib/types';
 
 const POPULAR_STAYS = [
   {
@@ -60,7 +61,9 @@ const POPULAR_STAYS = [
   },
 ];
 
-export default function PopularStays() {
+export default function PopularStays({ stays }: { stays?: PopularStayItem[] }) {
+  const displayStays = stays && stays.length > 0 ? stays : POPULAR_STAYS;
+
   return (
     <section className="relative overflow-hidden bg-white py-16 sm:py-20 text-navy-950 border-t border-slate-200">
       <div className="container-x relative">
@@ -90,7 +93,7 @@ export default function PopularStays() {
 
         {/* 4 Cards */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {POPULAR_STAYS.map((stay, idx) => (
+          {displayStays.map((stay, idx) => (
             <motion.div
               key={stay.id}
               initial={{ opacity: 0, y: 20 }}

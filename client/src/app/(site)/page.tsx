@@ -21,7 +21,7 @@ import PopularStays from '@/components/home/PopularStays';
 import VipClubBanner from '@/components/home/VipClubBanner';
 import TravelRoutes from '@/components/home/TravelRoutes';
 import { serverFetch } from '@/lib/api';
-import { getBranches, getSiteSettings } from '@/lib/db';
+import { getBranches, getHomeSectionsData, getSiteSettings } from '@/lib/db';
 import type { Destination, HeroSlide, PackageSummary, PublicStats, Review, VipService } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -72,7 +72,7 @@ const homeJsonLd = {
 };
 
 export default async function HomePage() {
-  const [slides, destinations, packages, services, reviews, stats, branches, settings] = await Promise.all([
+  const [slides, destinations, packages, services, reviews, stats, branches, settings, sectionsData] = await Promise.all([
     serverFetch<HeroSlide[]>('/hero', []),
     serverFetch<Destination[]>('/destinations', []),
     serverFetch<PackageSummary[]>('/packages?featured=1&limit=6', []),
@@ -81,7 +81,10 @@ export default async function HomePage() {
     serverFetch<PublicStats | undefined>('/stats', undefined),
     getBranches(),
     getSiteSettings(),
+    getHomeSectionsData(),
   ]);
+
+  const vis = sectionsData.visibility;
 
   const marqueeItems = [
     ...destinations.map((d) => d.name),
@@ -100,26 +103,26 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
       />
-      <HeroSlider slides={slides} destinations={destinations} />
-      <BookingValueProps />
-      <StayTypes />
-      <TrendingDestinations />
-      <ExploreCities />
-      <Marquee items={marqueeItems} />
-      <QuickTripPlanner />
-      <WeekendDeals />
-      <FeaturedPackages packages={packages} />
-      <PopularStays />
-      <VipClubBanner />
-      <Stats data={stats} />
-      <VipServices services={services} />
-      <OwnerMessage settings={settings} />
-      <BranchesHomeSection branches={branches} />
-      <TravelRoutes />
-      <WhyUs />
-      <HowItWorks />
-      <Testimonials reviews={reviews} />
-      <CtaBanner />
+      {vis.hero !== false && <HeroSlider slides={slides} destinations={destinations} />}
+      {vis.valueProps !== false && <BookingValueProps items={sectionsData.valueProps} />}
+      {vis.stayTypes !== false && <StayTypes items={sectionsData.stayTypes} />}
+      {vis.trendingDestinations !== false && <TrendingDestinations />}
+      {vis.exploreCities !== false && <ExploreCities items={sectionsData.exploreCities} />}
+      {vis.marquee !== false && <Marquee items={marqueeItems} />}
+      {vis.quickTripPlanner !== false && <QuickTripPlanner categories={sectionsData.tripPlanner} />}
+      {vis.weekendDeals !== false && <WeekendDeals deals={sectionsData.weekendDeals} />}
+      {vis.featuredPackages !== false && <FeaturedPackages packages={packages} />}
+      {vis.popularStays !== false && <PopularStays stays={sectionsData.popularStays} />}
+      {vis.vipClubBanner !== false && <VipClubBanner config={sectionsData.vipBanner} />}
+      {vis.stats !== false && <Stats data={stats} />}
+      {vis.vipServices !== false && <VipServices services={services} />}
+      {vis.ownerMessage !== false && <OwnerMessage settings={settings} />}
+      {vis.branches !== false && <BranchesHomeSection branches={branches} />}
+      {vis.travelRoutes !== false && <TravelRoutes departures={sectionsData.travelRoutes} />}
+      {vis.whyUs !== false && <WhyUs />}
+      {vis.howItWorks !== false && <HowItWorks />}
+      {vis.testimonials !== false && <Testimonials reviews={reviews} />}
+      {vis.ctaBanner !== false && <CtaBanner />}
     </>
   );
 }

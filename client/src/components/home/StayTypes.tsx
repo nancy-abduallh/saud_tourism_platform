@@ -4,6 +4,17 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { BedDouble, Building, Castle, Compass, Sparkles, Tent, Trees } from 'lucide-react';
+import type { StayTypeItem } from '@/lib/types';
+
+const ICON_MAP: Record<string, any> = {
+  Castle,
+  Tent,
+  Building,
+  Trees,
+  BedDouble,
+  Compass,
+  Sparkles,
+};
 
 const STAY_TYPES = [
   {
@@ -44,7 +55,9 @@ const STAY_TYPES = [
   },
 ];
 
-export default function StayTypes() {
+export default function StayTypes({ items }: { items?: StayTypeItem[] }) {
+  const displayItems = items && items.length > 0 ? items : STAY_TYPES;
+
   return (
     <section className="relative overflow-hidden bg-white py-16 sm:py-20 text-navy-950">
       {/* Background Subtle Glow */}
@@ -78,8 +91,8 @@ export default function StayTypes() {
 
         {/* 4 Responsive Cards */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {STAY_TYPES.map((stay, idx) => {
-            const Icon = stay.icon;
+          {displayItems.map((stay: any, idx: number) => {
+            const Icon = typeof stay.icon === 'string' ? (ICON_MAP[stay.icon] || Castle) : stay.icon;
             return (
               <motion.div
                 key={idx}

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Flame, Heart, MapPin, ShieldCheck, Sparkles, Star, Tag } from 'lucide-react';
+import type { WeekendDealItem } from '@/lib/types';
 
 const WEEKEND_DEALS = [
   {
@@ -68,8 +69,9 @@ const WEEKEND_DEALS = [
   },
 ];
 
-export default function WeekendDeals() {
+export default function WeekendDeals({ deals }: { deals?: WeekendDealItem[] }) {
   const [favorites, setFavorites] = useState<Record<number, boolean>>({});
+  const displayDeals = deals && deals.length > 0 ? deals : WEEKEND_DEALS;
 
   const toggleFavorite = (e: React.MouseEvent, id: number) => {
     e.preventDefault();
@@ -108,7 +110,7 @@ export default function WeekendDeals() {
 
         {/* 4 Cards Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {WEEKEND_DEALS.map((deal, idx) => (
+          {displayDeals.map((deal, idx) => (
             <motion.div
               key={deal.id}
               initial={{ opacity: 0, y: 20 }}

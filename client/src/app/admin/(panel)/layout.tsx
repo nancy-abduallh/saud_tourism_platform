@@ -2,12 +2,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Building2, CalendarCheck, ConciergeBell, Images, LayoutDashboard, LogOut, MapPin, Mail, Menu, Package, Radio, Share2, Star, X } from 'lucide-react';
+import { Building2, CalendarCheck, ConciergeBell, Images, LayoutDashboard, LayoutGrid, LogOut, MapPin, Mail, Menu, Package, Radio, Share2, Star, X } from 'lucide-react';
 import clsx from 'clsx';
 
 const nav = [
   { href: '/admin', label: 'لوحة التحكم', icon: LayoutDashboard },
   { href: '/admin/live', label: 'بث التدشين المباشر 🔴', icon: Radio },
+  { href: '/admin/sections', label: 'أقسام وتجارب الرئيسية ✦', icon: LayoutGrid },
   { href: '/admin/packages', label: 'الباقات', icon: Package },
   { href: '/admin/destinations', label: 'الوجهات', icon: MapPin },
   { href: '/admin/branches', label: 'فروع الجمعية (13)', icon: Building2 },

@@ -4,8 +4,17 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Award, CheckCircle2, Crown, Gift, ShieldCheck, Sparkles, Star } from 'lucide-react';
+import type { VipBannerConfig } from '@/lib/types';
 
-export default function VipClubBanner() {
+export default function VipClubBanner({ config }: { config?: VipBannerConfig }) {
+  const title = config?.title || 'سافر أكثر، واستمتع بمزايا فندقية وحصرية لا تضاهى';
+  const subtitle =
+    config?.subtitle ||
+    'انضم مجاناً إلى برنامج النخبة لنادي النجوم للسياحة واستفد فوراً من خصومات تبدأ من 10% إلى 20% على كافة حجوزاتك، مع ترقية مجانية للفلل والأجنحة، وخدمة كونسيرج واستقبال خاص بسيارات Range Rover الفارهة.';
+  const badge = config?.badge || 'برنامج الولاء ونادي النخبة';
+  const ctaText = config?.ctaText || 'انضم لنادي النجوم مجاناً الآن';
+  const ctaLink = config?.ctaLink || '/contact';
+
   return (
     <section className="relative overflow-hidden bg-navy-950 py-12 sm:py-16 text-white border-y border-white/5">
       <div className="container-x relative">
@@ -44,13 +53,13 @@ export default function VipClubBanner() {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-3.5 py-1 text-xs font-bold text-gold-300">
                   <Sparkles size={13} className="text-gold-400" />
-                  <span>برنامج الولاء ونادي النخبة</span>
+                  <span>{badge}</span>
                 </div>
                 <h3 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight">
-                  سافر أكثر، واستمتع بمزايا فندقية وحصرية لا تضاهى
+                  {title}
                 </h3>
                 <p className="mt-2 text-xs sm:text-sm text-white/80 leading-relaxed max-w-3xl">
-                  انضم مجاناً إلى برنامج النخبة لنادي النجوم للسياحة واستفد فوراً من خصومات تبدأ من 10% إلى 20% على كافة حجوزاتك، مع ترقية مجانية للفلل والأجنحة، وخدمة كونسيرج واستقبال خاص بسيارات Range Rover الفارهة.
+                  {subtitle}
                 </p>
               </div>
 
@@ -78,11 +87,11 @@ export default function VipClubBanner() {
               {/* Buttons */}
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <Link
-                  href="/contact"
+                  href={ctaLink}
                   className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-6 py-3 text-xs font-black text-navy-950 shadow-gold transition-all hover:scale-105"
                 >
                   <Sparkles size={14} />
-                  <span>انضم لنادي النجوم مجاناً الآن</span>
+                  <span>{ctaText}</span>
                 </Link>
 
                 <Link

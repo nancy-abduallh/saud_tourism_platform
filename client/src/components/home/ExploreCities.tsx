@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Building2, Compass, MapPin, Sparkles } from 'lucide-react';
+import type { ExploreCityItem } from '@/lib/types';
 
 const CITIES = [
   {
@@ -50,13 +51,15 @@ const CITIES = [
     name: 'جازان',
     title: 'جزر فرسان وأرخبيل المرجان',
     count: '11 باقة وتجربة',
-    image: '/images/pkg-5.jpg',
+    image: '/images/red-sea.jpg',
     href: '/packages?destination=jazan',
     badge: 'جزر فيروزية',
   },
 ];
 
-export default function ExploreCities() {
+export default function ExploreCities({ items }: { items?: ExploreCityItem[] }) {
+  const displayCities = items && items.length > 0 ? items : CITIES;
+
   return (
     <section className="relative overflow-hidden bg-slate-50/80 py-14 sm:py-16 text-navy-950 border-t border-slate-200/80">
       <div className="container-x relative">
@@ -86,7 +89,7 @@ export default function ExploreCities() {
 
         {/* 6 Responsive Grid Cards */}
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-          {CITIES.map((city, idx) => (
+          {displayCities.map((city, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 15 }}

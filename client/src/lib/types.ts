@@ -114,3 +114,147 @@ export interface LiveAgendaItem {
   description: string;
   sortOrder: number;
 }
+
+/* ==========================================================================
+   HOMEPAGE SECTIONS CONFIGURATION & MANAGEMENT
+   ========================================================================== */
+
+export interface HomeSectionsVisibility {
+  hero: boolean;
+  valueProps: boolean;
+  stayTypes: boolean;
+  trendingDestinations: boolean;
+  exploreCities: boolean;
+  marquee: boolean;
+  quickTripPlanner: boolean;
+  weekendDeals: boolean;
+  featuredPackages: boolean;
+  popularStays: boolean;
+  vipClubBanner: boolean;
+  stats: boolean;
+  vipServices: boolean;
+  ownerMessage: boolean;
+  branches: boolean;
+  travelRoutes: boolean;
+  whyUs: boolean;
+  howItWorks: boolean;
+  testimonials: boolean;
+  ctaBanner: boolean;
+}
+
+export interface ValuePropItem {
+  id: string;
+  title: string;
+  description: string;
+  badge: string;
+  color: string;
+  icon: string;
+}
+
+export interface StayTypeItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  count: string;
+  image: string;
+  href: string;
+  badge: string;
+  icon: string;
+}
+
+export interface ExploreCityItem {
+  id: string;
+  name: string;
+  title: string;
+  count: string;
+  image: string;
+  href: string;
+  badge: string;
+}
+
+export interface WeekendDealItem {
+  id: number;
+  title: string;
+  destination: string;
+  duration: string;
+  originalPrice: string;
+  dealPrice: string;
+  discount: string;
+  rating: string;
+  ratingLabel: string;
+  reviewsCount: string;
+  image: string;
+  features: string[];
+  badge: string;
+}
+
+export interface PopularStayItem {
+  id: number;
+  name: string;
+  city: string;
+  region: string;
+  rating: string;
+  ratingLabel: string;
+  reviewsCount: string;
+  price: string;
+  image: string;
+  badge: string;
+  highlights: string;
+}
+
+export interface TripPlannerItem {
+  id: string;
+  name: string;
+  region: string;
+  travelTime: string;
+  priceFrom: string;
+  image: string;
+  rating: string;
+  badge: string;
+}
+
+export interface TripPlannerCategory {
+  id: string;
+  label: string;
+  icon: string;
+  items: TripPlannerItem[];
+}
+
+export interface RouteItem {
+  to: string;
+  type: string;
+  duration: string;
+  priceFrom: string;
+  icon: string;
+  badge: string;
+  slug: string;
+}
+
+export interface TravelRouteDeparture {
+  city: string;
+  label: string;
+  routes: RouteItem[];
+}
+
+export interface VipBannerConfig {
+  badge: string;
+  title: string;
+  subtitle: string;
+  perks: { title: string; desc: string }[];
+  ctaText: string;
+  ctaLink: string;
+  secondaryCtaText: string;
+  secondaryCtaLink: string;
+}
+
+export interface HomeSectionsData {
+  visibility: HomeSectionsVisibility;
+  valueProps: ValuePropItem[];
+  stayTypes: StayTypeItem[];
+  exploreCities: ExploreCityItem[];
+  weekendDeals: WeekendDealItem[];
+  popularStays: PopularStayItem[];
+  tripPlanner: TripPlannerCategory[];
+  travelRoutes: TravelRouteDeparture[];
+  vipBanner: VipBannerConfig;
+}

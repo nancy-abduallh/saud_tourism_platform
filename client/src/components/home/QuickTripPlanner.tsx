@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, MapPin, Plane, Sparkles, Tag, Timer } from 'lucide-react';
+import type { TripPlannerCategory } from '@/lib/types';
 
 interface PlannerItem {
   id: string;
@@ -38,7 +39,7 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
         region: 'جازان',
         travelTime: 'طيران + عبارة فاخرة ساعتان',
         priceFrom: '2,200 ر.س',
-        image: '/images/pkg-5.jpg',
+        image: '/images/red-sea.jpg',
         rating: '4.8 ★',
         badge: 'محمية بحرية',
       },
@@ -48,7 +49,7 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
         region: 'تبوك',
         travelTime: 'طيران إلى تبوك ساعتان',
         priceFrom: '1,950 ر.س',
-        image: '/images/hero-2.jpg',
+        image: '/images/hero-3.jpg',
         rating: '4.9 ★',
         badge: 'سفينة جورجيوس الغارقة',
       },
@@ -58,7 +59,7 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
         region: 'جدة',
         travelTime: 'طيران 1 س و 30 د من الرياض',
         priceFrom: '2,400 ر.س',
-        image: '/images/pkg-3.jpg',
+        image: '/images/hero-3.jpg',
         rating: '4.8 ★',
         badge: 'إبحار وغروب VIP',
       },
@@ -142,7 +143,7 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
         region: 'عسير',
         travelTime: '45 دقيقة من مطار أبها',
         priceFrom: '1,650 ر.س',
-        image: '/images/pkg-6.jpg',
+        image: '/images/asir.jpg',
         rating: '4.9 ★',
         badge: 'عمارة عسيرية فريدة',
       },
@@ -216,7 +217,7 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
         region: 'مكة المكرمة',
         travelTime: 'قطار الحرمين من مطار جدة 35 د',
         priceFrom: '3,500 ر.س',
-        image: '/images/pkg-2.jpg',
+        image: '/images/pkg-5.jpg',
         rating: '5.0 ★',
         badge: 'أبراج الساعة وأجنحة VIP',
       },
@@ -226,7 +227,7 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
         region: 'المدينة المنورة',
         travelTime: 'طيران مباشر إلى مطار الأمير محمد',
         priceFrom: '2,800 ر.س',
-        image: '/images/gallery-1.jpg',
+        image: '/images/pkg-5.jpg',
         rating: '5.0 ★',
         badge: 'روحانية وضيافة متكاملة',
       },
@@ -234,11 +235,12 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
   },
 ];
 
-export default function QuickTripPlanner() {
-  const [activeTab, setActiveTab] = useState('beach');
+export default function QuickTripPlanner({ categories }: { categories?: TripPlannerCategory[] }) {
+  const displayCategories = categories && categories.length > 0 ? categories : CATEGORIES;
+  const [activeTab, setActiveTab] = useState(displayCategories[0]?.id || 'beach');
 
   const activeCategory =
-    CATEGORIES.find((c) => c.id === activeTab) || CATEGORIES[0];
+    displayCategories.find((c) => c.id === activeTab) || displayCategories[0];
 
   return (
     <section className="relative overflow-hidden bg-white py-16 sm:py-20 text-navy-950 border-t border-slate-200">
@@ -262,14 +264,14 @@ export default function QuickTripPlanner() {
             href="/packages"
             className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-700 hover:text-gold-800 transition-colors group"
           >
-            <span>استكشف باقات {activeCategory.label}</span>
+            <span>استكشف باقات {activeCategory?.label || ''}</span>
             <span className="transition-transform group-hover:-translate-x-1">←</span>
           </Link>
         </div>
 
         {/* Scrollable Horizontal Tabs */}
         <div className="mb-8 flex gap-2.5 overflow-x-auto pb-2 scrollbar-none">
-          {CATEGORIES.map((cat) => {
+          {displayCategories.map((cat) => {
             const isActive = cat.id === activeTab;
             return (
               <button

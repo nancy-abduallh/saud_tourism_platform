@@ -8,9 +8,9 @@ import { Building2, Compass, Flame, MapPin, Sparkles, Star } from 'lucide-react'
 const TRENDING_TOP = [
   {
     name: 'الرياض',
-    subtitle: 'عاصمة الفعاليات العالمية، قصر الملك عبدالعزيز، والدرعية التاريخية',
+    subtitle: 'عاصمة الفعاليات العالمية، حافة العالم، ومطل طويق الأسطوري',
     tag: '24 تجربة وباقة فاخرة',
-    image: '/images/gallery-1.jpg',
+    image: '/images/tuwaiq-edge.jpg',
     href: '/packages?destination=riyadh',
     rating: '4.9 ★',
     popularBadge: 'الأكثر زيارة هذا الموسم',

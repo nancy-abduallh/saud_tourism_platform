@@ -3,6 +3,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, Clock, Headphones, MapPin, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import type { ValuePropItem } from '@/lib/types';
+
+const ICON_MAP: Record<string, any> = {
+  ShieldCheck,
+  Headphones,
+  MapPin,
+  Sparkles,
+  Zap,
+  Clock,
+  Award,
+};
 
 const VALUE_PROPS = [
   {
@@ -35,13 +46,15 @@ const VALUE_PROPS = [
   },
 ];
 
-export default function BookingValueProps() {
+export default function BookingValueProps({ items }: { items?: ValuePropItem[] }) {
+  const displayItems = items && items.length > 0 ? items : VALUE_PROPS;
+
   return (
     <section className="relative overflow-hidden bg-white py-10 sm:py-14 text-navy-950 border-b border-slate-200/80">
       <div className="container-x relative">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {VALUE_PROPS.map((item, idx) => {
-            const Icon = item.icon;
+          {displayItems.map((item: any, idx: number) => {
+            const Icon = typeof item.icon === 'string' ? (ICON_MAP[item.icon] || ShieldCheck) : item.icon;
             return (
               <motion.div
                 key={idx}

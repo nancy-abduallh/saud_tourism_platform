@@ -4,6 +4,15 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Car, Compass, MapPin, Navigation, Plane, Train } from 'lucide-react';
+import type { TravelRouteDeparture } from '@/lib/types';
+
+const ICON_MAP: Record<string, any> = {
+  Plane,
+  Train,
+  Car,
+  Compass,
+  Navigation,
+};
 
 interface RouteItem {
   to: string;
@@ -153,11 +162,12 @@ const DEPARTURES: { city: string; label: string; routes: RouteItem[] }[] = [
   },
 ];
 
-export default function TravelRoutes() {
-  const [selectedCity, setSelectedCity] = useState('riyadh');
+export default function TravelRoutes({ departures }: { departures?: TravelRouteDeparture[] }) {
+  const displayDepartures = departures && departures.length > 0 ? departures : DEPARTURES;
+  const [selectedCity, setSelectedCity] = useState(displayDepartures[0]?.city || 'riyadh');
 
   const currentDeparture =
-    DEPARTURES.find((d) => d.city === selectedCity) || DEPARTURES[0];
+    displayDepartures.find((d) => d.city === selectedCity) || displayDepartures[0];
 
   return (
     <section className="relative overflow-hidden bg-slate-50/80 py-16 sm:py-20 text-navy-950 border-t border-slate-200">
@@ -188,7 +198,7 @@ export default function TravelRoutes() {
 
         {/* Departure City Pills */}
         <div className="mb-8 flex gap-2.5 overflow-x-auto pb-2 scrollbar-none">
-          {DEPARTURES.map((dep) => {
+          {displayDepartures.map((dep) => {
             const isActive = dep.city === selectedCity;
             return (
               <button
@@ -218,8 +228,8 @@ export default function TravelRoutes() {
             transition={{ duration: 0.3 }}
             className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
-            {currentDeparture.routes.map((route, idx) => {
-              const Icon = route.icon;
+            {currentDeparture?.routes?.map((route: any, idx: number) => {
+              const Icon = typeof route.icon === 'string' ? (ICON_MAP[route.icon] || Plane) : route.icon;
               return (
                 <Link
                   key={idx}
