@@ -65,6 +65,14 @@ const HIGHLIGHT_DESTINATIONS = [
     image: '/images/medical-rub-al-khali.jpg',
     badge: 'سكينة الصحراء',
   },
+  {
+    id: 'riyadh',
+    name: 'الرياض',
+    title: 'حديقة السلام ومرافق العافية',
+    desc: 'استرخاء في حديقة السلام والبحيرة ومراكز اللياقة والمنتجعات الصحية بالحي الدبلوماسي.',
+    image: '/images/medical-salam-park.jpg',
+    badge: 'عافية العاصمة',
+  },
 ];
 
 export default function MedicalTourismSection() {
