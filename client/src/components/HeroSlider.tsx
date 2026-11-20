@@ -8,7 +8,7 @@ import HeroSearch from './HeroSearch';
 import { EASE } from '@/lib/motion';
 import type { Destination, HeroSlide } from '@/lib/types';
 
-const DURATION = 7; // seconds per slide
+const DURATION = 6; // seconds per slide
 
 const FALLBACK: HeroSlide[] = [
   { id: 0, title: 'اكتشف سحر المملكة بفخامة', titleEn: 'Experience Saudi in Ultimate Luxury', subtitle: 'إقامات استثنائية بين صخور العلا الذهبية ومنتجعات البحر الأحمر', image: '/images/hero-1.jpg', ctaText: 'استكشف الآن', ctaLink: '/packages' },
@@ -31,6 +31,17 @@ export default function HeroSlider({ slides, destinations }: { slides: HeroSlide
   const next = useCallback(() => setIndex((i) => (i + 1) % count), [count]);
   const prev = useCallback(() => setIndex((i) => (i - 1 + count) % count), [count]);
 
+  // Guaranteed automatic scrolling timer (advances every DURATION seconds)
+  useEffect(() => {
+    if (paused || count <= 1) return;
+
+    const timer = setInterval(() => {
+      setIndex((i) => (i + 1) % count);
+    }, DURATION * 1000);
+
+    return () => clearInterval(timer);
+  }, [paused, count, index]);
+
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') next(); // RTL: left = next
@@ -46,8 +57,6 @@ export default function HeroSlider({ slides, destinations }: { slides: HeroSlide
     <motion.section
       className="relative z-10 min-h-[820px] w-full bg-navy-950 lg:min-h-[880px]"
       style={{ touchAction: 'pan-y' }}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
       onPanEnd={(_, info) => {
         if (info.offset.x < -80) next();
         if (info.offset.x > 80) prev();
@@ -124,29 +133,65 @@ export default function HeroSlider({ slides, destinations }: { slides: HeroSlide
 
             {/* Slider Switcher Controls */}
             {count > 1 && (
-              <motion.div variants={fade} className="mt-8 flex items-center gap-4">
-                <div className="font-display text-2xl font-bold text-white" dir="ltr">
+              <motion.div
+                variants={fade}
+                className="mt-8 flex flex-wrap items-center gap-4"
+                onMouseEnter={() => setPaused(true)}
+                onMouseLeave={() => setPaused(false)}
+              >
+                {/* Counter */}
+                <div className="font-display text-2xl font-bold text-white tracking-wider" dir="ltr">
                   <span className="text-gold-300">{String(index + 1).padStart(2, '0')}</span>
                   <span className="text-white/40"> / {String(count).padStart(2, '0')}</span>
                 </div>
+
+                {/* Indicators / Progress bars */}
                 <div className="flex items-center gap-2">
                   {list.map((s, i) => (
                     <button
                       key={s.id + '-' + i}
                       onClick={() => setIndex(i)}
-                      aria-label={`شريحة ${i + 1}`}
-                      className={clsx('relative h-2 overflow-hidden rounded-full bg-white/25 transition-all duration-500', i === index ? 'w-16' : 'w-4 hover:bg-white/50')}
+                      aria-label={`الانتقال إلى الشريحة ${i + 1}`}
+                      className={clsx(
+                        'relative h-2 overflow-hidden rounded-full transition-all duration-500 focus:outline-none',
+                        i === index ? 'w-16 bg-white/20' : 'w-4 bg-white/30 hover:bg-white/60'
+                      )}
                     >
                       {i === index && (
-                        <span
-                          key={index}
-                          onAnimationEnd={next}
-                          className="absolute inset-0 origin-right bg-gold-gradient"
-                          style={{ animation: `heroProgress ${DURATION}s linear forwards`, animationPlayState: paused ? 'paused' : 'running' }}
+                        <motion.span
+                          key={`progress-${index}`}
+                          className="absolute inset-y-0 right-0 bg-gold-gradient rounded-full"
+                          initial={{ width: '0%' }}
+                          animate={{ width: '100%' }}
+                          transition={{ duration: DURATION, ease: 'linear' }}
                         />
                       )}
                     </button>
                   ))}
+                </div>
+
+                {/* Prev / Next Arrow Controls */}
+                <div className="flex items-center gap-2 mr-2">
+                  <button
+                    type="button"
+                    onClick={prev}
+                    aria-label="الشريحة السابقة"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-navy-900/60 text-white/80 backdrop-blur transition hover:border-gold-400 hover:bg-gold-500/20 hover:text-white"
+                  >
+                    <svg className="h-4 w-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={next}
+                    aria-label="الشريحة التالية"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-navy-900/60 text-white/80 backdrop-blur transition hover:border-gold-400 hover:bg-gold-500/20 hover:text-white"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </div>
               </motion.div>
             )}

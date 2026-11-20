@@ -111,4 +111,9 @@ body {
   .custom-select-menu::-webkit-scrollbar-thumb:hover {
     background: #dfb758;
   }
+
+  @keyframes heroProgress {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
 }
