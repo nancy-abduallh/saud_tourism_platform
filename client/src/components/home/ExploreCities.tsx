@@ -43,7 +43,7 @@ const CITIES = [
     name: 'الخرج',
     title: 'عيون الماء وقصر الملك عبدالعزيز',
     count: '9 باقات وتجربة',
-    image: '/images/tuwaiq-edge.jpg',
+    image: '/images/kharj-springs.jpg',
     href: '/packages?destination=kharj',
     badge: 'قريبة من الرياض',
   },
