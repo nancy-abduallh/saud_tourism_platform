@@ -47,8 +47,16 @@ const AVAILABLE_IMAGES = [
   { url: '/images/red-sea.jpg', label: 'وجهة البحر الأحمر - جزر فيروزية وبنغلات فوق الماء' },
   { url: '/images/diriyah.jpg', label: 'الدرعية - حي الطريف التاريخي وقصور نجد' },
   { url: '/images/asir.jpg', label: 'عسير - مرتفعات السودة الخضراء والضباب' },
+  { url: '/images/makkah.jpg', label: 'مكة المكرمة - جناح ملكي مطل على الكعبة وبرج الساعة' },
+  { url: '/images/madinah.jpg', label: 'المدينة المنورة - المسجد النبوي الشريف والقبة الخضراء' },
+  { url: '/images/hail.jpg', label: 'حائل - قصر القشلة التاريخي وجبال حائل' },
+  { url: '/images/tabuk-disah.jpg', label: 'تبوك - وادي الديسة والأعمدة الصخرية والواحات' },
+  { url: '/images/qassim.jpg', label: 'القصيم - مزارع النخيل الباسقة والنزل الريفية' },
+  { url: '/images/taif.jpg', label: 'الطائف - طريق عقبة الهدا والتلفريك ومصائف الجبال' },
+  { url: '/images/jeddah.jpg', label: 'جدة - مارينا اليخوت ونافورة الملك فهد بالكورنيش' },
+  { url: '/images/jazan-farasan.jpg', label: 'جازان - أرخبيل جزر فرسان البكر والشواطئ الفيروزية' },
   { url: '/images/pkg-4.jpg', label: 'أبها وعسير - قمم السحاب وقرى ألمعية' },
-  { url: '/images/pkg-5.jpg', label: 'مكة المكرمة - جناح ملكي مطل على الكعبة وبرج الساعة' },
+  { url: '/images/pkg-5.jpg', label: 'مكة المكرمة - إطلالة الحرم والأجنحة الفاخرة' },
   { url: '/images/hero-1.jpg', label: 'ملاذ فاخر ومسبح خاص في الصحراء' },
   { url: '/images/hero-3.jpg', label: 'جزر البحر الأحمر وأنشطة الإبحار الفاخر' },
 ];
@@ -57,7 +65,7 @@ export default function AdminSectionsPage() {
   const [data, setData] = useState<HomeSectionsData>(DEFAULT_HOME_SECTIONS_DATA);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'visibility' | 'valueProps' | 'stayTypes' | 'exploreCities' | 'weekendDeals' | 'popularStays' | 'vipBanner' | 'travelRoutes'>('visibility');
+  const [activeTab, setActiveTab] = useState<'visibility' | 'valueProps' | 'stayTypes' | 'exploreCities' | 'tripPlanner' | 'weekendDeals' | 'popularStays' | 'vipBanner' | 'travelRoutes'>('visibility');
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
@@ -209,6 +217,7 @@ export default function AdminSectionsPage() {
           { id: 'valueProps', label: 'شريط المزايا (4)', icon: ShieldCheck },
           { id: 'stayTypes', label: 'أنواع الإقامة (4)', icon: Castle },
           { id: 'exploreCities', label: 'استكشف المدن (6)', icon: Compass },
+          { id: 'tripPlanner', label: 'مخطط الرحلات (5 فئات)', icon: Layers },
           { id: 'weekendDeals', label: 'عروض عطلة الأسبوع (4)', icon: Flame },
           { id: 'popularStays', label: 'بيوت وملاذات الضيوف (4)', icon: Star },
           { id: 'travelRoutes', label: 'مسارات التنقل', icon: Navigation },
@@ -569,6 +578,148 @@ export default function AdminSectionsPage() {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Trip Planner */}
+      {activeTab === 'tripPlanner' && (
+        <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200 space-y-6">
+          <div>
+            <h2 className="font-display text-base font-black text-navy-950">
+              تعديل بطاقات وتجارب مخطط الرحلات الذكي (Smart Trip Planner)
+            </h2>
+            <p className="mt-1 text-xs text-slate-500">
+              تحكم في تصنيفات مخطط الرحلات (الشواطئ، الطبيعة، التراث، السفاري، العمرة والزيارة) وبطاقات الوجهات، الأسعار، وأوقات التنقل والصور.
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            {data.tripPlanner?.map((cat, catIdx) => (
+              <div key={cat.id} className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 space-y-4">
+                <div className="flex items-center gap-3 border-b border-slate-200 pb-3">
+                  <span className="text-2xl">{cat.icon}</span>
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={cat.label}
+                      onChange={(e) => {
+                        const updated = [...(data.tripPlanner || [])];
+                        updated[catIdx].label = e.target.value;
+                        setData({ ...data, tripPlanner: updated });
+                      }}
+                      className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-navy-950"
+                    />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-500">
+                    ({cat.items?.length || 0} بطاقات وجهات)
+                  </span>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {cat.items?.map((item, itemIdx) => (
+                    <div key={item.id} className="rounded-xl border border-slate-200 bg-white p-3.5 space-y-2.5 shadow-sm">
+                      <div className="relative h-28 w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+                        <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                        <span className="absolute top-2 right-2 rounded-full bg-navy-950/80 px-2 py-0.5 text-[10px] font-black text-gold-300 backdrop-blur-sm">
+                          {item.badge}
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 mb-0.5">اسم الوجهة / التجربة</label>
+                        <input
+                          type="text"
+                          value={item.name}
+                          onChange={(e) => {
+                            const updated = [...(data.tripPlanner || [])];
+                            updated[catIdx].items[itemIdx].name = e.target.value;
+                            setData({ ...data, tripPlanner: updated });
+                          }}
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-bold text-navy-950"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 mb-0.5">المنطقة</label>
+                          <input
+                            type="text"
+                            value={item.region}
+                            onChange={(e) => {
+                              const updated = [...(data.tripPlanner || [])];
+                              updated[catIdx].items[itemIdx].region = e.target.value;
+                              setData({ ...data, tripPlanner: updated });
+                            }}
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-700"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 mb-0.5">السعر يبدأ من</label>
+                          <input
+                            type="text"
+                            value={item.priceFrom}
+                            onChange={(e) => {
+                              const updated = [...(data.tripPlanner || [])];
+                              updated[catIdx].items[itemIdx].priceFrom = e.target.value;
+                              setData({ ...data, tripPlanner: updated });
+                            }}
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-bold text-gold-700"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 mb-0.5">مدة وتفاصيل السفر</label>
+                        <input
+                          type="text"
+                          value={item.travelTime}
+                          onChange={(e) => {
+                            const updated = [...(data.tripPlanner || [])];
+                            updated[catIdx].items[itemIdx].travelTime = e.target.value;
+                            setData({ ...data, tripPlanner: updated });
+                          }}
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-600"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 mb-0.5">الشارة المميزة</label>
+                        <input
+                          type="text"
+                          value={item.badge}
+                          onChange={(e) => {
+                            const updated = [...(data.tripPlanner || [])];
+                            updated[catIdx].items[itemIdx].badge = e.target.value;
+                            setData({ ...data, tripPlanner: updated });
+                          }}
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-navy-950 font-bold"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 mb-0.5">الصورة المعتمدة</label>
+                        <select
+                          value={item.image}
+                          onChange={(e) => {
+                            const updated = [...(data.tripPlanner || [])];
+                            updated[catIdx].items[itemIdx].image = e.target.value;
+                            setData({ ...data, tripPlanner: updated });
+                          }}
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50 p-1.5 text-[11px] text-navy-950"
+                        >
+                          {AVAILABLE_IMAGES.map((img) => (
+                            <option key={img.url} value={img.url}>
+                              {img.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
