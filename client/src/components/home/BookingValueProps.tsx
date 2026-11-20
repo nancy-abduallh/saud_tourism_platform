@@ -37,7 +37,7 @@ const VALUE_PROPS = [
 
 export default function BookingValueProps() {
   return (
-    <section className="relative overflow-hidden bg-navy-950 py-10 sm:py-14 text-white border-y border-white/5">
+    <section className="relative overflow-hidden bg-white py-10 sm:py-14 text-navy-950 border-b border-slate-200/80">
       <div className="container-x relative">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {VALUE_PROPS.map((item, idx) => {
@@ -49,10 +49,10 @@ export default function BookingValueProps() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.08 }}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-900/60 p-5 shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/40 hover:bg-navy-900/90 hover:shadow-gold"
+                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/80 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/50 hover:bg-white hover:shadow-xl hover:shadow-gold-500/10"
               >
                 {/* Accent Top Line */}
-                <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-gold-500/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
                 <div className="flex items-start gap-4">
                   <div
@@ -63,14 +63,14 @@ export default function BookingValueProps() {
 
                   <div className="space-y-1.5 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <h3 className="font-display text-sm sm:text-base font-black text-white group-hover:text-gold-300 transition-colors">
+                      <h3 className="font-display text-sm sm:text-base font-black text-navy-950 group-hover:text-gold-600 transition-colors">
                         {item.title}
                       </h3>
                     </div>
-                    <p className="text-xs leading-relaxed text-white/70">
+                    <p className="text-xs leading-relaxed text-slate-600">
                       {item.description}
                     </p>
-                    <span className="inline-block pt-1 text-[10px] font-bold text-gold-400/90 tracking-wide">
+                    <span className="inline-block pt-1 text-[10px] font-bold text-gold-700 tracking-wide">
                       {item.badge} ←
                     </span>
                   </div>

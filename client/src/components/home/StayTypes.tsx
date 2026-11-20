@@ -46,30 +46,30 @@ const STAY_TYPES = [
 
 export default function StayTypes() {
   return (
-    <section className="relative overflow-hidden bg-navy-950 py-16 sm:py-20 text-white">
-      {/* Background Glow */}
-      <div className="pointer-events-none absolute -right-32 top-10 h-72 w-72 rounded-full bg-gold-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -left-32 bottom-10 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" />
+    <section className="relative overflow-hidden bg-white py-16 sm:py-20 text-navy-950">
+      {/* Background Subtle Glow */}
+      <div className="pointer-events-none absolute -right-32 top-10 h-72 w-72 rounded-full bg-gold-500/5 blur-3xl" />
+      <div className="pointer-events-none absolute -left-32 bottom-10 h-72 w-72 rounded-full bg-slate-200/50 blur-3xl" />
 
       <div className="container-x relative">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-3.5 py-1 text-xs font-bold text-gold-300">
-              <Sparkles size={13} className="text-gold-400" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-50 px-3.5 py-1 text-xs font-bold text-gold-800">
+              <Sparkles size={13} className="text-gold-600" />
               <span>تنوع الإقامة والتجارب</span>
             </div>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-white">
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-navy-950">
               ابحث حسب نوع مكان الإقامة والتجربة
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-white/70 max-w-xl">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl">
               اختر أسلوب إقامتك المفضل في رحلتك القادمة عبر تشكيلة من أفخم أماكن الضيافة في المملكة العربية السعودية.
             </p>
           </div>
 
           <Link
             href="/packages"
-            className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-400 hover:text-gold-300 transition-colors group"
+            className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-700 hover:text-gold-800 transition-colors group"
           >
             <span>استعراض كافة الباقات</span>
             <span className="transition-transform group-hover:-translate-x-1">←</span>
@@ -90,19 +90,19 @@ export default function StayTypes() {
               >
                 <Link
                   href={stay.href}
-                  className="group relative block overflow-hidden rounded-3xl border border-white/10 bg-navy-900/80 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-black"
+                  className="group relative block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md transition-all duration-500 hover:-translate-y-2 hover:border-gold-500/60 hover:shadow-2xl"
                 >
                   {/* Image Aspect Box */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-navy-950">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                     <img
                       src={stay.image}
                       alt={stay.title}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
 
                     {/* Top Pill */}
-                    <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy-950/80 px-3 py-1 text-[11px] font-bold text-gold-300 backdrop-blur-md">
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy-950/85 px-3 py-1 text-[11px] font-bold text-gold-300 backdrop-blur-md">
                       <Icon size={12} className="text-gold-400" />
                       <span>{stay.badge}</span>
                     </div>
@@ -117,18 +117,18 @@ export default function StayTypes() {
 
                   {/* Card Content */}
                   <div className="p-5">
-                    <h3 className="font-display text-lg font-black text-white group-hover:text-gold-300 transition-colors">
+                    <h3 className="font-display text-lg font-black text-navy-950 group-hover:text-gold-700 transition-colors">
                       {stay.title}
                     </h3>
-                    <p className="mt-1.5 text-xs text-white/70 leading-relaxed">
+                    <p className="mt-1.5 text-xs text-slate-600 leading-relaxed">
                       {stay.subtitle}
                     </p>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-xs">
-                      <span className="text-gold-400 font-bold group-hover:underline">
+                    <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+                      <span className="text-gold-700 font-bold group-hover:underline">
                         اكتشف الإقامات
                       </span>
-                      <span className="text-white/50 transition-transform group-hover:-translate-x-1">
+                      <span className="text-slate-400 transition-transform group-hover:-translate-x-1">
                         ←
                       </span>
                     </div>

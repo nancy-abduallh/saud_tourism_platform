@@ -62,26 +62,26 @@ const POPULAR_STAYS = [
 
 export default function PopularStays() {
   return (
-    <section className="relative overflow-hidden bg-navy-950 py-16 sm:py-20 text-white border-t border-white/5">
+    <section className="relative overflow-hidden bg-white py-16 sm:py-20 text-navy-950 border-t border-slate-200">
       <div className="container-x relative">
         {/* Header */}
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-3.5 py-1 text-xs font-bold text-gold-300">
-              <Star size={13} className="text-gold-400 fill-gold-400" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-50 px-3.5 py-1 text-xs font-bold text-gold-800">
+              <Star size={13} className="text-gold-600 fill-gold-600" />
               <span>تجارب حازت على ثقة ضيوفنا</span>
             </div>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-white">
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-navy-950">
               بيوت وملاذات يفضلها الضيوف
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-white/70 max-w-xl">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl">
               أماكن إقامة استثنائية حصدت أعلى تقييمات الرضا لرواد الفخامة والباحثين عن أرقى تجارب الضيافة السعودية.
             </p>
           </div>
 
           <Link
             href="/packages"
-            className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-400 hover:text-gold-300 transition-colors group"
+            className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-700 hover:text-gold-800 transition-colors group"
           >
             <span>استعراض كافة الإقامات</span>
             <span className="transition-transform group-hover:-translate-x-1">←</span>
@@ -100,16 +100,16 @@ export default function PopularStays() {
             >
               <Link
                 href="/packages"
-                className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-navy-900/80 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-black"
+                className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:border-gold-500/50 hover:shadow-xl"
               >
                 {/* Image */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-navy-950">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                   <img
                     src={stay.image}
                     alt={stay.name}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-transparent opacity-80" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
 
                   {/* Top Badge */}
                   <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy-950/80 px-3 py-1 text-[11px] font-bold text-gold-300 backdrop-blur-md">
@@ -132,30 +132,30 @@ export default function PopularStays() {
                       <span className="flex h-6 w-8 items-center justify-center rounded-lg bg-gold-gradient text-[11px] font-black text-navy-950 shadow-sm">
                         {stay.rating}
                       </span>
-                      <span className="text-xs font-bold text-white">{stay.ratingLabel}</span>
-                      <span className="text-[11px] text-white/50">• {stay.reviewsCount}</span>
+                      <span className="text-xs font-bold text-navy-950">{stay.ratingLabel}</span>
+                      <span className="text-[11px] text-slate-500">• {stay.reviewsCount}</span>
                     </div>
 
-                    <h3 className="font-display text-base font-black text-white group-hover:text-gold-300 transition-colors line-clamp-1">
+                    <h3 className="font-display text-base font-black text-navy-950 group-hover:text-gold-700 transition-colors line-clamp-1">
                       {stay.name}
                     </h3>
-                    <p className="mt-1 text-xs text-white/60">{stay.region}</p>
+                    <p className="mt-1 text-xs text-slate-500">{stay.region}</p>
 
-                    <div className="mt-3 rounded-xl bg-navy-950/70 border border-white/5 p-2 text-[11px] text-gold-300/90 line-clamp-1">
+                    <div className="mt-3 rounded-xl bg-slate-50 border border-slate-200/80 p-2 text-[11px] text-slate-700 line-clamp-1">
                       {stay.highlights}
                     </div>
                   </div>
 
                   {/* Price */}
-                  <div className="mt-4 border-t border-white/10 pt-3 flex items-center justify-between">
+                  <div className="mt-4 border-t border-slate-100 pt-3 flex items-center justify-between">
                     <div>
-                      <span className="block text-[10px] text-white/50">السعر ابتداءً من</span>
-                      <span className="font-display text-sm font-black text-gold-gradient">
+                      <span className="block text-[10px] text-slate-400">السعر ابتداءً من</span>
+                      <span className="font-display text-sm font-black text-navy-950">
                         {stay.price}
                       </span>
                     </div>
 
-                    <span className="text-xs font-bold text-gold-400 group-hover:underline">
+                    <span className="text-xs font-bold text-gold-700 group-hover:text-gold-800 group-hover:underline">
                       عرض الإقامة ←
                     </span>
                   </div>

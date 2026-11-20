@@ -77,29 +77,29 @@ export default function WeekendDeals() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-navy-950 py-16 sm:py-20 text-white">
-      {/* Decorative Blur */}
-      <div className="pointer-events-none absolute left-1/2 top-10 h-80 w-80 -translate-x-1/2 rounded-full bg-red-500/10 blur-3xl" />
+    <section className="relative overflow-hidden bg-white py-16 sm:py-20 text-navy-950 border-t border-slate-200/80">
+      {/* Decorative Subtle Blur */}
+      <div className="pointer-events-none absolute left-1/2 top-10 h-80 w-80 -translate-x-1/2 rounded-full bg-red-500/5 blur-3xl" />
 
       <div className="container-x relative">
         {/* Header */}
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/10 px-3.5 py-1 text-xs font-bold text-red-300">
-              <Flame size={14} className="text-red-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-50 px-3.5 py-1 text-xs font-bold text-red-700">
+              <Flame size={14} className="text-red-500 animate-pulse" />
               <span>عروض وتخفيضات لفترة محدودة</span>
             </div>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-white">
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-navy-950">
               عروض عطلة نهاية الأسبوع
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-white/70 max-w-xl">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl">
               وفر حتى 30% مع باقات حصرية ومميزة صُممت لتمنحك عطلة نهاية أسبوع ساحرة مع كامل خدمات الـ VIP.
             </p>
           </div>
 
           <Link
             href="/packages"
-            className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-400 hover:text-gold-300 transition-colors group"
+            className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-700 hover:text-gold-800 transition-colors group"
           >
             <span>عرض كافة العروض الترويجية</span>
             <span className="transition-transform group-hover:-translate-x-1">←</span>
@@ -116,15 +116,15 @@ export default function WeekendDeals() {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
             >
-              <div className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-navy-900/90 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-black">
+              <div className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:border-gold-500/60 hover:shadow-2xl">
                 {/* Image Box */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-navy-950">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                   <img
                     src={deal.image}
                     alt={deal.title}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-transparent opacity-80" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
 
                   {/* Discount Ribbon Top Right */}
                   <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 px-3 py-1 text-xs font-black text-white shadow-lg">
@@ -160,24 +160,24 @@ export default function WeekendDeals() {
                       <span className="flex h-6 w-8 items-center justify-center rounded-lg bg-gold-gradient text-[11px] font-black text-navy-950 shadow-sm">
                         {deal.rating}
                       </span>
-                      <span className="text-xs font-bold text-white">{deal.ratingLabel}</span>
-                      <span className="text-[11px] text-white/50">• {deal.reviewsCount}</span>
+                      <span className="text-xs font-bold text-navy-900">{deal.ratingLabel}</span>
+                      <span className="text-[11px] text-slate-400">• {deal.reviewsCount}</span>
                     </div>
 
-                    <h3 className="font-display text-base font-black text-white group-hover:text-gold-300 transition-colors line-clamp-2">
+                    <h3 className="font-display text-base font-black text-navy-950 group-hover:text-gold-700 transition-colors line-clamp-2">
                       {deal.title}
                     </h3>
 
-                    <div className="mt-2.5 flex items-center gap-1 text-[11px] text-white/60">
-                      <Clock size={12} className="text-gold-400" />
+                    <div className="mt-2.5 flex items-center gap-1 text-[11px] text-slate-500">
+                      <Clock size={12} className="text-gold-600" />
                       <span>{deal.duration}</span>
                     </div>
 
                     {/* Feature bullets */}
-                    <ul className="mt-3 space-y-1 text-[11px] text-white/70">
+                    <ul className="mt-3 space-y-1 text-[11px] text-slate-600">
                       {deal.features.map((f, i) => (
                         <li key={i} className="flex items-center gap-1.5">
-                          <span className="h-1 w-1 rounded-full bg-gold-400" />
+                          <span className="h-1 w-1 rounded-full bg-gold-500" />
                           <span>{f}</span>
                         </li>
                       ))}
@@ -185,15 +185,15 @@ export default function WeekendDeals() {
                   </div>
 
                   {/* Price Section & CTA */}
-                  <div className="mt-5 border-t border-white/10 pt-3 flex items-end justify-between">
+                  <div className="mt-5 border-t border-slate-100 pt-3 flex items-end justify-between">
                     <div>
-                      <span className="block text-[11px] text-white/50 line-through">
+                      <span className="block text-[11px] text-slate-400 line-through">
                         {deal.originalPrice}
                       </span>
-                      <div className="font-display text-lg font-black text-gold-gradient">
+                      <div className="font-display text-lg font-black text-navy-950">
                         {deal.dealPrice}
                       </div>
-                      <span className="text-[10px] text-emerald-400 font-bold">شامل الضريبة والخدمة</span>
+                      <span className="text-[10px] text-emerald-600 font-bold">شامل الضريبة والخدمة</span>
                     </div>
 
                     <Link

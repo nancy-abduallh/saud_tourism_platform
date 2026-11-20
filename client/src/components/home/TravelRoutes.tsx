@@ -160,26 +160,26 @@ export default function TravelRoutes() {
     DEPARTURES.find((d) => d.city === selectedCity) || DEPARTURES[0];
 
   return (
-    <section className="relative overflow-hidden bg-navy-950 py-16 sm:py-20 text-white border-t border-white/5">
+    <section className="relative overflow-hidden bg-slate-50/80 py-16 sm:py-20 text-navy-950 border-t border-slate-200">
       <div className="container-x relative">
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/40 bg-gold-500/10 px-3.5 py-1 text-xs font-bold text-gold-300">
-              <Navigation size={13} className="text-gold-400" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-50 px-3.5 py-1 text-xs font-bold text-gold-800">
+              <Navigation size={13} className="text-gold-600" />
               <span>خطوط السير والربط بين المدن</span>
             </div>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-white">
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-navy-950">
               مسارات رائجة للمسافرين داخل المملكة
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-white/70 max-w-xl">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl">
               تصفح أشهر مسارات التنقل السياحية بين فروع ومناطق المملكة مع متوسط أوقات الرحلات وأفضل الأسعار.
             </p>
           </div>
 
           <Link
             href="/branches"
-            className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-400 hover:text-gold-300 transition-colors group"
+            className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-gold-700 hover:text-gold-800 transition-colors group"
           >
             <span>استعراض فروع المملكة الـ 13</span>
             <span className="transition-transform group-hover:-translate-x-1">←</span>
@@ -197,11 +197,11 @@ export default function TravelRoutes() {
                 onClick={() => setSelectedCity(dep.city)}
                 className={`flex shrink-0 items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-gold-gradient text-navy-950 shadow-gold font-black scale-105'
-                    : 'border border-white/10 bg-navy-900/70 text-white/80 hover:border-gold-500/40 hover:bg-navy-900 hover:text-white'
+                    ? 'bg-gold-gradient text-navy-950 shadow-md font-black scale-105'
+                    : 'border border-slate-200 bg-white text-slate-700 hover:border-gold-500/40 hover:bg-slate-100 hover:text-navy-950 shadow-sm'
                 }`}
               >
-                <MapPin size={14} className={isActive ? 'text-navy-950' : 'text-gold-400'} />
+                <MapPin size={14} className={isActive ? 'text-navy-950' : 'text-gold-600'} />
                 <span>{dep.label}</span>
               </button>
             );
@@ -224,20 +224,20 @@ export default function TravelRoutes() {
                 <Link
                   key={idx}
                   href={`/packages?destination=${route.slug}`}
-                  className="group relative flex items-center justify-between rounded-2xl border border-white/10 bg-navy-900/60 p-4 shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/50 hover:bg-navy-900/90 hover:shadow-xl"
+                  className="group relative flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-gold-500/50 hover:bg-white hover:shadow-md"
                 >
                   <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gold-500/10 border border-gold-500/30 text-gold-400 group-hover:bg-gold-500 group-hover:text-navy-950 transition-colors">
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gold-50 border border-gold-200/60 text-gold-700 group-hover:bg-gold-500 group-hover:text-navy-950 transition-colors">
                       <Icon size={20} />
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-display text-sm font-bold text-white group-hover:text-gold-300 transition-colors truncate">
+                        <h4 className="font-display text-sm font-bold text-navy-950 group-hover:text-gold-700 transition-colors truncate">
                           {route.to}
                         </h4>
                       </div>
-                      <div className="mt-1 flex items-center gap-2 text-[11px] text-white/60">
+                      <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
                         <span>{route.type}</span>
                         <span>•</span>
                         <span>{route.duration}</span>
@@ -246,9 +246,9 @@ export default function TravelRoutes() {
                   </div>
 
                   {/* Price */}
-                  <div className="text-start pr-3 border-r border-white/10 shrink-0">
-                    <span className="block text-[10px] text-white/50">ابتداءً من</span>
-                    <span className="font-display text-xs font-black text-gold-gradient">
+                  <div className="text-start pr-3 border-r border-slate-200 shrink-0">
+                    <span className="block text-[10px] text-slate-400">ابتداءً من</span>
+                    <span className="font-display text-xs font-black text-navy-950">
                       {route.priceFrom}
                     </span>
                   </div>
