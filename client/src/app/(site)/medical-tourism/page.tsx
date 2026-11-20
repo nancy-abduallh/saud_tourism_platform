@@ -274,77 +274,54 @@ export default function MedicalTourismPage() {
   return (
     <div className="bg-slate-50 min-h-screen text-navy-950 pb-20">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-navy-950 pt-36 pb-24 sm:pt-44 sm:pb-32 text-white">
+      <section className="relative overflow-hidden bg-navy-950 pt-24 pb-8 sm:pt-28 sm:pb-12 text-white">
         {/* Background Image with High-Contrast Dark Gradient Overlay */}
         <div className="absolute inset-0 z-0">
           <img
             src="/images/medical-hero-bg.jpg"
             alt="ملاذات وطبيعة السياحة العلاجية والاستشفاء في المملكة العربية السعودية"
-            className="h-full w-full object-cover object-center transform scale-105 transition-transform duration-1000"
+            className="h-full w-full object-cover object-center"
           />
           {/* Gradients ensuring 100% text legibility and rich atmosphere */}
-          <div className="absolute inset-0 bg-gradient-to-b from-navy-950/90 via-navy-950/75 to-navy-950/95" />
-          <div className="absolute inset-0 bg-radial-gradient opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-navy-950/92 via-navy-950/85 to-navy-950/95" />
+          <div className="absolute inset-0 bg-radial-gradient opacity-50" />
         </div>
 
         {/* Ambient Subtle Glows */}
-        <div className="pointer-events-none absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl z-0" />
-        <div className="pointer-events-none absolute bottom-0 left-1/4 h-96 w-96 rounded-full bg-gold-500/15 blur-3xl z-0" />
+        <div className="pointer-events-none absolute -top-24 right-1/4 h-72 w-72 rounded-full bg-emerald-500/15 blur-3xl z-0" />
+        <div className="pointer-events-none absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-gold-500/15 blur-3xl z-0" />
 
         <div className="container-x relative z-10 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-navy-950/85 px-4 py-1.5 text-xs font-bold text-emerald-300 backdrop-blur-md shadow-lg"
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-navy-950/90 px-4 py-1.5 text-xs font-bold text-emerald-300 backdrop-blur-md shadow-md"
           >
             <Sparkles size={14} className="text-gold-400" />
             <span>السياحة العلاجية والاستشفاء الطبيعي بالمملكة</span>
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-6 font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]"
+            className="mt-3.5 font-display text-2xl sm:text-4xl lg:text-5xl font-black leading-tight text-white tracking-normal"
           >
-            7 وجهات للسياحة العلاجية في{' '}
-            <span className="text-gold-gradient inline-block pt-2 drop-shadow-[0_4px_25px_rgba(243,211,122,0.6)]">
+            <span>7 وجهات للسياحة العلاجية في</span>{' '}
+            <span className="text-gold-300 inline-block font-extrabold">
               المملكة العربية السعودية
             </span>
           </motion.h1>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mx-auto mt-6 max-w-3xl rounded-2xl bg-navy-950/50 p-4 sm:p-5 backdrop-blur-md border border-white/10 shadow-2xl"
+            className="mx-auto mt-4 max-w-3xl rounded-2xl bg-navy-950/85 p-4 sm:p-5 backdrop-blur-md border border-white/15 shadow-2xl"
           >
-            <p className="text-sm sm:text-base text-white/95 font-medium leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+            <p className="text-sm sm:text-base text-white font-medium leading-relaxed text-center">
               استكشف ملاذات الراحة والاسترخاء والسلام الداخلي بالمملكة: من هواء جبال أبها العليل وملاذات البحر الأحمر الشاطئية، إلى ينابيع الأحساء الساخنة، حدائق الطائف العطرة، سكينة صخور العلا، هدوء صحراء الربع الخالي، ومرافق العافية في العاصمة الرياض.
             </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4"
-          >
-            <a
-              href="#destinations-grid"
-              className="btn-gold !py-3.5 !px-8 text-sm font-black shadow-gold hover:scale-105 transition-transform"
-            >
-              استكشف الوجهات الـ 7
-            </a>
-            <a
-              href={`https://wa.me/966571713078?text=${whatsappMessage}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/60 bg-emerald-600/95 hover:bg-emerald-600 px-7 py-3.5 text-sm font-bold text-white transition-all shadow-xl hover:scale-105 backdrop-blur-sm"
-            >
-              <MessageCircle size={18} />
-              <span>تواصل مع مستشار العافية عبر واتساب</span>
-            </a>
           </motion.div>
         </div>
       </section>
