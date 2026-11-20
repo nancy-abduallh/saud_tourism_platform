@@ -490,8 +490,11 @@ export default function QuickTripPlanner({ categories }: { categories?: TripPlan
           </Link>
         </div>
 
-        {/* Scrollable Horizontal Tabs */}
-        <div className="mb-8 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
+        {/* Scrollable Horizontal Tabs (Scrollbar Completely Removed) */}
+        <div
+          className="mb-8 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           {displayCategories.map((cat) => {
             const isActive = cat.id === activeTab;
             return (

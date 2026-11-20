@@ -197,7 +197,10 @@ export default function TravelRoutes({ departures }: { departures?: TravelRouteD
         </div>
 
         {/* Departure City Pills */}
-        <div className="mb-8 flex gap-2.5 overflow-x-auto pb-2 scrollbar-none">
+        <div
+          className="mb-8 flex gap-2.5 overflow-x-auto pb-2 scrollbar-none"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           {displayDepartures.map((dep) => {
             const isActive = dep.city === selectedCity;
             return (

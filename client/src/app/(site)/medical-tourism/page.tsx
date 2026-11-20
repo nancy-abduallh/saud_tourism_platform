@@ -399,7 +399,10 @@ export default function MedicalTourismPage() {
 
       {/* Quick Navigation Anchor Bar */}
       <section className="sticky top-20 z-30 border-y border-slate-200/80 bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="container-x py-3 flex gap-2 overflow-x-auto scrollbar-none items-center">
+        <div
+          className="container-x py-3 flex gap-2 overflow-x-auto scrollbar-none items-center"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           <span className="text-xs font-bold text-slate-500 shrink-0 ml-2">انتقل مباشرة:</span>
           {destinations.map((d) => (
             <button
