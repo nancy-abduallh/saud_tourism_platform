@@ -655,7 +655,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   address: 'الرياض، المملكة العربية السعودية',
   workingHours: 'كونسيرج VIP متاح 24/7',
   footerDescription: 'نصنع رحلات سعودية فاخرة تجمع بين عراقة التاريخ وروعة الطبيعة وأرقى مستويات الضيافة.',
-  copyrightText: '© 2026 جمعية نجوم السياحة. جميع الحقوق محفوظة.',
+  copyrightText: '© 2026 SA للسياحة | SA Tourism. جميع الحقوق محفوظة.',
   ownerName: 'سعود الشمري',
   ownerTitle: 'المالك',
   ownerMessage: `بسم الله الرحمن الرحيم

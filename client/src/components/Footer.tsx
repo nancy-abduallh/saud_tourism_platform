@@ -1,7 +1,21 @@
 'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Instagram, Linkedin, Twitter, Youtube } from 'lucide-react';
+import {
+  ChevronDown,
+  Compass,
+  Heart,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  Twitter,
+  Youtube,
+} from 'lucide-react';
 import clsx from 'clsx';
 import NewsletterForm from './NewsletterForm';
 import { DEFAULT_SETTINGS } from '@/lib/default-data';
@@ -26,6 +40,7 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
   const currentSettings = settings || DEFAULT_SETTINGS;
   const [quickOpen, setQuickOpen] = useState(false);
   const [destinationsOpen, setDestinationsOpen] = useState(false);
+  const [experiencesOpen, setExperiencesOpen] = useState(false);
 
   const socialLinks = [
     { name: 'Instagram', href: currentSettings.instagramUrl, icon: Instagram },
@@ -36,183 +51,259 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
     { name: 'LinkedIn', href: currentSettings.linkedinUrl, icon: Linkedin },
   ].filter((s) => Boolean(s.href && s.href.trim() !== '' && s.href !== '#'));
 
-  const renderCopyright = () => {
-    const raw =
-      currentSettings.copyrightText ||
-      `© ${new Date().getFullYear()} جمعية نجوم السياحة. جميع الحقوق محفوظة.`;
-    const targetWords = ['جمعية نجوم السياحة', 'جمعية النجوم للسياحة'];
-    for (const word of targetWords) {
-      if (raw.includes(word)) {
-        const parts = raw.split(word);
-        return (
-          <span>
-            {parts[0]}
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="relative overflow-hidden bg-navy-950 text-white/80 border-t border-gold-500/30">
+      {/* Background Decor */}
+      <div className="absolute inset-0 bg-pattern opacity-30 pointer-events-none" />
+      <div className="h-1 bg-gold-gradient" />
+
+      <div className="container-x relative py-16 sm:py-20">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12 items-start">
+          {/* Column 1: Brand, Association, and Direct Contacts (Col 4) */}
+          <div className="lg:col-span-4 space-y-5">
+            <div className="flex flex-col gap-3">
+              {/* SA Tourism & Tourism Stars Association Branding */}
+              <div className="flex items-center gap-3">
+                <a
+                  href={TOURISM_STARS_LINKTREE}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="جمعية نجوم السياحة (Linktree)"
+                  className="group inline-flex items-center gap-3 transition-transform hover:opacity-95"
+                >
+                  <img
+                    src="/footer-logo.png"
+                    alt="جمعية نجوم السياحة"
+                    className="h-14 w-14 rounded-full object-contain ring-2 ring-gold-400/60 shadow-lg shadow-black/40 transition-transform duration-300 group-hover:scale-105 bg-navy-900"
+                  />
+                  <div className="flex flex-col text-start leading-tight">
+                    <span className="font-display text-xl font-black text-white transition-colors group-hover:text-gold-300">
+                      SA للسياحة الفاخرة
+                    </span>
+                    <span className="font-display text-[11px] font-semibold tracking-wider text-gold-400">
+                      جمعية نجوم السياحة • TOURISM STARS
+                    </span>
+                  </div>
+                </a>
+              </div>
+
+              <p className="text-xs sm:text-sm leading-relaxed text-white/70 pt-1">
+                {currentSettings.footerDescription || DEFAULT_SETTINGS.footerDescription}
+              </p>
+            </div>
+
+            {/* Quick Contacts */}
+            <div className="space-y-2 pt-1 text-xs text-white/75">
+              <div className="flex items-center gap-2.5">
+                <MapPin size={14} className="text-gold-400 shrink-0" />
+                <span>{currentSettings.address || 'الرياض، المملكة العربية السعودية'}</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Phone size={14} className="text-gold-400 shrink-0" />
+                <span dir="ltr" className="font-mono">{currentSettings.phone || '+966 57 171 3078'}</span>
+                <span className="rounded bg-gold-500/20 px-1.5 py-0.5 text-[10px] font-bold text-gold-300">24/7 VIP</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Mail size={14} className="text-gold-400 shrink-0" />
+                <span className="font-mono">{currentSettings.email || 'info@saudtourism.sa'}</span>
+              </div>
+            </div>
+
+            {/* Social Icons */}
+            {socialLinks.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {socialLinks.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={item.name}
+                    className="grid h-9 w-9 place-items-center rounded-xl border border-gold-500/30 bg-navy-900/80 text-gold-300 transition hover:bg-gold-400 hover:text-navy-950 hover:shadow-gold hover:scale-105"
+                  >
+                    <item.icon size={16} />
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Column 2: Quick Links (Col 2) */}
+          <div className="lg:col-span-2">
+            <button
+              suppressHydrationWarning
+              type="button"
+              onClick={() => setQuickOpen((prev) => !prev)}
+              className="flex w-full items-center justify-between border-b border-white/10 pb-3 font-display text-base font-bold text-gold-300 transition-colors md:cursor-default md:border-b-0 md:pb-0 md:mb-5"
+              aria-expanded={quickOpen}
+            >
+              <span>روابط سريعة</span>
+              <ChevronDown
+                size={16}
+                className={clsx(
+                  'text-gold-400 transition-transform duration-300 md:hidden',
+                  quickOpen && 'rotate-180'
+                )}
+              />
+            </button>
+            <div
+              className={clsx(
+                'transition-all duration-300 ease-in-out md:block',
+                quickOpen
+                  ? 'mt-3 max-h-[500px] opacity-100 md:mt-0'
+                  : 'max-h-0 overflow-hidden opacity-0 md:max-h-none md:overflow-visible md:opacity-100'
+              )}
+            >
+              <ul className="space-y-2.5 text-xs">
+                {[
+                  ['/', 'الرئيسية'],
+                  ['/packages', 'الباقات والتجارب الفاخرة'],
+                  ['/medical-tourism', 'السياحة العلاجية والاستشفاء ✦'],
+                  ['/branches', 'فروعنا بالمملكة (13 فرعاً)'],
+                  ['/live', 'البث المباشر لحفل التدشين'],
+                  ['/#vip', 'خدمات الطيران واليخوت VIP'],
+                  ['/#testimonials', 'آراء وتجارب الضيوف'],
+                  ['/#owner', 'رسالة المالك والريادة'],
+                  ['/contact', 'طلب استشارة خاصة وتواصل'],
+                ].map(([h, l]) => (
+                  <li key={h}>
+                    <Link
+                      href={h}
+                      className="text-white/70 hover:text-gold-300 transition-colors flex items-center gap-1.5"
+                    >
+                      <span className="text-gold-500/60 text-[10px]">›</span>
+                      <span>{l}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Column 3: 13 Saudi Destinations (Col 3) */}
+          <div className="lg:col-span-3">
+            <button
+              suppressHydrationWarning
+              type="button"
+              onClick={() => setDestinationsOpen((prev) => !prev)}
+              className="flex w-full items-center justify-between border-b border-white/10 pb-3 font-display text-base font-bold text-gold-300 transition-colors md:cursor-default md:border-b-0 md:pb-0 md:mb-5"
+              aria-expanded={destinationsOpen}
+            >
+              <span>وجهات المملكة (13 وجهة)</span>
+              <ChevronDown
+                size={16}
+                className={clsx(
+                  'text-gold-400 transition-transform duration-300 md:hidden',
+                  destinationsOpen && 'rotate-180'
+                )}
+              />
+            </button>
+            <div
+              className={clsx(
+                'transition-all duration-300 ease-in-out md:block',
+                destinationsOpen
+                  ? 'mt-3 max-h-[600px] opacity-100 md:mt-0'
+                  : 'max-h-0 overflow-hidden opacity-0 md:max-h-none md:overflow-visible md:opacity-100'
+              )}
+            >
+              <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                {[
+                  ['tuwaiq', 'حافة العالم (طويق)'],
+                  ['alula', 'العلا ومدائن صالح'],
+                  ['red-sea', 'البحر الأحمر وأمالا'],
+                  ['diriyah', 'الدرعية التاريخية'],
+                  ['asir', 'عسير وجبال السودة'],
+                  ['makkah', 'مكة والمدينة المنورة'],
+                  ['hail', 'حائل وقصر القشلة'],
+                  ['tabuk', 'تبوك ووادي الديسة'],
+                  ['taif', 'عروس المصائف الطائف'],
+                  ['qassim', 'واحات ونخيل القصيم'],
+                  ['jazan', 'جزر فرسان وجازان'],
+                  ['jeddah', 'جدة واليخوت الفاخرة'],
+                  ['kharj', 'عيون الخرج الأثرية'],
+                ].map(([s, l]) => (
+                  <Link
+                    key={s}
+                    href={`/packages?destination=${s}`}
+                    className="text-white/70 hover:text-gold-300 transition-colors truncate flex items-center gap-1"
+                  >
+                    <span className="text-gold-500/50 text-[10px]">›</span>
+                    <span className="truncate">{l}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Column 4: Newsletter, Stays & Payment Badges (Col 3) */}
+          <div className="lg:col-span-3 space-y-5">
+            <div>
+              <h4 className="mb-3 font-display text-base font-bold text-gold-300 flex items-center gap-2">
+                <Sparkles size={14} className="text-gold-400" />
+                <span>النشرة البريدية والعروض الحصرية</span>
+              </h4>
+              <p className="text-xs text-white/60 mb-3 leading-relaxed">
+                انضم لنخبة المسافرين وتلقَّ أحدث الباقات الترويجية وبرامج الاستشفاء الخاصة.
+              </p>
+              <NewsletterForm />
+            </div>
+
+            {/* Payment Methods */}
+            <div>
+              <div className="text-[11px] font-bold text-white/50 mb-2">طرق الدفع الإلكتروني المعتمدة:</div>
+              <div className="flex flex-wrap gap-2 text-[11px] font-bold">
+                {['mada', 'VISA', 'Mastercard', 'Apple Pay'].map((p) => (
+                  <span
+                    key={p}
+                    className="rounded-lg bg-white/95 px-2.5 py-1 text-navy-950 font-black shadow-sm"
+                  >
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Accreditation Badge */}
+            <div className="rounded-2xl border border-gold-500/20 bg-navy-900/60 p-3 text-[11px] text-white/75 flex items-center gap-2.5">
+              <ShieldCheck size={20} className="text-gold-400 shrink-0" />
+              <span>مرخصة ومعتمدة رسمياً للأنشطة والرحلات السياحية في المملكة العربية السعودية.</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar: Copyright & Legal */}
+        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60 text-center sm:text-right">
+          <div>
+            © {currentYear}{' '}
+            <span className="font-bold text-gold-400">SA للسياحة</span> |{' '}
+            <span className="font-bold text-white">SA Tourism</span>. جميع الحقوق محفوظة.
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 text-white/50">
+            <Link href="/packages" className="hover:text-gold-300 transition-colors">
+              شروط الحجز
+            </Link>
+            <span>•</span>
+            <Link href="/contact" className="hover:text-gold-300 transition-colors">
+              سياسة الخصوصية
+            </Link>
+            <span>•</span>
+            <Link href="/branches" className="hover:text-gold-300 transition-colors">
+              فروع المملكة
+            </Link>
+            <span>•</span>
             <a
               href={TOURISM_STARS_LINKTREE}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-bold text-gold-400 transition hover:text-gold-300 hover:underline"
+              className="text-gold-400/80 hover:text-gold-300 transition-colors"
             >
-              {word}
+              جمعية نجوم السياحة
             </a>
-            {parts.slice(1).join(word)}
-          </span>
-        );
-      }
-    }
-    return <span>{raw}</span>;
-  };
-
-  return (
-    <footer className="relative overflow-hidden bg-navy-950 text-white/80">
-      <div className="absolute inset-0 bg-pattern opacity-40" />
-      <div className="h-1 bg-gold-gradient" />
-      <div className="container-x relative grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <a
-            href={TOURISM_STARS_LINKTREE}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="رابط جمعية نجوم السياحة (Linktree)"
-            className="group inline-flex items-center gap-3.5 transition-transform hover:opacity-95"
-          >
-            <img
-              src="/footer-logo.png"
-              alt="جمعية نجوم السياحة"
-              className="h-16 w-16 rounded-full object-contain ring-2 ring-gold-400/50 shadow-lg shadow-black/40 transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="flex flex-col text-start leading-tight">
-              <span className="font-display text-xl font-black text-white transition-colors group-hover:text-gold-300 sm:text-2xl">
-                جمعية نجوم السياحة
-              </span>
-              <span className="font-display text-[11px] font-semibold tracking-wider text-gold-400">
-                TOURISM STARS ASSOCIATION
-              </span>
-            </div>
-          </a>
-          <p className="mt-5 leading-7 text-white/60">
-            {currentSettings.footerDescription || DEFAULT_SETTINGS.footerDescription}
-          </p>
-          {socialLinks.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2.5">
-              {socialLinks.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={item.name}
-                  className="grid h-10 w-10 place-items-center rounded-full border border-gold-500/40 text-gold-300 transition hover:bg-gold-400 hover:text-navy-950 hover:shadow-gold"
-                >
-                  <item.icon size={18} />
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* روابط سريعة (Collapsible on Mobile) */}
-        <div>
-          <button
-            suppressHydrationWarning
-            type="button"
-            onClick={() => setQuickOpen((prev) => !prev)}
-            className="flex w-full items-center justify-between border-b border-white/10 pb-3 font-display text-lg font-bold text-gold-300 transition-colors md:cursor-default md:border-b-0 md:pb-0 md:mb-5 hover:text-gold-200 md:hover:text-gold-300"
-            aria-expanded={quickOpen}
-          >
-            <span>روابط سريعة</span>
-            <ChevronDown
-              size={18}
-              className={clsx(
-                'text-gold-400 transition-transform duration-300 md:hidden',
-                quickOpen && 'rotate-180'
-              )}
-            />
-          </button>
-          <div
-            className={clsx(
-              'transition-all duration-300 ease-in-out md:block',
-              quickOpen
-                ? 'mt-3 max-h-96 opacity-100 md:mt-0'
-                : 'max-h-0 overflow-hidden opacity-0 md:max-h-none md:overflow-visible md:opacity-100'
-            )}
-          >
-            <ul className="space-y-3 pt-1 md:pt-0">
-              {[
-                ['/packages', 'الباقات الفاخرة'],
-                ['/medical-tourism', 'السياحة العلاجية والاستشفاء ✦'],
-                ['/branches', 'فروع الجمعية (13 فرعاً)'],
-                ['/#vip', 'خدمات VIP'],
-                ['/#testimonials', 'آراء الضيوف'],
-                ['/contact', 'تواصل معنا'],
-              ].map(([h, l]) => (
-                <li key={h}>
-                  <Link href={h} className="transition hover:text-gold-300">
-                    {l}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
-
-        {/* الوجهات (Collapsible on Mobile) */}
-        <div>
-          <button
-            suppressHydrationWarning
-            type="button"
-            onClick={() => setDestinationsOpen((prev) => !prev)}
-            className="flex w-full items-center justify-between border-b border-white/10 pb-3 font-display text-lg font-bold text-gold-300 transition-colors md:cursor-default md:border-b-0 md:pb-0 md:mb-5 hover:text-gold-200 md:hover:text-gold-300"
-            aria-expanded={destinationsOpen}
-          >
-            <span>الوجهات</span>
-            <ChevronDown
-              size={18}
-              className={clsx(
-                'text-gold-400 transition-transform duration-300 md:hidden',
-                destinationsOpen && 'rotate-180'
-              )}
-            />
-          </button>
-          <div
-            className={clsx(
-              'transition-all duration-300 ease-in-out md:block',
-              destinationsOpen
-                ? 'mt-3 max-h-96 opacity-100 md:mt-0'
-                : 'max-h-0 overflow-hidden opacity-0 md:max-h-none md:overflow-visible md:opacity-100'
-            )}
-          >
-            <ul className="space-y-3 pt-1 md:pt-0">
-              {[
-                ['alula', 'العلا'],
-                ['red-sea', 'البحر الأحمر'],
-                ['diriyah', 'الدرعية'],
-                ['asir', 'عسير'],
-              ].map(([s, l]) => (
-                <li key={s}>
-                  <Link href={`/packages?destination=${s}`} className="transition hover:text-gold-300">
-                    {l}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div>
-          <h4 className="mb-5 font-display text-lg font-bold text-gold-300">النشرة البريدية</h4>
-          <NewsletterForm />
-          <div className="mt-6 flex flex-wrap gap-2 text-xs font-bold">
-            {['mada', 'VISA', 'Mastercard', 'Apple Pay'].map((p) => (
-              <span key={p} className="rounded-md bg-white px-3 py-1.5 text-navy-900">
-                {p}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="relative border-t border-white/10 py-5 text-center text-sm text-white/50">
-        {renderCopyright()}
       </div>
     </footer>
   );
