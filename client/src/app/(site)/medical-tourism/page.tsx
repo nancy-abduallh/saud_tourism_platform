@@ -328,28 +328,39 @@ export default function MedicalTourismPage() {
   return (
     <div className="bg-slate-50 min-h-screen text-navy-950 pb-20">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-navy-950 pt-24 pb-8 sm:pt-28 sm:pb-12 text-white">
-        {/* Background Image with High-Contrast Dark Gradient Overlay */}
-        <div className="absolute inset-0 z-0">
+      <section className="relative overflow-hidden bg-navy-950 min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] pt-24 pb-14 sm:pt-32 sm:pb-20 lg:pt-36 lg:pb-24 flex flex-col justify-center items-center text-white">
+        {/* Background Image Container: reveals the whole landscape with a balanced black overlay */}
+        <div className="absolute inset-0 z-0 overflow-hidden bg-black">
+          {/* Ambient blurred backdrop so ultra-wide screens seamlessly extend canyon colors */}
+          <img
+            src="/images/medical-hero-bg.jpg"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center scale-110 blur-xl opacity-35"
+          />
+
+          {/* Crisp background image displayed in its entirety */}
           <img
             src="/images/medical-hero-bg.jpg"
             alt="ملاذات وطبيعة السياحة العلاجية والاستشفاء في المملكة العربية السعودية"
-            className="h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-cover sm:object-cover object-[center_35%]"
           />
-          {/* Gradients ensuring 100% text legibility and rich atmosphere */}
-          <div className="absolute inset-0 bg-gradient-to-b from-navy-950/92 via-navy-950/85 to-navy-950/95" />
-          <div className="absolute inset-0 bg-radial-gradient opacity-50" />
+
+          {/* Balanced black tint (not too dark to let image shine, dark enough to make words completely obvious) */}
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-black/75" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(0,0,0,0.4)_0%,_transparent_75%)]" />
         </div>
 
         {/* Ambient Subtle Glows */}
-        <div className="pointer-events-none absolute -top-24 right-1/4 h-72 w-72 rounded-full bg-emerald-500/15 blur-3xl z-0" />
-        <div className="pointer-events-none absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-gold-500/15 blur-3xl z-0" />
+        <div className="pointer-events-none absolute -top-24 right-1/4 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl z-0" />
+        <div className="pointer-events-none absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-gold-500/10 blur-3xl z-0" />
 
         <div className="container-x relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-navy-950/90 px-4 py-1.5 text-xs font-bold text-emerald-300 backdrop-blur-md shadow-md"
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-400/60 bg-black/60 px-4 py-1.5 text-xs font-bold text-emerald-300 backdrop-blur-md shadow-lg"
           >
             <Sparkles size={14} className="text-gold-400" />
             <span>{heroConfig.badge}</span>
@@ -359,17 +370,17 @@ export default function MedicalTourismPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-3.5 font-display text-2xl sm:text-4xl lg:text-5xl font-black leading-tight text-white tracking-normal"
+            className="mt-4 font-display text-2xl sm:text-4xl lg:text-5xl font-black leading-tight text-white tracking-normal drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] [text-shadow:_0_2px_12px_rgb(0_0_0_/_90%)]"
           >
             {heroConfig.title.includes('في') ? (
               <>
-                <span>{heroConfig.title.split('في')[0]}في</span>{' '}
-                <span className="text-gold-300 inline-block font-extrabold">
+                <span className="drop-shadow-lg">{heroConfig.title.split('في')[0]}في</span>{' '}
+                <span className="text-gold-300 inline-block font-extrabold drop-shadow-[0_3px_14px_rgba(0,0,0,0.9)]">
                   {heroConfig.title.split('في').slice(1).join('في').trim()}
                 </span>
               </>
             ) : (
-              <span className="text-gold-300 font-extrabold">{heroConfig.title}</span>
+              <span className="text-gold-300 font-extrabold drop-shadow-[0_3px_14px_rgba(0,0,0,0.9)]">{heroConfig.title}</span>
             )}
           </motion.h1>
 
@@ -377,9 +388,9 @@ export default function MedicalTourismPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mx-auto mt-4 max-w-3xl rounded-2xl bg-navy-950/85 p-4 sm:p-5 backdrop-blur-md border border-white/15 shadow-2xl"
+            className="mx-auto mt-5 max-w-3xl rounded-2xl bg-black/45 p-4 sm:p-5 backdrop-blur-md border border-white/20 shadow-2xl"
           >
-            <p className="text-sm sm:text-base text-white font-medium leading-relaxed text-center">
+            <p className="text-sm sm:text-base text-white font-medium leading-relaxed text-center drop-shadow-sm">
               {heroConfig.subtitle}
             </p>
           </motion.div>
