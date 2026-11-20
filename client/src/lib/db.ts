@@ -1102,6 +1102,8 @@ export async function getHomeSectionsData(): Promise<HomeSectionsData> {
             tripPlanner: Array.isArray(parsed.tripPlanner) ? parsed.tripPlanner : DEFAULT_HOME_SECTIONS_DATA.tripPlanner,
             travelRoutes: Array.isArray(parsed.travelRoutes) ? parsed.travelRoutes : DEFAULT_HOME_SECTIONS_DATA.travelRoutes,
             vipBanner: { ...DEFAULT_HOME_SECTIONS_DATA.vipBanner, ...(parsed.vipBanner || {}) },
+            medicalDestinations: Array.isArray(parsed.medicalDestinations) ? parsed.medicalDestinations : DEFAULT_HOME_SECTIONS_DATA.medicalDestinations,
+            medicalHero: { ...DEFAULT_HOME_SECTIONS_DATA.medicalHero, ...(parsed.medicalHero || {}) },
           };
         } catch (jsonErr) {
           console.warn('Failed to parse home_sections_config JSON, falling back:', jsonErr);
@@ -1126,6 +1128,8 @@ export async function updateHomeSectionsData(data: Partial<HomeSectionsData>): P
     tripPlanner: data.tripPlanner || current.tripPlanner,
     travelRoutes: data.travelRoutes || current.travelRoutes,
     vipBanner: { ...current.vipBanner, ...(data.vipBanner || {}) },
+    medicalDestinations: data.medicalDestinations || current.medicalDestinations,
+    medicalHero: { ...current.medicalHero, ...(data.medicalHero || {}) },
   };
 
   const p = getPool();

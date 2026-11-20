@@ -15,6 +15,7 @@ import {
   Waves,
   Wind,
 } from 'lucide-react';
+import type { MedicalDestinationItem } from '@/lib/types';
 
 const HIGHLIGHT_DESTINATIONS = [
   {
@@ -75,7 +76,23 @@ const HIGHLIGHT_DESTINATIONS = [
   },
 ];
 
-export default function MedicalTourismSection() {
+export default function MedicalTourismSection({
+  destinations,
+}: {
+  destinations?: MedicalDestinationItem[];
+}) {
+  const items =
+    destinations && destinations.length > 0
+      ? destinations.map((d) => ({
+          id: d.id,
+          name: d.name,
+          title: d.title,
+          desc: d.description ? d.description.slice(0, 95) + '...' : '',
+          image: d.image,
+          badge: d.badge,
+        }))
+      : HIGHLIGHT_DESTINATIONS;
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 py-16 sm:py-24 border-t border-slate-200">
       {/* Ambient Glow */}
@@ -109,9 +126,9 @@ export default function MedicalTourismSection() {
           </Link>
         </div>
 
-        {/* 6 Destination Cards Grid */}
+        {/* Destination Cards Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {HIGHLIGHT_DESTINATIONS.map((dest, idx) => (
+          {items.map((dest, idx) => (
             <motion.div
               key={dest.id}
               initial={{ opacity: 0, y: 20 }}

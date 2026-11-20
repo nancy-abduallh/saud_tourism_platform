@@ -63,13 +63,21 @@ const AVAILABLE_IMAGES = [
   { url: '/images/pkg-5.jpg', label: 'مكة المكرمة - إطلالة الحرم والأجنحة الفاخرة' },
   { url: '/images/hero-1.jpg', label: 'ملاذ فاخر ومسبح خاص في الصحراء' },
   { url: '/images/hero-3.jpg', label: 'جزر البحر الأحمر وأنشطة الإبحار الفاخر' },
+  { url: '/images/medical-abha.jpg', label: 'استشفاء: أبها - منتجع جبلي هادئ' },
+  { url: '/images/medical-redsea-jeddah.jpg', label: 'استشفاء: كورنيش جدة وسواحل البحر الأحمر' },
+  { url: '/images/medical-ahsa.jpg', label: 'استشفاء: واحة الأحساء والينابيع الساخنة' },
+  { url: '/images/medical-taif.jpg', label: 'استشفاء: الطائف - جنة زهور وورود' },
+  { url: '/images/medical-alula.jpg', label: 'استشفاء: العلا - توازن بين الحاضر والماضي' },
+  { url: '/images/medical-rub-al-khali.jpg', label: 'استشفاء: الربع الخالي - سكينة الصحراء والنجوم' },
+  { url: '/images/medical-salam-park.jpg', label: 'استشفاء: الرياض - حديقة السلام والحي الدبلوماسي' },
+  { url: '/images/medical-hero-bg.jpg', label: 'خلفية سياحة علاجية: وادي ومحمية استشفاء طبيعية' },
 ];
 
 export default function AdminSectionsPage() {
   const [data, setData] = useState<HomeSectionsData>(DEFAULT_HOME_SECTIONS_DATA);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'visibility' | 'valueProps' | 'stayTypes' | 'exploreCities' | 'tripPlanner' | 'weekendDeals' | 'popularStays' | 'vipBanner' | 'travelRoutes'>('visibility');
+  const [activeTab, setActiveTab] = useState<'visibility' | 'valueProps' | 'stayTypes' | 'exploreCities' | 'tripPlanner' | 'weekendDeals' | 'popularStays' | 'vipBanner' | 'travelRoutes' | 'medicalTourism'>('visibility');
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
@@ -219,6 +227,7 @@ export default function AdminSectionsPage() {
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
         {[
           { id: 'visibility', label: 'إظهار / إخفاء الأقسام (21 قسماً)', icon: Eye },
+          { id: 'medicalTourism', label: 'السياحة العلاجية والاستشفاء (7 وجهات) 🌿', icon: HeartPulse },
           { id: 'valueProps', label: 'شريط المزايا (4)', icon: ShieldCheck },
           { id: 'stayTypes', label: 'أنواع الإقامة (4)', icon: Castle },
           { id: 'exploreCities', label: 'استكشف المدن (6)', icon: Compass },
@@ -1125,6 +1134,354 @@ export default function AdminSectionsPage() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Medical Tourism (السياحة العلاجية والاستشفاء) */}
+      {activeTab === 'medicalTourism' && (
+        <div className="space-y-6">
+          {/* Hero & Contact Settings */}
+          <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200 space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h3 className="font-display text-base font-bold text-navy-950 flex items-center gap-2">
+                  <HeartPulse className="text-emerald-600" size={18} />
+                  <span>إعدادات بوابة وسكشن السياحة العلاجية والاستشفاء</span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  تعديل العنوان الترويجي، شارة الهيرو، ورقم واتساب كونسيرج العافية.
+                </p>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200">
+                <span className="text-xs font-bold text-slate-700">ظهور السكشن بالرئيسية:</span>
+                <input
+                  type="checkbox"
+                  checked={data.visibility.medicalTourism}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      visibility: { ...data.visibility, medicalTourism: e.target.checked },
+                    })
+                  }
+                  className="h-4 w-4 rounded accent-emerald-600 cursor-pointer"
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">الشارة العلوية (Badge)</label>
+                <input
+                  type="text"
+                  value={data.medicalHero?.badge || 'السياحة العلاجية والاستشفاء الطبيعي بالمملكة'}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      medicalHero: {
+                        ...(data.medicalHero || {
+                          badge: '',
+                          title: '',
+                          subtitle: '',
+                          whatsappPhone: '966571713078',
+                        }),
+                        badge: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs font-semibold text-navy-950"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">رقم واتساب استشارات العافية (دولي بدون +)</label>
+                <input
+                  type="text"
+                  value={data.medicalHero?.whatsappPhone || '966571713078'}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      medicalHero: {
+                        ...(data.medicalHero || {
+                          badge: 'السياحة العلاجية والاستشفاء الطبيعي بالمملكة',
+                          title: '7 وجهات للسياحة العلاجية في المملكة العربية السعودية',
+                          subtitle: '',
+                          whatsappPhone: '',
+                        }),
+                        whatsappPhone: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs font-bold text-navy-950"
+                  dir="ltr"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-slate-700 mb-1">العنوان الرئيسي (Title)</label>
+                <input
+                  type="text"
+                  value={data.medicalHero?.title || '7 وجهات للسياحة العلاجية في المملكة العربية السعودية'}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      medicalHero: {
+                        ...(data.medicalHero || {
+                          badge: 'السياحة العلاجية والاستشفاء الطبيعي بالمملكة',
+                          title: '',
+                          subtitle: '',
+                          whatsappPhone: '966571713078',
+                        }),
+                        title: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs font-bold text-navy-950"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-slate-700 mb-1">الوصف التعريفي (Subtitle)</label>
+                <textarea
+                  rows={2}
+                  value={data.medicalHero?.subtitle || ''}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      medicalHero: {
+                        ...(data.medicalHero || {
+                          badge: 'السياحة العلاجية والاستشفاء الطبيعي بالمملكة',
+                          title: '7 وجهات للسياحة العلاجية في المملكة العربية السعودية',
+                          subtitle: '',
+                          whatsappPhone: '966571713078',
+                        }),
+                        subtitle: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-700 leading-relaxed"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Destinations List */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-display text-base font-bold text-navy-950">
+                  وجهات الاستشفاء والعافية ({(data.medicalDestinations || []).length} وجهات)
+                </h3>
+                <p className="text-xs text-slate-500">
+                  تحكم كامل في نصوص، صور، ميزات، واقتباسات كل وجهة علاجية تظهر للمسافرين.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const newDest = {
+                    id: 'dest-' + Date.now(),
+                    name: 'وجهة استشفائية جديدة',
+                    title: 'ملاذ صحي واستجمام',
+                    region: 'المملكة العربية السعودية',
+                    description: 'وصف التجربة العلاجية والاسترخاء...',
+                    highlights: ['هواء نقي وبيئة مهدئة', 'جلسات استجمام وعناية متخصصة'],
+                    image: '/images/medical-hero-bg.jpg',
+                    badge: 'ملاذ صحي',
+                    tag: 'استرخاء',
+                    featuredQuote: 'تجربة استثنائية للاستشفاء والسلام الداخلي.',
+                    bestFor: 'الراحة النفسية واستعادة الحيوية',
+                  };
+                  setData({
+                    ...data,
+                    medicalDestinations: [...(data.medicalDestinations || []), newDest],
+                  });
+                }}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 text-xs font-bold shadow-sm transition-colors cursor-pointer"
+              >
+                + إضافة وجهة علاجية جديدة
+              </button>
+            </div>
+
+            {(data.medicalDestinations || []).map((dest, idx) => (
+              <div
+                key={dest.id || idx}
+                className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200 space-y-4"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 font-black text-xs">
+                      {idx + 1}
+                    </span>
+                    <div>
+                      <h4 className="font-bold text-navy-950 text-sm">{dest.name} - {dest.title}</h4>
+                      <span className="text-[11px] text-slate-400">{dest.region}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = (data.medicalDestinations || []).filter((_, i) => i !== idx);
+                      setData({ ...data, medicalDestinations: updated });
+                    }}
+                    className="text-xs text-red-500 hover:text-red-700 font-bold self-start sm:self-auto cursor-pointer"
+                  >
+                    حذف الوجهة
+                  </button>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">اسم المدينة / الوجهة</label>
+                    <input
+                      type="text"
+                      value={dest.name}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].name = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-bold text-navy-950"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">العنوان الفرعي للوجهة</label>
+                    <input
+                      type="text"
+                      value={dest.title}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].title = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-navy-950"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">الموقع الجغرافي (المنطقة)</label>
+                    <input
+                      type="text"
+                      value={dest.region}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].region = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-slate-700"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">الشارة (Badge)</label>
+                    <input
+                      type="text"
+                      value={dest.badge}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].badge = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-emerald-800 font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">الوسم الصغير (Tag)</label>
+                    <input
+                      type="text"
+                      value={dest.tag}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].tag = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-slate-700"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">صورة الوجهة</label>
+                    <select
+                      value={dest.image}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].image = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-navy-950 mb-1"
+                    >
+                      {AVAILABLE_IMAGES.map((img) => (
+                        <option key={img.url} value={img.url}>
+                          {img.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">الوصف التفصيلي للرحلة العلاجية</label>
+                    <textarea
+                      rows={3}
+                      value={dest.description}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].description = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-slate-700 leading-relaxed"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      أبرز الميزات العلاجية (اكتب كل ميزة بسطر مستقل)
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={(dest.highlights || []).join('\n')}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].highlights = e.target.value.split('\n').filter((l) => l.trim().length > 0);
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-slate-700"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">مثالية وموصى بها لـ (Best For)</label>
+                    <input
+                      type="text"
+                      value={dest.bestFor}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].bestFor = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-navy-950"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">اقتباس مميز (Featured Quote)</label>
+                    <input
+                      type="text"
+                      value={dest.featuredQuote}
+                      onChange={(e) => {
+                        const updated = [...(data.medicalDestinations || [])];
+                        updated[idx].featuredQuote = e.target.value;
+                        setData({ ...data, medicalDestinations: updated });
+                      }}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-navy-950"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

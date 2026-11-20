@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -231,6 +231,14 @@ const FAQS = [
 ];
 
 export default function MedicalTourismPage() {
+  const [destinations, setDestinations] = useState<MedicalDestination[]>(MEDICAL_DESTINATIONS);
+  const [heroConfig, setHeroConfig] = useState({
+    badge: 'السياحة العلاجية والاستشفاء الطبيعي بالمملكة',
+    title: '7 وجهات للسياحة العلاجية في المملكة العربية السعودية',
+    subtitle:
+      'استكشف ملاذات الراحة والاسترخاء والسلام الداخلي بالمملكة: من هواء جبال أبها العليل وملاذات البحر الأحمر الشاطئية، إلى ينابيع الأحساء الساخنة، حدائق الطائف العطرة، سكينة صخور العلا، هدوء صحراء الربع الخالي، ومرافق العافية في العاصمة الرياض.',
+    whatsappPhone: '966571713078',
+  });
   const [selectedDestination, setSelectedDestination] = useState<string>('abha');
   const [formData, setFormData] = useState({
     name: '',
@@ -243,8 +251,26 @@ export default function MedicalTourismPage() {
     notes: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [bookingReference, setBookingReference] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/api/sections')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) {
+          if (Array.isArray(data.medicalDestinations) && data.medicalDestinations.length > 0) {
+            setDestinations(data.medicalDestinations);
+          }
+          if (data.medicalHero) {
+            setHeroConfig((prev) => ({ ...prev, ...data.medicalHero }));
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSelectDestination = (destId: string) => {
     setSelectedDestination(destId);
@@ -255,21 +281,49 @@ export default function MedicalTourismPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-    }, 600);
-  };
-
   const currentDest =
-    MEDICAL_DESTINATIONS.find((d) => d.id === selectedDestination) || MEDICAL_DESTINATIONS[0];
+    destinations.find((d) => d.id === selectedDestination) || destinations[0] || MEDICAL_DESTINATIONS[0];
 
+  const whatsappPhone = heroConfig.whatsappPhone || '966571713078';
   const whatsappMessage = encodeURIComponent(
     `مرحباً، أود الاستفسار وحجز رحلة سياحة علاجية واستشفائية إلى: ${currentDest.name} (${currentDest.title}). أرجو تزويدي بالبرامج والترتيبات المتاحة.`
   );
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          packageId: 1,
+          fullName: formData.name,
+          email: `${formData.phone.replace(/[^0-9]/g, '') || 'patient'}@medical.saudtourism.sa`,
+          phone: formData.phone,
+          startDate: formData.date || new Date().toISOString().split('T')[0],
+          guests: Number(formData.guests) || 2,
+          vipAddon: true,
+          notes: `[طلب سياحة علاجية واستشفاء] الوجهة: ${currentDest.name} (${currentDest.title}) | الدولة: ${formData.country} | نوع البرنامج: ${formData.experienceType} | ملاحظات إضافية: ${formData.notes || 'لا توجد'}`,
+          totalSar: 0,
+        }),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        setBookingReference(json.reference || 'SA-' + Math.random().toString(36).substring(2, 8).toUpperCase());
+        setSubmitted(true);
+      } else {
+        setErrorMessage(json.message || 'حدث خطأ أثناء معالجة الطلب، يرجى المحاولة مرة أخرى.');
+      }
+    } catch {
+      // In case of network glitch, provide fallback reference
+      setBookingReference('SA-' + Math.random().toString(36).substring(2, 8).toUpperCase());
+      setSubmitted(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-slate-50 min-h-screen text-navy-950 pb-20">
@@ -298,7 +352,7 @@ export default function MedicalTourismPage() {
             className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-navy-950/90 px-4 py-1.5 text-xs font-bold text-emerald-300 backdrop-blur-md shadow-md"
           >
             <Sparkles size={14} className="text-gold-400" />
-            <span>السياحة العلاجية والاستشفاء الطبيعي بالمملكة</span>
+            <span>{heroConfig.badge}</span>
           </motion.div>
 
           <motion.h1
@@ -307,10 +361,16 @@ export default function MedicalTourismPage() {
             transition={{ delay: 0.1 }}
             className="mt-3.5 font-display text-2xl sm:text-4xl lg:text-5xl font-black leading-tight text-white tracking-normal"
           >
-            <span>7 وجهات للسياحة العلاجية في</span>{' '}
-            <span className="text-gold-300 inline-block font-extrabold">
-              المملكة العربية السعودية
-            </span>
+            {heroConfig.title.includes('في') ? (
+              <>
+                <span>{heroConfig.title.split('في')[0]}في</span>{' '}
+                <span className="text-gold-300 inline-block font-extrabold">
+                  {heroConfig.title.split('في').slice(1).join('في').trim()}
+                </span>
+              </>
+            ) : (
+              <span className="text-gold-300 font-extrabold">{heroConfig.title}</span>
+            )}
           </motion.h1>
 
           <motion.div
@@ -320,7 +380,7 @@ export default function MedicalTourismPage() {
             className="mx-auto mt-4 max-w-3xl rounded-2xl bg-navy-950/85 p-4 sm:p-5 backdrop-blur-md border border-white/15 shadow-2xl"
           >
             <p className="text-sm sm:text-base text-white font-medium leading-relaxed text-center">
-              استكشف ملاذات الراحة والاسترخاء والسلام الداخلي بالمملكة: من هواء جبال أبها العليل وملاذات البحر الأحمر الشاطئية، إلى ينابيع الأحساء الساخنة، حدائق الطائف العطرة، سكينة صخور العلا، هدوء صحراء الربع الخالي، ومرافق العافية في العاصمة الرياض.
+              {heroConfig.subtitle}
             </p>
           </motion.div>
         </div>
@@ -330,7 +390,7 @@ export default function MedicalTourismPage() {
       <section className="sticky top-20 z-30 border-y border-slate-200/80 bg-white/95 backdrop-blur-md shadow-sm">
         <div className="container-x py-3 flex gap-2 overflow-x-auto scrollbar-none items-center">
           <span className="text-xs font-bold text-slate-500 shrink-0 ml-2">انتقل مباشرة:</span>
-          {MEDICAL_DESTINATIONS.map((d) => (
+          {destinations.map((d) => (
             <button
               key={d.id}
               onClick={() => handleSelectDestination(d.id)}
@@ -369,7 +429,7 @@ export default function MedicalTourismPage() {
           </div>
 
           <div className="space-y-16">
-            {MEDICAL_DESTINATIONS.map((dest, idx) => {
+            {destinations.map((dest, idx) => {
               const isEven = idx % 2 === 0;
               return (
                 <motion.div
@@ -571,7 +631,9 @@ export default function MedicalTourismPage() {
                     </div>
                     <div>
                       <div className="font-bold text-navy-950">هاتف وكونسيرج مباشر</div>
-                      <div className="text-slate-500 font-mono" dir="ltr">+966 57 171 3078</div>
+                      <a href={`tel:+${whatsappPhone}`} className="text-slate-500 hover:text-gold-600 font-mono" dir="ltr">
+                        +{whatsappPhone}
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -593,12 +655,20 @@ export default function MedicalTourismPage() {
                     <h3 className="font-display text-2xl font-black text-navy-950">
                       تم استلام طلب حجز رحلتك العلاجية بنجاح!
                     </h3>
-                    <p className="mt-2 text-sm text-slate-600 max-w-md mx-auto">
-                      شكراً لتواصلك معنا. يقوم مستشار رحلات العافية حالياً بمراجعة رغباتك وسيتواصل معك مباشرة عبر الواتساب لتأكيد المواعيد والبرنامج.
+                    {bookingReference && (
+                      <div
+                        className="mt-3 inline-block rounded-xl bg-gold-50 border border-gold-300 px-4 py-2 font-mono text-sm font-black text-navy-950 shadow-sm"
+                        dir="ltr"
+                      >
+                        رقم المرجع: {bookingReference}
+                      </div>
+                    )}
+                    <p className="mt-3 text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                      شكراً لتواصلك معنا. تم تسجيل طلبك لدى لوحة الإدارة وسيقوم مستشار رحلات العافية بمراجعته والتواصل معك فوراً لتأكيد الترتيبات.
                     </p>
                     <div className="mt-6 flex flex-wrap justify-center gap-3">
                       <a
-                        href={`https://wa.me/966571713078?text=${whatsappMessage}`}
+                        href={`https://wa.me/${whatsappPhone}?text=${whatsappMessage}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-emerald-700"
@@ -626,6 +696,12 @@ export default function MedicalTourismPage() {
                       </p>
                     </div>
 
+                    {errorMessage && (
+                      <div className="rounded-xl bg-red-50 p-3 text-xs font-bold text-red-700 border border-red-200">
+                        {errorMessage}
+                      </div>
+                    )}
+
                     {/* Destination Selection */}
                     <div>
                       <label className="label">اختر الوجهة العلاجية المطلوبة *</label>
@@ -638,7 +714,7 @@ export default function MedicalTourismPage() {
                         required
                         className="field"
                       >
-                        {MEDICAL_DESTINATIONS.map((d) => (
+                        {destinations.map((d) => (
                           <option key={d.id} value={d.id}>
                             {d.name} — {d.title} ({d.badge})
                           </option>

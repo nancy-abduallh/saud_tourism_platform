@@ -115,7 +115,9 @@ export default async function HomePage() {
       {vis.featuredPackages !== false && <FeaturedPackages packages={packages} />}
       {vis.popularStays !== false && <PopularStays stays={sectionsData.popularStays} />}
       {vis.vipClubBanner !== false && <VipClubBanner config={sectionsData.vipBanner} />}
-      {vis.medicalTourism !== false && <MedicalTourismSection />}
+      {vis.medicalTourism !== false && (
+        <MedicalTourismSection destinations={sectionsData.medicalDestinations} />
+      )}
       {vis.stats !== false && <Stats data={stats} />}
       {vis.vipServices !== false && <VipServices services={services} />}
       {vis.ownerMessage !== false && <OwnerMessage settings={settings} />}

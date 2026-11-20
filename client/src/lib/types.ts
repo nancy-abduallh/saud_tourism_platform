@@ -248,6 +248,27 @@ export interface VipBannerConfig {
   secondaryCtaLink: string;
 }
 
+export interface MedicalDestinationItem {
+  id: string;
+  name: string;
+  title: string;
+  region: string;
+  description: string;
+  highlights: string[];
+  image: string;
+  badge: string;
+  tag: string;
+  featuredQuote: string;
+  bestFor: string;
+}
+
+export interface MedicalHeroConfig {
+  badge?: string;
+  title?: string;
+  subtitle?: string;
+  whatsappPhone?: string;
+}
+
 export interface HomeSectionsData {
   visibility: HomeSectionsVisibility;
   valueProps: ValuePropItem[];
@@ -258,4 +279,6 @@ export interface HomeSectionsData {
   tripPlanner: TripPlannerCategory[];
   travelRoutes: TravelRouteDeparture[];
   vipBanner: VipBannerConfig;
+  medicalDestinations?: MedicalDestinationItem[];
+  medicalHero?: MedicalHeroConfig;
 }
