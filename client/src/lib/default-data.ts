@@ -1468,7 +1468,7 @@ export const DEFAULT_HOME_SECTIONS_DATA: HomeSectionsData = {
           region: 'جدة',
           travelTime: 'طيران 1 س و 30 د من الرياض',
           priceFrom: '2,400 ر.س',
-          image: '/images/jeddah.jpg',
+          image: '/images/jeddah-chalets.jpg',
           rating: '4.8 ★',
           badge: 'إبحار وغروب VIP',
         },
