@@ -11,6 +11,15 @@ import Testimonials from '@/components/Testimonials';
 import CtaBanner from '@/components/CtaBanner';
 import BranchesHomeSection from '@/components/BranchesHomeSection';
 import OwnerMessage from '@/components/OwnerMessage';
+import BookingValueProps from '@/components/home/BookingValueProps';
+import StayTypes from '@/components/home/StayTypes';
+import TrendingDestinations from '@/components/home/TrendingDestinations';
+import ExploreCities from '@/components/home/ExploreCities';
+import QuickTripPlanner from '@/components/home/QuickTripPlanner';
+import WeekendDeals from '@/components/home/WeekendDeals';
+import PopularStays from '@/components/home/PopularStays';
+import VipClubBanner from '@/components/home/VipClubBanner';
+import TravelRoutes from '@/components/home/TravelRoutes';
 import { serverFetch } from '@/lib/api';
 import { getBranches, getSiteSettings } from '@/lib/db';
 import type { Destination, HeroSlide, PackageSummary, PublicStats, Review, VipService } from '@/lib/types';
@@ -92,13 +101,21 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
       />
       <HeroSlider slides={slides} destinations={destinations} />
-      <DestinationCards destinations={destinations} />
+      <BookingValueProps />
+      <StayTypes />
+      <TrendingDestinations />
+      <ExploreCities />
       <Marquee items={marqueeItems} />
+      <QuickTripPlanner />
+      <WeekendDeals />
       <FeaturedPackages packages={packages} />
+      <PopularStays />
+      <VipClubBanner />
       <Stats data={stats} />
       <VipServices services={services} />
       <OwnerMessage settings={settings} />
       <BranchesHomeSection branches={branches} />
+      <TravelRoutes />
       <WhyUs />
       <HowItWorks />
       <Testimonials reviews={reviews} />
