@@ -684,6 +684,7 @@ export const DEFAULT_HOME_SECTIONS_DATA: HomeSectionsData = {
     stayTypes: true,
     trendingDestinations: true,
     exploreCities: true,
+    medicalTourism: true,
     marquee: true,
     quickTripPlanner: true,
     weekendDeals: true,

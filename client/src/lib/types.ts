@@ -125,6 +125,7 @@ export interface HomeSectionsVisibility {
   stayTypes: boolean;
   trendingDestinations: boolean;
   exploreCities: boolean;
+  medicalTourism: boolean;
   marquee: boolean;
   quickTripPlanner: boolean;
   weekendDeals: boolean;

@@ -16,6 +16,7 @@ import {
   EyeOff,
   Flame,
   Gift,
+  HeartPulse,
   HelpCircle,
   Image as ImageIcon,
   Layers,
@@ -151,6 +152,7 @@ export default function AdminSectionsPage() {
     { key: 'featuredPackages', title: 'الباقات السياحية الفاخرة المميزة', desc: 'قائمة الباقات الرئيسية المضافة في لوحة الباقات', icon: Package },
     { key: 'popularStays', title: 'بيوت وملاذات يفضلها الضيوف', desc: 'أماكن الإقامة الأعلى تقييماً من رواد الفخامة', icon: Star },
     { key: 'vipClubBanner', title: 'بطاقة نادي نجوم السياحة VIP', desc: 'برنامج الولاء والامتيازات الحصرية والخصومات', icon: Crown },
+    { key: 'medicalTourism', title: 'بوابة السياحة العلاجية والاستشفائية الدولية', desc: 'استقبال المرضى الدوليين، العلاج في المستشفيات المرجعية وبرامج النقاهة', icon: HeartPulse },
     { key: 'stats', title: 'إحصائيات وأرقام المنصة', desc: 'أرقام الضيوف والتجارب والتقييمات وخدمة الكونسيرج', icon: Award },
     { key: 'vipServices', title: 'خدمات كبار الشخصيات VIP', desc: 'طيران خاص، يخوت، سيارات رينج روفر، ومرشدون', icon: Gift },
     { key: 'ownerMessage', title: 'كلمة الأستاذ سعود الشمري (المالك)', desc: 'الرسالة الترحيبية الرسمية للمالك ورؤية 2030', icon: ShieldCheck },
@@ -216,7 +218,7 @@ export default function AdminSectionsPage() {
       {/* Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
         {[
-          { id: 'visibility', label: 'إظهار / إخفاء الأقسام (20 قسماً)', icon: Eye },
+          { id: 'visibility', label: 'إظهار / إخفاء الأقسام (21 قسماً)', icon: Eye },
           { id: 'valueProps', label: 'شريط المزايا (4)', icon: ShieldCheck },
           { id: 'stayTypes', label: 'أنواع الإقامة (4)', icon: Castle },
           { id: 'exploreCities', label: 'استكشف المدن (6)', icon: Compass },

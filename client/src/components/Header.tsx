@@ -59,6 +59,7 @@ export default function Header() {
     { href: '/live', label: liveNavLabel, highlight: true, status: liveStatus },
     { href: '/#destinations', label: 'الوجهات' },
     { href: '/packages', label: 'الباقات الفاخرة' },
+    { href: '/medical-tourism', label: 'السياحة العلاجية ✦' },
     { href: '/branches', label: 'فروعنا' },
     { href: '/#vip', label: 'خدمات VIP' },
     { href: '/#testimonials', label: 'آراء الضيوف' },

@@ -19,6 +19,7 @@ import QuickTripPlanner from '@/components/home/QuickTripPlanner';
 import WeekendDeals from '@/components/home/WeekendDeals';
 import PopularStays from '@/components/home/PopularStays';
 import VipClubBanner from '@/components/home/VipClubBanner';
+import MedicalTourismSection from '@/components/home/MedicalTourismSection';
 import TravelRoutes from '@/components/home/TravelRoutes';
 import { serverFetch } from '@/lib/api';
 import { getBranches, getHomeSectionsData, getSiteSettings } from '@/lib/db';
@@ -114,6 +115,7 @@ export default async function HomePage() {
       {vis.featuredPackages !== false && <FeaturedPackages packages={packages} />}
       {vis.popularStays !== false && <PopularStays stays={sectionsData.popularStays} />}
       {vis.vipClubBanner !== false && <VipClubBanner config={sectionsData.vipBanner} />}
+      {vis.medicalTourism !== false && <MedicalTourismSection />}
       {vis.stats !== false && <Stats data={stats} />}
       {vis.vipServices !== false && <VipServices services={services} />}
       {vis.ownerMessage !== false && <OwnerMessage settings={settings} />}

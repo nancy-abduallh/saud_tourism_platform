@@ -140,6 +140,7 @@ export default function Footer({ settings = DEFAULT_SETTINGS }: { settings?: Sit
             <ul className="space-y-3 pt-1 md:pt-0">
               {[
                 ['/packages', 'الباقات الفاخرة'],
+                ['/medical-tourism', 'السياحة العلاجية والاستشفاء ✦'],
                 ['/branches', 'فروع الجمعية (13 فرعاً)'],
                 ['/#vip', 'خدمات VIP'],
                 ['/#testimonials', 'آراء الضيوف'],
