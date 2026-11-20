@@ -235,197 +235,6 @@ const CATEGORIES: { id: string; label: string; icon: string; items: PlannerItem[
   },
 ];
 
-function CategoryRealisticIcon({ id, label }: { id?: string; label?: string }) {
-  const normId = (id || '').toLowerCase();
-  const normLabel = (label || '').toLowerCase();
-
-  // 1. Coastal / Beach
-  if (normId.includes('beach') || normLabel.includes('شواطئ') || normLabel.includes('بحر') || normLabel.includes('ساحل') || normLabel.includes('جزر')) {
-    return (
-      <svg className="h-5 w-5 sm:h-5.5 sm:w-5.5 drop-shadow-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="seaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#06b6d4" />
-            <stop offset="100%" stopColor="#0284c7" />
-          </linearGradient>
-          <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fef08a" />
-            <stop offset="100%" stopColor="#f59e0b" />
-          </linearGradient>
-          <linearGradient id="yachtGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="100%" stopColor="#f1f5f9" />
-          </linearGradient>
-        </defs>
-        {/* Golden Sun */}
-        <circle cx="23" cy="8" r="4.5" fill="url(#sunGrad)" opacity="0.95" />
-        <path d="M23 2v2M23 12v2M17 8h2M27 8h2" stroke="#f59e0b" strokeWidth="1.2" strokeLinecap="round" />
-        {/* Palm Silhouette on Shore */}
-        <path d="M5 21c1.5-3 3-5 5.5-6" stroke="#047857" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M10.5 15c-1-2.5-3-3-4.5-2M10.5 15c2-2 3.5-1.5 4.5 0M10.5 15c-0.5-2.5 1-3.5 2-4" stroke="#059669" strokeWidth="1.2" strokeLinecap="round" />
-        {/* Luxury Yacht Hull & Cabin */}
-        <path d="M14 18l5.5-5 1.5 5H14z" fill="url(#yachtGrad)" stroke="#0f172a" strokeWidth="0.8" />
-        <path d="M21 16l3 2h-3v-2z" fill="#d4af37" />
-        <path d="M11 18h16l-3 4H14l-3-4z" fill="url(#yachtGrad)" stroke="#0f172a" strokeWidth="0.8" />
-        <line x1="12" y1="20" x2="25" y2="20" stroke="#d4af37" strokeWidth="1" />
-        {/* Azure Ocean Waves */}
-        <path d="M3 24c3-1.5 6-1.5 9 0s6 1.5 9 0 6-1.5 9 0" stroke="url(#seaGrad)" strokeWidth="2.2" strokeLinecap="round" />
-        <path d="M1 28c3.5-1.2 7-1.2 10.5 0s7 1.2 10.5 0 7-1.2 10 0" stroke="#0284c7" strokeWidth="1.8" strokeLinecap="round" opacity="0.85" />
-      </svg>
-    );
-  }
-
-  // 2. Nature & Mountain Relaxation
-  if (normId.includes('nature') || normLabel.includes('طبيعة') || normLabel.includes('جبل') || normLabel.includes('استرخاء')) {
-    return (
-      <svg className="h-5 w-5 sm:h-5.5 sm:w-5.5 drop-shadow-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="mtnGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#10b981" />
-            <stop offset="100%" stopColor="#047857" />
-          </linearGradient>
-          <linearGradient id="mtnGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0f766e" />
-            <stop offset="100%" stopColor="#064e3b" />
-          </linearGradient>
-          <linearGradient id="skySun" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fef08a" />
-            <stop offset="100%" stopColor="#f59e0b" />
-          </linearGradient>
-        </defs>
-        {/* Sunrise behind peaks */}
-        <circle cx="16" cy="11" r="5" fill="url(#skySun)" opacity="0.9" />
-        {/* Back High Mountain Peak */}
-        <polygon points="16,6 25,23 7,23" fill="url(#mtnGrad2)" />
-        {/* Snow/Mist Cap on Peak */}
-        <polygon points="16,6 19.5,12 17,11 16,12.5 14.5,11 13,12" fill="#ffffff" opacity="0.95" />
-        {/* Shaded Mountain Facet */}
-        <polygon points="16,6 25,23 16,23" fill="#044e3f" opacity="0.4" />
-        {/* Foreground Mountain Peak */}
-        <polygon points="8,13 18,27 2,27" fill="url(#mtnGrad1)" />
-        <polygon points="8,13 18,27 9,27" fill="#065f46" opacity="0.3" />
-        {/* Evergreen Juniper / Pine Trees */}
-        <path d="M24 23l2.5 4h-5z M27 24l2 4h-4z" fill="#064e3b" />
-        {/* Soft base meadow */}
-        <path d="M1 28c5-1.5 10-1 15 0s10 1.5 15 0" stroke="#10b981" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  // 3. Heritage & Authentic Culture
-  if (normId.includes('heritage') || normLabel.includes('تراث') || normLabel.includes('ثقافة') || normLabel.includes('أصالة') || normLabel.includes('أصيلة')) {
-    return (
-      <svg className="h-5 w-5 sm:h-5.5 sm:w-5.5 drop-shadow-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="mudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#d97706" />
-            <stop offset="100%" stopColor="#92400e" />
-          </linearGradient>
-          <linearGradient id="goldArch" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#fef08a" />
-            <stop offset="100%" stopColor="#c9a24b" />
-          </linearGradient>
-        </defs>
-        {/* Historic Fortress Walls */}
-        <path d="M4 11h3v2h2v-2h4v2h2v-2h4v2h2v-2h4v2h2v-2h1v16H4V11z" fill="url(#mudGrad)" />
-        {/* Najdi Triangular Decorative Openings (Tarmash) */}
-        <polygon points="9,15 11,18 7,18" fill="#fef3c7" opacity="0.9" />
-        <polygon points="16,15 18,18 14,18" fill="#fef3c7" opacity="0.9" />
-        <polygon points="23,15 25,18 21,18" fill="#fef3c7" opacity="0.9" />
-        {/* Heritage Arched Grand Portal */}
-        <path d="M12 27v-6c0-2.2 1.8-4 4-4s4 1.8 4 4v6h-8z" fill="#311907" />
-        <path d="M12 21c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="url(#goldArch)" strokeWidth="1.4" />
-        {/* Wooden Door Studs & Pattern */}
-        <line x1="16" y1="18" x2="16" y2="27" stroke="#78350f" strokeWidth="1" />
-        <circle cx="14" cy="22" r="0.75" fill="#f59e0b" />
-        <circle cx="18" cy="22" r="0.75" fill="#f59e0b" />
-        {/* Hanging Lantern (Fanoos) */}
-        <line x1="16" y1="12" x2="16" y2="14" stroke="#f59e0b" strokeWidth="0.8" />
-        <polygon points="16,14 17.5,16 14.5,16" fill="#fef08a" />
-      </svg>
-    );
-  }
-
-  // 4. Safari & Edge of the World Adventures
-  if (normId.includes('safari') || normLabel.includes('سفاري') || normLabel.includes('مغامر') || normLabel.includes('حافة العالم') || normLabel.includes('طويق')) {
-    return (
-      <svg className="h-5 w-5 sm:h-5.5 sm:w-5.5 drop-shadow-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="duneGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#b45309" />
-          </linearGradient>
-          <linearGradient id="duneGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fbbf24" />
-            <stop offset="100%" stopColor="#d97706" />
-          </linearGradient>
-          <linearGradient id="cliffGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#78350f" />
-            <stop offset="100%" stopColor="#451a03" />
-          </linearGradient>
-        </defs>
-        {/* Desert Horizon / Cliffs of Tuwaiq */}
-        <polygon points="2,14 12,10 14,15 19,11 26,16 30,16 30,22 2,22" fill="url(#cliffGrad)" opacity="0.6" />
-        {/* Golden Sand Dunes */}
-        <path d="M1 21c6-3 12-1 18-3s8 1 12 3v7H1v-7z" fill="url(#duneGrad1)" />
-        <path d="M1 24c8-2 14 0 20-2s7 1 10 2v4H1v-4z" fill="url(#duneGrad2)" opacity="0.9" />
-        {/* 4x4 Overland Expedition Vehicle */}
-        <rect x="7" y="10" width="8" height="1.5" rx="0.5" fill="#d4af37" />
-        <path d="M6 13.5l2-3h7l2 3v3H6v-3z" fill="#0f172a" />
-        <rect x="9" y="11.5" width="2.5" height="2" fill="#94a3b8" />
-        <rect x="12.5" y="11.5" width="2.5" height="2" fill="#94a3b8" />
-        <path d="M4 14.5h16l1.5 2v2.5H4v-4.5z" fill="#b45309" stroke="#0f172a" strokeWidth="0.8" />
-        <rect x="19" y="15" width="2" height="1.5" rx="0.5" fill="#fef08a" />
-        {/* Off-Road Wheels */}
-        <circle cx="7.5" cy="19.5" r="2.2" fill="#1e293b" />
-        <circle cx="7.5" cy="19.5" r="1" fill="#cbd5e1" />
-        <circle cx="16.5" cy="19.5" r="2.2" fill="#1e293b" />
-        <circle cx="16.5" cy="19.5" r="1" fill="#cbd5e1" />
-      </svg>
-    );
-  }
-
-  // 5. Spiritual & Royal Umrah
-  if (normId.includes('spiritual') || normLabel.includes('عمرة') || normLabel.includes('زيارة') || normLabel.includes('مكة') || normLabel.includes('مدينة') || normLabel.includes('ملك')) {
-    return (
-      <svg className="h-5 w-5 sm:h-5.5 sm:w-5.5 drop-shadow-sm" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fef08a" />
-            <stop offset="50%" stopColor="#eab308" />
-            <stop offset="100%" stopColor="#ca8a04" />
-          </linearGradient>
-          <linearGradient id="domeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#10b981" />
-            <stop offset="100%" stopColor="#047857" />
-          </linearGradient>
-        </defs>
-        {/* Royal Gold Crescent Moon */}
-        <path
-          d="M17 3c4.97 0 9 4.03 9 9 0 3.2-1.68 6.02-4.22 7.6 1.34-1.6 2.14-3.66 2.14-5.91 0-4.97-4.03-9-9-9-1.28 0-2.48.27-3.57.75C12.75 3.96 14.77 3 17 3z"
-          fill="url(#moonGrad)"
-        />
-        {/* Islamic Star */}
-        <path d="M22 6l.8 1.5 1.7.2-1.3 1.2.3 1.7-1.5-.8-1.5.8.3-1.7-1.3-1.2 1.7-.2L22 6z" fill="#fef08a" />
-        {/* Grand Mosque Dome */}
-        <path d="M8 26v-5c0-4.4 3.6-8 8-8s8 3.6 8 8v5H8z" fill="url(#domeGrad)" />
-        {/* Dome Finial & Crescent */}
-        <line x1="16" y1="13" x2="16" y2="10" stroke="#f59e0b" strokeWidth="1.2" />
-        <circle cx="16" cy="9.5" r="1" fill="#fef08a" />
-        {/* Mosque Arched Base & Details */}
-        <rect x="6" y="25" width="20" height="3" rx="1" fill="#064e3b" />
-        <path d="M13 25v-3c0-1.7 1.3-3 3-3s3 1.3 3 3v3h-6z" fill="#fef08a" opacity="0.9" />
-        {/* Minaret Column on Left */}
-        <rect x="4" y="16" width="2.5" height="10" fill="#047857" />
-        <polygon points="5.25,12 7,16 3.5,16" fill="#ca8a04" />
-      </svg>
-    );
-  }
-
-  // Fallback icon for any custom category
-  return <Compass className="h-5 w-5 text-gold-600" />;
-}
-
 function getItemHref(item: PlannerItem): string {
   if (item.id.startsWith('red-sea')) return '/packages?destination=red-sea';
   if (item.id.startsWith('farasan')) return '/packages?destination=jazan';
@@ -490,9 +299,9 @@ export default function QuickTripPlanner({ categories }: { categories?: TripPlan
           </Link>
         </div>
 
-        {/* Scrollable Horizontal Tabs (Scrollbar Completely Removed) */}
+        {/* Professional Filter Tabs (No Icons, Luxury Minimalist Design) */}
         <div
-          className="mb-8 flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none"
+          className="mb-8 flex flex-wrap items-center gap-2.5 sm:gap-3 overflow-x-auto pb-1 scrollbar-none"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {displayCategories.map((cat) => {
@@ -502,22 +311,13 @@ export default function QuickTripPlanner({ categories }: { categories?: TripPlan
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveTab(cat.id)}
-                className={`group relative flex shrink-0 items-center gap-3 rounded-2xl px-4 py-2.5 sm:px-5 sm:py-3 text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
+                className={`shrink-0 rounded-2xl px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer select-none ${
                   isActive
-                    ? 'bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 text-navy-950 shadow-lg shadow-gold-500/25 font-black scale-[1.03] border border-gold-300/80 ring-2 ring-gold-400/20'
-                    : 'border border-slate-200/90 bg-white/95 text-slate-700 hover:border-gold-400/60 hover:bg-white hover:text-navy-950 hover:shadow-md'
+                    ? 'bg-gold-gradient text-navy-950 font-black shadow-lg shadow-gold-500/25 border border-gold-400 scale-[1.02]'
+                    : 'border border-slate-200/90 bg-slate-50/80 text-slate-700 hover:border-gold-400/80 hover:bg-white hover:text-navy-950 hover:shadow-sm'
                 }`}
               >
-                <span
-                  className={`flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110 ${
-                    isActive
-                      ? 'bg-navy-950/15 shadow-inner'
-                      : 'bg-gold-50/90 border border-gold-200/60 shadow-sm'
-                  }`}
-                >
-                  <CategoryRealisticIcon id={cat.id} label={cat.label} />
-                </span>
-                <span className="whitespace-nowrap font-black">{cat.label}</span>
+                <span className="whitespace-nowrap font-black tracking-tight">{cat.label}</span>
               </button>
             );
           })}
