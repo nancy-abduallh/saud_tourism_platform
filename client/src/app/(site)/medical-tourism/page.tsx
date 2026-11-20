@@ -2,10 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Activity,
-  Award,
   Calendar,
   Check,
   CheckCircle2,
@@ -14,574 +12,762 @@ import {
   FileText,
   Heart,
   HeartHandshake,
-  HeartPulse,
   HelpCircle,
-  Hospital,
   MapPin,
   MessageCircle,
+  Mountain,
+  Palmtree,
   Phone,
   Plane,
   Send,
   ShieldCheck,
   Sparkles,
-  Stethoscope,
+  Sun,
+  Trees,
   User,
   Users,
+  Waves,
+  Wind,
 } from 'lucide-react';
 
-const MEDICAL_SPECIALTIES = [
+interface MedicalDestination {
+  id: string;
+  name: string;
+  title: string;
+  region: string;
+  description: string;
+  highlights: string[];
+  image: string;
+  badge: string;
+  tag: string;
+  featuredQuote: string;
+  bestFor: string;
+}
+
+const MEDICAL_DESTINATIONS: MedicalDestination[] = [
   {
-    id: 'organ-transplant',
-    title: 'زراعة الأعضاء وجراحة الأورام المتقدمة',
-    hospital: 'مستشفى الملك فيصل التخصصي ومركز الأبحاث',
-    desc: 'المركز الأول في الشرق الأوسط وإفريقيا في برامج زراعة الكبد، الكلى، والقلب، والعلاج الجيني والمناعي للأورام بأعلى معدلات نجاح عالمية.',
-    badge: 'المرتبة الأولى إقليمياً',
-    tag: 'زراعة الأعضاء',
+    id: 'abha',
+    name: 'أبها',
+    title: 'منتجع جبلي هادئ',
+    region: 'جبال أبها، المملكة العربية السعودية',
+    description:
+      'تعتبر منحدرات منطقة عسير منطقة مثالية لراغبي الراحة والاسترخاء. فهي محاطة بالجبال والمساحات الخضراء ويتميز المناخ بالبرودة المنعشة. تكتمل جوانب الرحلة العلاجية في المدينة من خلال الحدائق الهادئة، مثل منتزه عسير الوطني، حيث يمكنك أن تستمتع بالطبيعة والهواء البارد والمناظر الخلابة مما يخلق بيئة تساعد على السلام الداخلي.',
+    highlights: [
+      'هواء بارد نقي وبيئة جبلية تساعد على السلام الداخلي',
+      'منتزه عسير الوطني والحدائق الهادئة المنعشة',
+      'إطلالات بانورامية فوق السحاب بعيداً عن التلوث والضوضاء',
+      'جلسات استجمام واستعادة النشاط الجسدي والذهني',
+    ],
+    image: '/images/medical-abha.jpg',
+    badge: 'منتجع جبلي هادئ',
+    tag: 'سلام داخلي',
+    featuredQuote: 'منحدرات خضراء وهواء نقي يساعد على صفاء الذهن والسلام الداخلي.',
+    bestFor: 'الراحة النفسية، نقاء الجهاز التنفسي، وتخفيف التوتر والإجهاد',
   },
   {
-    id: 'rehab',
-    title: 'التأهيل الطبي الشامل والعلاج الطبيعي المكثف',
-    hospital: 'مدينة سلطان بن عبدالعزيز للخدمات الإنسانية',
-    desc: 'أضخم صرح تأهيلي واستشفائي في الشرق الأوسط، يضم أحدث أجهزة الروبوت لإعادة التأهيل العصبي والحركي وجراحات العظام والمفاصل.',
-    badge: 'أكبر مجمع تأهيلي بالمنطقة',
-    tag: 'تأهيل طبي',
+    id: 'red-sea',
+    name: 'ساحل البحر الأحمر',
+    title: 'ملاذ صحي واستشفاء شاطئي',
+    region: 'كورنيش جدة وسواحل البحر الأحمر',
+    description:
+      'تقدم طبيعة ساحل البحر الأحمر مجموعة من الملاذات الساحلية. تتميز وجهات مثل جدة والخبر بشواطئ رائعة حيث يمكنك الاسترخاء على الشواطئ أمام المياه الصافية. سواء كان ذلك من خلال ممارسة اليوغا على الشاطئ أو الاستمتاع بعلاجات المنتجع المريحة، يوفر ساحل البحر الأحمر أجواء هادئة لرحلتك العلاجية.',
+    highlights: [
+      'ممارسة اليوغا والتأمل الشاطئي أمام المياه الفيروزية',
+      'علاجات المنتجع المريحة والسبا البحري المتطور',
+      'الاسترخاء على شواطئ البحر الأحمر النقية',
+      'أجواء كورنيش جدة ومسجد الرحمة العائم لراحة الروح والجسد',
+    ],
+    image: '/images/medical-redsea-jeddah.jpg',
+    badge: 'ملاذ صحي',
+    tag: 'عافية شاطئية',
+    featuredQuote: 'مزيج هادئ من اليوغا الشاطئية وعلاجات السبا أمام أمواج البحر الصافية.',
+    bestFor: 'العلاج بمياه البحر (Thalassotherapy)، جلسات اليوغا، والاسترخاء العميق',
   },
   {
-    id: 'cardiology',
-    title: 'جراحة القلب المفتوح والقسطرة التداخلية',
-    hospital: 'مدينة الملك فهد الطبية ومراكز القلب التخصصية',
-    desc: 'إجراء أدق عمليات القلب المعقدة، زراعة الصمامات بالقسطرة (TAVI)، وتصحيح العيوب الخلقية للكبار والأطفال بأحدث التقنيات.',
-    badge: 'كوادر طبية عالمية',
-    tag: 'طب القلب',
+    id: 'ahsa',
+    name: 'الأحساء',
+    title: 'جمال الطبيعة والينابيع الساخنة العلاجية',
+    region: 'واحة الأحساء، المملكة العربية السعودية',
+    description:
+      'تشتهر مدينة الأحساء بالواحات والبحيرات الهادئة والينابيع الساخنة. يعتقد أن ينابيع الهفوف تمتلك خصائص علاجية، مما يجعلها وجهة مرغوبة للباحثين عن وجهات متعلقة بالصحة الجسدية. استكشف واحة النخيل الواسعة، وقم بزيارة جبل القارة الهادئ، واستمتع بالممارسات العلاجية التقليدية، مثل الحمامات الطينية وجلسات الاسترخاء.',
+    highlights: [
+      'ينابيع الهفوف الكبريتية والساخنة ذات الخصائص العلاجية',
+      'الحمامات الطينية التقليدية لتجديد حيوية البشرة والمفاصل',
+      'واحة النخيل الواسعة المدرجة باليونسكو والبحيرات الهادئة',
+      'جبل القارة بكهوفه ذات التهوية والحرارة الطبيعية المعتدلة',
+    ],
+    image: '/images/medical-ahsa.jpg',
+    badge: 'ينابيع ساخنة وعلاج طبيعي',
+    tag: 'حمامات طينية',
+    featuredQuote: 'واحات وارفة وينابيع حارة تمتلك خصائص علاجية مثبتة عبر الأجيال.',
+    bestFor: 'علاج المفاصل، الروماتيزم، صحة الجلد والبشرة، والاستجمام الطبيعي',
   },
   {
-    id: 'neuro',
-    title: 'جراحة المخ والأعصاب والعمود الفقري بالروبوت',
-    hospital: 'المراكز العصبية المتقدمة بالرياض وجدة',
-    desc: 'استئصال أورام الدماغ بدقة الميكروسكوب الجراحي، جراحات العمود الفقري بالمنظار والتدخل المحدود لسرعة التعافي والحركة.',
-    badge: 'جراحة روبوتية فائقة الدقة',
-    tag: 'العلوم العصبية',
+    id: 'taif',
+    name: 'الطائف',
+    title: 'جنة زهور للاسترخاء',
+    region: 'مدينة الطائف، المملكة العربية السعودية',
+    description:
+      'تعرف الطائف بـ "مدينة الورود" نظرًا لأنها محاطة بحدائق ذات رائحة عطرية وتتمتع بهواء جبلي منعش. المناخ المعتدل للمدينة والمناظر الخلابة تجعلها وجهة شهيرة للراحة واستعادة النشاط. تجول في حدائق الورود وحدائق قصر شبرا، حيث ستهدأ حواسك في أجواء الطبيعة.',
+    highlights: [
+      'استنشاق أريج مزارع الورد الطائفي العطرية الزكية',
+      'العلاج العطري الطبيعي (Aromatherapy) بمستخلصات الورد الملكي',
+      'مناخ جبلي معتدل ومنعش على مدار العام',
+      'جولات الاسترخاء في حدائق الورود وحدائق قصر شبرا التاريخية',
+    ],
+    image: '/images/medical-taif.jpg',
+    badge: 'جنة زهور للاسترخاء',
+    tag: 'مدينة الورود',
+    featuredQuote: 'حدائق الورود الفواحة والمناخ المعتدل لتهدئة الحواس واستعادة النشاط.',
+    bestFor: 'العلاج بالروائح الطبيعية، تصفية الذهن، ونقاهة الجهاز العصبي',
   },
   {
-    id: 'executive-checkup',
-    title: 'الفحوصات الطبية الشاملة والتنفيذية (VIP)',
-    hospital: 'أجنحة الفحص الملكي في أرقى مستشفيات العاصمة',
-    desc: 'فحص شامل دقيق لكافة أجهزة الجسم والجينات الوراثية خلال يوم واحد، مع استشارات فورية من استشاريين دوليين وإقامة 5 نجوم.',
-    badge: 'خلال 24-48 ساعة',
-    tag: 'فحص تنفيذي شامل',
+    id: 'alula',
+    name: 'العلا',
+    title: 'التوازن بين الحاضر والماضي',
+    region: 'الصخور الرملية الطبيعية في العلا، المملكة العربية السعودية',
+    description:
+      'تخلق التكوينات الصخرية القديمة والكنوز التاريخية في العلا جوًا من الهدوء والدهشة. استكشف المناظر الخلابة في البلدة القديمة وصخرة الفيل، وعيش تجربة صحية بينما تتعرف على تراث المدينة وسط بيئة ملهمة تحقق التوازن والسكينة.',
+    highlights: [
+      'تأمل وسكون مطلق بين التكوينات الصخرية القديمة والرمال الذهبية',
+      'منتجعات عافية متخصصة في العزلة الإيجابية والتخلص من الضغوط',
+      'استكشاف البلدة القديمة وصخرة الفيل وصخرة الجرة التاريخية',
+      'تحقيق التوازن النفسي والجسدي وسط عجائب الطبيعة الصخرية',
+    ],
+    image: '/images/medical-alula.jpg',
+    badge: 'التوازن بين الحاضر والماضي',
+    tag: 'سكينة تاريخية',
+    featuredQuote: 'سحر الصخور القديمة يعزل ضوضاء العالم ليخلق جوًا من الهدوء والدهشة.',
+    bestFor: 'التأمل الواعي (Mindfulness)، الديتوكس الفكري، والتوازن الروحي',
   },
   {
-    id: 'orthopedics',
-    title: 'جراحة العظام واستبدال المفاصل الموجه بالحاسوب',
-    hospital: 'مراكز العظام والطب الرياضي التخصصية',
-    desc: 'استبدال مفصل الركبة والورك بدقة ثلاثية الأبعاد والروبوت، وعلاج إصابات الملاعب مع برنامج تأهيل استشفائي فندقي متكامل.',
-    badge: 'أحدث مفاصل الجيل الجديد',
-    tag: 'عظام ومفاصل',
+    id: 'rub-al-khali',
+    name: 'السكينة في الصحراء العربية',
+    title: 'السكينة والهدوء في الصحراء العربية',
+    region: 'صحراء الربع الخالي، المملكة العربية السعودية',
+    description:
+      'لتجربة علاجية فريدة، توجه إلى قلب الصحراء العربية. مع وجهات مثل الربع الخالي، يمكنك الانطلاق في رحلات استرخاء روحية في الصحراء. كما يمكنك التواصل مع الطبيعة والاستمتاع برؤية النجوم وممارسة اليوغا في أوساط الكثبان الرملية الشاسعة.',
+    highlights: [
+      'رحلات استرخاء روحية عميقة في قلب الصحراء العربية الشاسعة',
+      'ممارسة اليوغا والتنفس الصحي فوق الكثبان الرملية الذهبية',
+      'التواصل النقي مع الطبيعة بعيداً عن الشاشات والضوضاء',
+      'رؤية النجوم والمجرات ليلاً في سماء فائقة الصفاء والنقاء',
+    ],
+    image: '/images/medical-rub-al-khali.jpg',
+    badge: 'سكينة الصحراء',
+    tag: 'رحلات روحية',
+    featuredQuote: 'كثبان رملية شاسعة وسماء مليئة بالنجوم لرحلة استرخاء روحية لا مثيل لها.',
+    bestFor: 'الديتوكس الرقمي، التأمل العميق، والهدوء النفسي التام',
+  },
+  {
+    id: 'riyadh',
+    name: 'السياحة العلاجية في الرياض',
+    title: 'السياحة العلاجية ومرافق العافية بالرياض',
+    region: 'حديقة السلام والحي الدبلوماسي، الرياض، المملكة العربية السعودية',
+    description:
+      'حتى عاصمة المملكة العربية السعودية، الرياض، تضم وجهات سياحة علاجية. استرخ في أجواء حديقة السلام، حيث يمكنك الاسترخاء في وسط الخضرة والاستمتاع بالأنشطة في الهواء الطلق. ويقدم الحي الدبلوماسي مرافق علاجية بما في ذلك المنتجعات الصحية ومراكز اللياقة، لتلبية احتياجات المسافرين الباحثين عن الصحة.',
+    highlights: [
+      'استرخاء طبيعي وسط الخضرة والبحيرة الهادئة في حديقة السلام',
+      'مرافق علاجية متطورة ومنتجعات صحية عالمية في الحي الدبلوماسي',
+      'مراكز لياقة بدنية واستشفاء متكاملة تحت إشراف اختصاصيين',
+      'مزيج فريد يجمع بين رفاهية العاصمة وهدوء الطبيعة والأنشطة الصحية',
+    ],
+    image: '/images/medical-salam-park.jpg',
+    badge: 'عافية العاصمة',
+    tag: 'مرافق علاجية',
+    featuredQuote: 'خضرة وارفة في حديقة السلام ومرافق صحية عالمية تلبي متطلبات الباحثين عن العافية.',
+    bestFor: 'برامج العافية التنفيذية، الاسترخاء في الهواء الطلق، والنوادي الصحية المتطورة',
   },
 ];
 
-const JOURNEY_STEPS = [
+const BOOKING_STEPS = [
   {
     step: '01',
-    title: 'الاستشارة والتقييم الطبي عن بُعد',
-    desc: 'يرسل المريض تقاريره وفحوصاته الطبية، ليتم دراستها من نخبة استشاريين سعوديين معتمدين وتقديم خطة علاجية وتكلفة تقديرية خلال 24-48 ساعة.',
-    icon: Stethoscope,
+    title: 'اختر وجهتك العلاجية المفضلة',
+    desc: 'اختر من بين الوجهات الـ 7 الطبيعية بالمملكة بحسب طبيعة الاستشفاء التي تبحث عنها: جبال أبها الباردة، شواطئ البحر الأحمر، ينابيع الأحساء، حدائق الطائف، صخور العلا، سكينة الربع الخالي، أو حدائق ومرافق الرياض.',
+    icon: Compass,
   },
   {
     step: '02',
-    title: 'إصدار التأشيرة العلاجية وتنسيق السفر',
-    desc: 'إصدار التأشيرات الطبية الرسمية للمريض ومرافقيه بشكل عاجل، وحجز الطيران التجاري أو الإسعاف الجوي الطبي الخاص وتأمين السكن الفاخر.',
-    icon: FileText,
+    title: 'تنسيق واستشارة مخصصة مع مستشار العافية',
+    desc: 'يتواصل معك منسق السياحة العلاجية لتصميم برنامج استشفائي خاص يلبي احتياجاتك، متضمناً جلسات اليوغا، الحمامات الكبريتية، علاجات السبا، والتأمل الطبيعي.',
+    icon: HeartHandshake,
   },
   {
     step: '03',
-    title: 'الاستقبال والمرافقة الطبية VIP',
-    desc: 'استقبال فوري من باب الطائرة بمدرج المطار بسيارات إسعاف مجهزة أو ليموزين VIP، وتوفير منسق طبي ومترجم خاص يرافق المريض طوال رحلته.',
-    icon: Plane,
+    title: 'تأكيد الحجز وكافة الترتيبات اللوجستية',
+    desc: 'نتولى ترتيبات الإقامة الفندقية الفاخرة أو النزل الريفية والصحية، تأمين التنقلات بسيارات خاصة وسائق، وتسهيل إجراءات التأشيرة للضيوف القادمين من خارج المملكة.',
+    icon: FileText,
   },
   {
     step: '04',
-    title: 'تلقي العلاج في الأجنحة الملكية',
-    desc: 'إقامة في أجنحة استشفائية مجهزة بأعلى درجات الراحة والخصوصية، مع إشراف ومتابعة مباشرة من كبار البروفيسورات ورعاية تمريضية خاصة.',
-    icon: Hospital,
-  },
-  {
-    step: '05',
-    title: 'برامج النقاهة والاستشفاء الطبيعي',
-    desc: 'فترة نقاهة واسترخاء في أروع وجهات المملكة: منتجعات أمالا والبحر الأحمر الصحية، مرتفعات عسير الخضراء ذات الهواء العليل، أو واحات العلا.',
+    title: 'الاستقبال وعيش التجربة العلاجية براحة تامة',
+    desc: 'استقبال خاص من المطار، ومرافقة كونسيرج مخصص 24/7 طوال فترة إقامتك لضمان أعلى مستويات الهدوء والخصوصية والسلام الداخلي.',
     icon: Sparkles,
-  },
-  {
-    step: '06',
-    title: 'المتابعة الإلكترونية المستمرة بعد العودة',
-    desc: 'تزويد المريض بملف طبي إلكتروني موحد وشامل، وجلسات متابعة دورية عبر الفيديو مع الفريق الطبي المعالج بعد عودته لبلده بسلامة الله.',
-    icon: HeartHandshake,
   },
 ];
 
 const FAQS = [
   {
-    q: 'كيف يمكن للمريض القادم من خارج السعودية الحصول على التأشيرة العلاجية؟',
-    a: 'يتولى فريق كونسيرج المرضى الدوليين لدينا التنسيق مع الجهات المختصة لإصدار التأشيرة العلاجية السريعة للمريض ومرافقيه، بناءً على قبول التقرير الطبي من المستشفى المرجعي المعالج.',
+    q: 'ما هي وجهات السياحة العلاجية والاستشفائية في المملكة العربية السعودية؟',
+    a: 'تضم المملكة 7 وجهات بارزة للسياحة العلاجية والاستشفاء الطبيعي: جبال أبها (منتجع جبلي بارد)، ساحل البحر الأحمر وجدة (ملاذ صحي ويوغا شاطئية)، الأحساء (ينابيع ساخنة وحمامات طينية)، الطائف (جنة زهور وعلاج عطري)، العلا (سكينة وتوازن بين الحاضر والماضي)، الربع الخالي (هدوء الصحراء والنجوم)، والرياض (حديقة السلام ومرافق الحي الدبلوماسي).',
   },
   {
-    q: 'هل تتوفر خدمات الإخلاء الجوي الطبي للحالات الحرجة أو العاجلة؟',
-    a: 'نعم، نوفر أسطولاً مجهزاً بالكامل من طائرات الإسعاف الجوي (Air Ambulance) المزودة بوحدات عناية مركزة وطواقم طبية متخصصة لنقل الحالات من مختلف دول العالم مباشرة إلى مستشفيات المملكة.',
+    q: 'كيف يمكنني حجز رحلة سياحة علاجية واستشفائية؟',
+    a: 'يمكنك الحجز بسهولة عبر اختيار الوجهة المطلوبة من خلال النموذج في هذه الصفحة، أو التواصل الفوري عبر الواتساب مع مستشار رحلات العافية. سنقوم بتجهيز جدول الرحلة، الإقامة، وتأكيد المواعيد فوراً.',
   },
   {
-    q: 'ما هي خيارات الإقامة المتاحة للمرافقين وأفراد عائلة المريض؟',
-    a: 'نوفر أجنحة فندقية 5 نجوم وشققاً فندقية فاخرة قريبة جداً من المستشفيات والمدن الطبية، مع خدمات تنقل خاصة ومساعد شخصي على مدار الساعة لتأمين كافة احتياجات العائلة.',
+    q: 'هل توفرون التنسيق للقادمين من خارج المملكة العربية السعودية؟',
+    a: 'نعم، نوفر خدمات شاملة للمسافرين القادمين من خارج المملكة تتضمن تسهيل التأشيرات السياحية والعلاجية، الاستقبال الخاص من المطار، وتأمين الإقامة الفاخرة ووسائل التنقل والمترجمين.',
   },
   {
-    q: 'هل تقدمون برامج نقاهة وسياحة بعد إتمام العلاج والعمليات؟',
-    a: 'بالتأكيد، تمتاز المملكة بتنوع جغرافي وطبيعي استثنائي؛ فننظم للمريض بعد استقرار حالته برامج استجمام ونقاهة في منتجعات البحر الأحمر الصحية، أو مرتفعات أبها وعسير ذات الطقس المعتدل، أو واحات النخيل التراثية.',
+    q: 'ما هي الفوائد الصحية لزيارة ينابيع الأحساء الحارة؟',
+    a: 'تتميز ينابيع الهفوف في الأحساء بمياهها المعدنية الكبريتية الدافئة والحمامات الطينية، والتي تُعرف بقدرتها على تخفيف آلام المفاصل، تنشيط الدورة الدموية، وتجديد حيوية البشرة.',
   },
   {
-    q: 'كيف يتم تسعير الخدمات الطبية والدفع؟',
-    a: 'يتم تقديم تقدير مالي شفاف ومسبق يشمل الخطة العلاجية، الأتعاب الطبية، الإقامة، والتنقلات بعد مراجعة التقارير الطبية الأولية، مع خيارات دفع مرنة وآمنة.',
+    q: 'هل البرامج مناسبة للعائلات والأفراد على حد سواء؟',
+    a: 'نعم، كافة برامج وجهات السياحة العلاجية والاستشفائية مصممة لتلائم الأفراد الراغبين في العزلة والهدوء، وكذلك العائلات الباحثة عن الراحة والنقاهة وسط بيئة آمنة وراقية.',
   },
 ];
 
 export default function MedicalTourismPage() {
+  const [selectedDestination, setSelectedDestination] = useState<string>('abha');
   const [formData, setFormData] = useState({
-    patientName: '',
-    country: '',
+    name: '',
     phone: '',
-    specialty: 'organ-transplant',
-    companionsCount: '1',
-    needsAirAmbulance: 'no',
-    medicalSummary: '',
+    country: '',
+    guests: '2',
+    date: '',
+    destination: 'abha',
+    experienceType: 'طبيعة واسترخاء عام',
+    notes: '',
   });
-
-  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      const payload = {
-        name: formData.patientName,
-        email: 'medical-inquiry@saudtourism.sa',
-        phone: formData.phone,
-        message: `[طلب سياحة علاجية دولية]
-بلد المريض: ${formData.country}
-التخصص المطلوب: ${formData.specialty}
-عدد المرافقين: ${formData.companionsCount}
-يحتاج إسعاف جوي/طبي: ${formData.needsAirAmbulance === 'yes' ? 'نعم مطلوب' : 'لا (طيران عادي)'}
-ملخص الحالة الطبية:
-${formData.medicalSummary}`,
-      };
-
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        setSubmitted(true);
-      } else {
-        alert('حدث خطأ أثناء إرسال الطلب، يرجى التواصل مباشرة عبر الواتساب.');
-      }
-    } catch (err) {
-      alert('فشل الاتصال، يرجى المحاولة لاحقاً أو التواصل عبر الواتساب.');
-    } finally {
-      setSubmitting(false);
+  const handleSelectDestination = (destId: string) => {
+    setSelectedDestination(destId);
+    setFormData((prev) => ({ ...prev, destination: destId }));
+    const formEl = document.getElementById('booking-form-section');
+    if (formEl) {
+      formEl.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setSubmitted(true);
+    }, 600);
+  };
+
+  const currentDest =
+    MEDICAL_DESTINATIONS.find((d) => d.id === selectedDestination) || MEDICAL_DESTINATIONS[0];
+
   const whatsappMessage = encodeURIComponent(
-    `مرحباً، أود الاستفسار عن خدمات السياحة العلاجية في المملكة للمريض: ${formData.patientName || 'مريض دولي'} من دولة ${formData.country || 'خارج المملكة'}. التخصص: ${formData.specialty}`
+    `مرحباً، أود الاستفسار وحجز رحلة سياحة علاجية واستشفائية إلى: ${currentDest.name} (${currentDest.title}). أرجو تزويدي بالبرامج والترتيبات المتاحة.`
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 text-navy-950">
-      {/* Hero Header */}
-      <section className="relative overflow-hidden bg-navy-950 py-20 lg:py-28 text-white">
-        <div className="absolute inset-0 bg-pattern opacity-30" />
-        <div className="absolute top-1/4 right-10 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 left-10 h-96 w-96 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
+    <div className="bg-slate-50 min-h-screen text-navy-950 pb-20">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-navy-gradient pt-36 pb-20 sm:pt-44 sm:pb-28 text-white">
+        <div className="absolute inset-0 bg-pattern opacity-30 pointer-events-none" />
+        <div className="pointer-events-none absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 left-1/4 h-96 w-96 rounded-full bg-gold-500/15 blur-3xl" />
 
-        <div className="container-x relative z-10 text-center max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-950/60 px-4 py-1.5 text-xs font-bold text-emerald-300 backdrop-blur-md shadow-md">
-            <HeartPulse size={16} className="text-emerald-400 animate-pulse" />
-            <span>بوابة السياحة العلاجية والاستشفائية الدولية بالمملكة</span>
-          </div>
+        <div className="container-x relative text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-950/60 px-4 py-1.5 text-xs font-bold text-emerald-300 backdrop-blur-md shadow-sm"
+          >
+            <Sparkles size={14} className="text-gold-400" />
+            <span>السياحة العلاجية والاستشفاء الطبيعي بالمملكة</span>
+          </motion.div>
 
-          <h1 className="mt-5 font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
-            رعاية طبية تخصصية بمعايير عالمية ونقاهة ملكية في وطن الخير
-          </h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mt-6 font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight drop-shadow-xl"
+          >
+            7 وجهات للسياحة العلاجية في{' '}
+            <span className="text-gold-gradient inline-block pt-2 drop-shadow-[0_2px_18px_rgba(243,211,122,0.45)]">
+              المملكة العربية السعودية
+            </span>
+          </motion.h1>
 
-          <p className="mt-4 text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl mx-auto">
-            نستقبل المرضى وعائلاتهم من مختلف دول العالم لتلقي أحدث العلاجات الطبية في كبرى المستشفيات والمدن الطبية المرجعية بالمملكة العربية السعودية، تحت إشراف نخبة من كبار الاستشاريين العالميين، مع خدمات كونسيرج شاملة وبرامج نقاهة واستجمام استثنائية.
-          </p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mx-auto mt-5 max-w-3xl text-sm sm:text-lg text-white/85 leading-relaxed"
+          >
+            استكشف ملاذات الراحة والاسترخاء والسلام الداخلي بالمملكة: من هواء جبال أبها العليل وملاذات البحر الأحمر الشاطئية، إلى ينابيع الأحساء الساخنة، حدائق الطائف العطرة، سكينة صخور العلا، هدوء صحراء الربع الخالي، ومرافق العافية في العاصمة الرياض.
+          </motion.p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-3"
+          >
             <a
-              href="#consultation"
-              className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-7 py-3.5 text-xs sm:text-sm font-black text-navy-950 shadow-gold hover:scale-105 transition-all"
+              href="#destinations-grid"
+              className="btn-gold !py-3 !px-7 text-sm font-black shadow-gold"
             >
-              <Stethoscope size={16} />
-              <span>طلب تقييم طبي واستشارة دولية</span>
+              استكشف الوجهات الـ 7
             </a>
             <a
               href={`https://wa.me/966571713078?text=${whatsappMessage}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-6 py-3.5 text-xs sm:text-sm font-bold text-white backdrop-blur-md hover:bg-white/20 transition-all"
+              className="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/50 bg-emerald-600/90 hover:bg-emerald-600 px-6 py-3 text-sm font-bold text-white transition-all shadow-md hover:scale-105"
             >
-              <MessageCircle size={16} className="text-emerald-400" />
-              <span>محادثة فورية مع الكونسيرج الطبي</span>
+              <MessageCircle size={17} />
+              <span>تواصل مع مستشار العافية عبر واتساب</span>
             </a>
-          </div>
-
-          {/* Quick Badges */}
-          <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-bold text-slate-300">
-            <div className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 p-3 backdrop-blur-xs">
-              <CheckCircle2 size={16} className="text-gold-400 shrink-0" />
-              <span>مستشفيات معتمدة دولياً (JCI)</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 p-3 backdrop-blur-xs">
-              <CheckCircle2 size={16} className="text-gold-400 shrink-0" />
-              <span>تأشيرات علاجية ميسرة وسريعة</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 p-3 backdrop-blur-xs">
-              <CheckCircle2 size={16} className="text-gold-400 shrink-0" />
-              <span>إخلاء واستقبال طبي VIP 24/7</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 p-3 backdrop-blur-xs">
-              <CheckCircle2 size={16} className="text-gold-400 shrink-0" />
-              <span>برامج نقاهة واستشفاء طبيعي</span>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Specialties Grid */}
-      <section className="py-16 sm:py-24 bg-white border-b border-slate-200">
+      {/* Quick Navigation Anchor Bar */}
+      <section className="sticky top-20 z-30 border-y border-slate-200/80 bg-white/95 backdrop-blur-md shadow-sm">
+        <div className="container-x py-3 flex gap-2 overflow-x-auto scrollbar-none items-center">
+          <span className="text-xs font-bold text-slate-500 shrink-0 ml-2">انتقل مباشرة:</span>
+          {MEDICAL_DESTINATIONS.map((d) => (
+            <button
+              key={d.id}
+              onClick={() => handleSelectDestination(d.id)}
+              className={`shrink-0 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                selectedDestination === d.id
+                  ? 'bg-gold-gradient text-navy-950 font-black shadow-sm'
+                  : 'border border-slate-200 bg-slate-50 text-slate-700 hover:border-gold-400 hover:text-navy-950'
+              }`}
+            >
+              {d.name}
+            </button>
+          ))}
+          <a
+            href="#how-to-book"
+            className="shrink-0 rounded-xl bg-navy-900 text-gold-300 px-3.5 py-1.5 text-xs font-bold hover:bg-navy-950 transition-colors mr-auto"
+          >
+            كيفية الحجز ←
+          </a>
+        </div>
+      </section>
+
+      {/* 7 Medical & Wellness Destinations Detailed Section */}
+      <section id="destinations-grid" className="py-16 sm:py-24">
         <div className="container-x">
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="mb-14 text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-50 px-3.5 py-1 text-xs font-bold text-gold-800">
-              <Award size={14} className="text-gold-600" />
-              <span>أبرز التخصصات والمراكز المرجعية</span>
+              <Sun size={13} className="text-gold-600" />
+              <span>ملاذات الاسترخاء والسلام الداخلي بالمملكة</span>
             </div>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl font-black text-navy-950">
-              أرقى الصروح الطبية في الشرق الأوسط
+            <h2 className="mt-3 font-display text-2xl sm:text-4xl font-black text-navy-950">
+              الوجهات الـ 7 للسياحة العلاجية والاستشفائية
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-slate-600">
-              تنسيق مباشر مع كبرى المستشفيات والمدن الطبية السعودية الرائدة عالمياً لضمان أعلى نسب النجاح.
+              بيئات طبيعية متنوعة صُممت لتمنح الجسد والروح فرصة للتجدد والسكينة التامة
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {MEDICAL_SPECIALTIES.map((spec) => (
-              <div
-                key={spec.id}
-                className="group relative flex flex-col justify-between rounded-3xl border border-slate-200 bg-slate-50/70 p-6 shadow-xs transition-all duration-300 hover:border-gold-500/40 hover:bg-white hover:shadow-md"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="rounded-full bg-navy-950 px-2.5 py-1 text-[10px] font-black text-gold-300">
-                      {spec.tag}
-                    </span>
-                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      {spec.badge}
-                    </span>
-                  </div>
-
-                  <h3 className="mt-4 font-display text-base font-black text-navy-950 group-hover:text-gold-700 transition-colors">
-                    {spec.title}
-                  </h3>
-
-                  <div className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-slate-500">
-                    <Hospital size={13} className="text-gold-600 shrink-0" />
-                    <span>{spec.hospital}</span>
-                  </div>
-
-                  <p className="mt-3 text-xs text-slate-600 leading-relaxed">
-                    {spec.desc}
-                  </p>
-                </div>
-
-                <div className="mt-5 border-t border-slate-200/80 pt-4 flex items-center justify-between">
-                  <a
-                    href="#consultation"
-                    className="text-xs font-bold text-gold-700 hover:text-navy-950 transition-colors inline-flex items-center gap-1"
-                  >
-                    <span>طلب استشارة في هذا التخصص</span>
-                    <span>←</span>
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Patient Journey: Step by Step */}
-      <section className="py-16 sm:py-24 bg-slate-50">
-        <div className="container-x">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-50 px-3.5 py-1 text-xs font-bold text-blue-800">
-              <Compass size={14} className="text-blue-600" />
-              <span>خطوة بخطوة من الوصول حتى التعافي</span>
-            </div>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl font-black text-navy-950">
-              رحلة المريض الدولي المتكاملة
-            </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600">
-              نصمم كل تفصيلة لضمان راحة المريض النفسية والجسدية، وتوفير تجربة استشفائية فاخرة لعائلته.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {JOURNEY_STEPS.map((j) => {
-              const Icon = j.icon;
+          <div className="space-y-16">
+            {MEDICAL_DESTINATIONS.map((dest, idx) => {
+              const isEven = idx % 2 === 0;
               return (
-                <div
-                  key={j.step}
-                  className="relative rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4"
+                <motion.div
+                  key={dest.id}
+                  id={`dest-${dest.id}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-50px' }}
+                  transition={{ duration: 0.5 }}
+                  className={`grid gap-8 lg:grid-cols-12 items-center rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-md hover:shadow-xl transition-shadow ${
+                    selectedDestination === dest.id ? 'ring-2 ring-gold-400' : ''
+                  }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gold-50 border border-gold-200 text-gold-700 font-display font-black">
-                      <Icon size={22} className="text-gold-700" />
+                  {/* Image Column */}
+                  <div className={`lg:col-span-6 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-slate-100 shadow-md group">
+                      <img
+                        src={dest.image}
+                        alt={dest.title}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-navy-950/70 via-transparent to-transparent" />
+
+                      {/* Badge Top Right */}
+                      <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy-950/85 px-3.5 py-1 text-xs font-bold text-gold-300 backdrop-blur-md">
+                        <Sparkles size={12} className="text-gold-400" />
+                        <span>{dest.badge}</span>
+                      </div>
+
+                      {/* Region Bottom Right */}
+                      <div className="absolute bottom-4 right-4 flex items-center gap-1.5 text-xs font-bold text-white/95">
+                        <MapPin size={13} className="text-gold-400" />
+                        <span>{dest.region}</span>
+                      </div>
                     </div>
-                    <span className="font-display text-2xl font-black text-slate-200">
-                      {j.step}
-                    </span>
                   </div>
 
-                  <h3 className="font-display text-base font-black text-navy-950">
-                    {j.title}
-                  </h3>
+                  {/* Content Column */}
+                  <div className={`lg:col-span-6 ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
+                    <div className="inline-block rounded-full bg-emerald-50 border border-emerald-200 px-3 py-0.5 text-[11px] font-bold text-emerald-800 mb-2">
+                      الوجهة {idx + 1} من 7
+                    </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {j.desc}
-                  </p>
-                </div>
+                    <h3 className="font-display text-2xl sm:text-3xl font-black text-navy-950">
+                      {dest.name} - <span className="text-gold-700">{dest.title}</span>
+                    </h3>
+
+                    <p className="mt-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                      {dest.description}
+                    </p>
+
+                    {/* Best for Box */}
+                    <div className="mt-4 rounded-xl border border-gold-500/20 bg-gold-50/50 p-3 text-xs text-navy-900">
+                      <span className="font-black text-gold-800">الأفضل لـ: </span>
+                      <span>{dest.bestFor}</span>
+                    </div>
+
+                    {/* Highlights List */}
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {dest.highlights.map((h, i) => (
+                        <div key={i} className="flex items-start gap-2 text-xs text-slate-700">
+                          <CheckCircle2 size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                          <span>{h}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="mt-6 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectDestination(dest.id)}
+                        className="btn-gold !py-2.5 !px-5 text-xs font-bold shadow-sm"
+                      >
+                        احجز رحلتك إلى {dest.name}
+                      </button>
+
+                      <a
+                        href={`https://wa.me/966571713078?text=${encodeURIComponent(
+                          `مرحباً، أود الاستفسار عن باقات السياحة العلاجية والاسترخاء في: ${dest.name} (${dest.title}).`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-bold text-emerald-700 transition-colors shadow-sm"
+                      >
+                        <MessageCircle size={15} />
+                        <span>استشارة واتساب سريعة</span>
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* Interactive Consultation Form Section */}
-      <section id="consultation" className="py-16 sm:py-24 bg-white border-t border-slate-200 scroll-mt-20">
+      {/* How To Book Section */}
+      <section id="how-to-book" className="py-16 sm:py-24 bg-white border-y border-slate-200">
+        <div className="container-x">
+          <div className="mx-auto max-w-3xl text-center mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-50 px-3.5 py-1 text-xs font-bold text-gold-800">
+              <Calendar size={13} className="text-gold-600" />
+              <span>خطوات ميسرة وخدمة متكاملة</span>
+            </div>
+            <h2 className="mt-3 font-display text-2xl sm:text-4xl font-black text-navy-950">
+              كيفية حجز رحلتك العلاجية والاستشفائية في 4 خطوات
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-slate-600">
+              من لحظة تواصلك معنا وحتى عودتك سالماً، نرافقك بخدمة كبار الشخصيات لضمان أقصى درجات الراحة والاستجمام
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {BOOKING_STEPS.map((s, idx) => {
+              const Icon = s.icon;
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="relative flex flex-col justify-between rounded-3xl border border-slate-200 bg-slate-50/70 p-6 shadow-sm hover:border-gold-500/50 hover:bg-white hover:shadow-lg transition-all"
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gold-gradient text-navy-950 shadow-gold font-black">
+                        <Icon size={22} />
+                      </div>
+                      <span className="font-display text-2xl font-black text-slate-300">
+                        {s.step}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-5 font-display text-base font-bold text-navy-950">
+                      {s.title}
+                    </h3>
+                    <p className="mt-2 text-xs text-slate-600 leading-relaxed">
+                      {s.desc}
+                    </p>
+                  </div>
+
+                  <div className="mt-5 pt-3 border-t border-slate-200/60 text-[11px] font-bold text-gold-700 flex items-center gap-1">
+                    <span>مشمول بالكامل</span>
+                    <span>✓</span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Booking Form & Concierge Assistance Section */}
+      <section id="booking-form-section" className="py-16 sm:py-24">
         <div className="container-x">
           <div className="grid gap-12 lg:grid-cols-12 items-start">
-            {/* Info Column */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-50 px-3.5 py-1 text-xs font-bold text-emerald-800">
-                <HeartHandshake size={14} className="text-emerald-600" />
-                <span>استشارة وتقييم أولي مجاني</span>
-              </div>
-
-              <h2 className="font-display text-2xl sm:text-3xl font-black text-navy-950 leading-tight">
-                ابدأ رحلتك العلاجية الآن مع نخبة الأطباء السعوديين
-              </h2>
-
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                املأ النموذج وسيقوم فريق كونسيرج المرضى الدوليين بمراجعة ملفك الطبي مع الاستشاريين المتخصصين والتواصل معك خلال أقل من 24 ساعة لتقديم الخطة العلاجية والتكلفة وخيارات السفر.
-              </p>
-
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 space-y-4">
-                <h3 className="text-xs font-black text-navy-950 flex items-center gap-2">
-                  <ShieldCheck size={16} className="text-emerald-600" />
-                  <span>ضمانات الخصوصية والاحترافية:</span>
-                </h3>
-                <ul className="space-y-2 text-xs text-slate-600">
-                  <li className="flex items-center gap-2">
-                    <Check size={14} className="text-gold-600 shrink-0" />
-                    <span>سرية تامة وتشفير كامل للتقارير والملفات الطبية.</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check size={14} className="text-gold-600 shrink-0" />
-                    <span>فريق طبي مختص يتابع معك خطوة بخطوة باللغة العربية والإنجليزية.</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check size={14} className="text-gold-600 shrink-0" />
-                    <span>تنسيق مباشر مع المستشفيات الحكومية والخاصة المرجعية.</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Direct WhatsApp Callout */}
-              <div className="rounded-3xl border border-gold-500/30 bg-navy-950 p-6 text-white space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-gold-500/20 text-gold-400">
-                    <Phone size={18} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-black text-white">الخط الساخن للمرضى الدوليين</h4>
-                    <p className="text-[11px] text-slate-400">متاح 24/7 لاستقبال الحالات العاجلة</p>
-                  </div>
+            {/* Form Info Box */}
+            <div className="lg:col-span-5">
+              <div className="sticky top-32">
+                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-50 px-3.5 py-1 text-xs font-bold text-emerald-800">
+                  <ShieldCheck size={14} className="text-emerald-600" />
+                  <span>تنسيق فوري وخصوصية تامة</span>
                 </div>
-                <div className="pt-2">
-                  <a
-                    href="https://wa.me/966571713078?text=مرحباً،%20أود%20الاستفسار%20عن%20السياحة%20العلاجية%20الدولية"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-500 transition-colors"
-                  >
-                    <MessageCircle size={15} />
-                    <span>تواصل مباشر واتساب: +966 57 171 3078</span>
-                  </a>
+
+                <h2 className="mt-4 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-navy-950 leading-tight">
+                  احجز وجهتك العلاجية الآن مع كونسيرج SA للعافية
+                </h2>
+
+                <p className="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  أدخل بياناتك وسيقوم مستشار السياحة العلاجية والاستشفاء بالتواصل معك خلال ساعتين لتنسيق كافة تفاصيل رحلتك: الإقامة، الجلسات العلاجية، الاستقبال والنقل، والتأشيرات للمسافرين الدوليين.
+                </p>
+
+                <div className="mt-8 space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm text-xs">
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gold-100 text-gold-800">
+                      <Clock size={16} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-navy-950">رد واستجابة سريعة</div>
+                      <div className="text-slate-500">تواصل مباشر خلال 1-2 ساعة بحد أقصى</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-100 text-emerald-800">
+                      <Plane size={16} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-navy-950">استقبال وتسهيلات دولية</div>
+                      <div className="text-slate-500">تأشيرات، استقبال VIP من المطار، وتنقلات خاصة</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-blue-100 text-blue-800">
+                      <Phone size={16} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-navy-950">هاتف وكونسيرج مباشر</div>
+                      <div className="text-slate-500 font-mono" dir="ltr">+966 57 171 3078</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Form Column */}
+            {/* Interactive Form Box */}
             <div className="lg:col-span-7">
-              <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-lg">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-xl">
                 {submitted ? (
-                  <div className="py-12 text-center space-y-4">
-                    <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
-                      <CheckCircle2 size={32} />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="py-12 text-center"
+                  >
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-4">
+                      <Check size={32} />
                     </div>
-                    <h3 className="font-display text-xl font-black text-navy-950">
-                      تم استلام طلبك الطبي بنجاح!
+                    <h3 className="font-display text-2xl font-black text-navy-950">
+                      تم استلام طلب حجز رحلتك العلاجية بنجاح!
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                      شكراً لثقتكم بنا. سيقوم فريق كونسيرج المرضى الدوليين بمراجعة الحالة مع الفريق الاستشاري والتواصل معكم عبر الهاتف والواتساب خلال ساعات قليلة.
+                    <p className="mt-2 text-sm text-slate-600 max-w-md mx-auto">
+                      شكراً لتواصلك معنا. يقوم مستشار رحلات العافية حالياً بمراجعة رغباتك وسيتواصل معك مباشرة عبر الواتساب لتأكيد المواعيد والبرنامج.
                     </p>
-                    <div className="pt-4">
+                    <div className="mt-6 flex flex-wrap justify-center gap-3">
+                      <a
+                        href={`https://wa.me/966571713078?text=${whatsappMessage}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-emerald-700"
+                      >
+                        <MessageCircle size={15} />
+                        <span>متابعة فورية عبر الواتساب</span>
+                      </a>
                       <button
                         type="button"
                         onClick={() => setSubmitted(false)}
-                        className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-bold text-navy-950 hover:bg-slate-50 transition-colors"
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100"
                       >
-                        إرسال طلب آخر
+                        إرسال طلب لوجهة أخرى
                       </button>
                     </div>
-                  </div>
+                  </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <h3 className="font-display text-lg font-black text-navy-950 border-b border-slate-100 pb-3">
-                      بيانات المريض واستمارة التقييم الأولي
-                    </h3>
-
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          اسم المريض بالكامل *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={formData.patientName}
-                          onChange={(e) => setFormData({ ...formData, patientName: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-navy-950 focus:border-gold-500 focus:bg-white focus:outline-none"
-                          placeholder="الاسم الثلاثي"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          بلد الإقامة / الجنسية *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={formData.country}
-                          onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-navy-950 focus:border-gold-500 focus:bg-white focus:outline-none"
-                          placeholder="مثال: الكويت، الإمارات، مصر، بريطانيا..."
-                        />
-                      </div>
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                      <h3 className="font-display text-xl font-black text-navy-950">
+                        نموذج حجز واستشارة الوجهات العلاجية
+                      </h3>
+                      <p className="mt-1 text-xs text-slate-500">
+                        يرجى ملء النموذج أدناه لتخصيص أفضل برنامج استشفائي يلبي تطلعاتك
+                      </p>
                     </div>
 
+                    {/* Destination Selection */}
+                    <div>
+                      <label className="label">اختر الوجهة العلاجية المطلوبة *</label>
+                      <select
+                        value={formData.destination}
+                        onChange={(e) => {
+                          setFormData({ ...formData, destination: e.target.value });
+                          setSelectedDestination(e.target.value);
+                        }}
+                        required
+                        className="field"
+                      >
+                        {MEDICAL_DESTINATIONS.map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.name} — {d.title} ({d.badge})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Personal Details */}
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          رقم الهاتف / الواتساب الدولي *
-                        </label>
+                        <label className="label">الاسم الكامل *</label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="الاسم الثلاثي"
+                          className="field"
+                        />
+                      </div>
+                      <div>
+                        <label className="label">رقم الهاتف / واتساب *</label>
                         <input
                           type="tel"
                           required
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-navy-950 focus:border-gold-500 focus:bg-white focus:outline-none dir-ltr text-right"
-                          placeholder="+966 ..."
+                          placeholder="مثال: +966 50 123 4567"
+                          className="field"
+                          dir="ltr"
                         />
                       </div>
+                    </div>
 
+                    <div className="grid gap-4 sm:grid-cols-3">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          التخصص الطبي المطلوب *
-                        </label>
+                        <label className="label">الدولة / الجنسية *</label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.country}
+                          onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                          placeholder="مثال: الإمارات / الكويت / بريطانيا"
+                          className="field"
+                        />
+                      </div>
+                      <div>
+                        <label className="label">عدد المسافرين</label>
                         <select
-                          value={formData.specialty}
-                          onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-navy-950 focus:border-gold-500 focus:bg-white focus:outline-none"
+                          value={formData.guests}
+                          onChange={(e) => setFormData({ ...formData, guests: e.target.value })}
+                          className="field"
                         >
-                          <option value="organ-transplant">زراعة الأعضاء وجراحة الأورام المتقدمة</option>
-                          <option value="rehab">التأهيل الطبي الشامل والعلاج الطبيعي المكثف</option>
-                          <option value="cardiology">جراحة القلب والقسطرة التداخلية</option>
-                          <option value="neuro">جراحة المخ والأعصاب والعمود الفقري</option>
-                          <option value="executive-checkup">الفحص الطبي الشامل التنفيذي لكبار الشخصيات</option>
-                          <option value="orthopedics">جراحة العظام والمفاصل بالروبوت</option>
-                          <option value="ophthalmology">طب وجراحة العيون والشبكية</option>
-                          <option value="other">تخصص أو استشارة أخرى</option>
+                          <option value="1">شخص واحد (مفرد)</option>
+                          <option value="2">شخصان (زوجي)</option>
+                          <option value="3">3 أشخاص</option>
+                          <option value="4">عائلة (4 أشخاص)</option>
+                          <option value="5+">مجموعة (5 فأكثر)</option>
                         </select>
+                      </div>
+                      <div>
+                        <label className="label">التاريخ المقترح للرحلة</label>
+                        <input
+                          type="date"
+                          value={formData.date}
+                          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                          className="field"
+                        />
                       </div>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          عدد المرافقين المتوقع
-                        </label>
-                        <select
-                          value={formData.companionsCount}
-                          onChange={(e) => setFormData({ ...formData, companionsCount: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-navy-950 focus:border-gold-500 focus:bg-white focus:outline-none"
-                        >
-                          <option value="0">بدون مرافق</option>
-                          <option value="1">مرافق واحد</option>
-                          <option value="2">مرافقان</option>
-                          <option value="3+">3 مرافقين أو أكثر</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          هل يحتاج المريض إسعافاً جوياً أو نقلاً طبياً مجهزاً؟
-                        </label>
-                        <select
-                          value={formData.needsAirAmbulance}
-                          onChange={(e) => setFormData({ ...formData, needsAirAmbulance: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-navy-950 focus:border-gold-500 focus:bg-white focus:outline-none"
-                        >
-                          <option value="no">لا (طيران تجاري عادي)</option>
-                          <option value="yes">نعم (إسعاف جوي طبي خاص / حالة دقيقة)</option>
-                        </select>
-                      </div>
-                    </div>
-
+                    {/* Experience Type */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">
-                        ملخص الحالة والتشخيص الطبي الحالي *
-                      </label>
+                      <label className="label">نوع الرعاية أو التجربة المفضلة</label>
+                      <select
+                        value={formData.experienceType}
+                        onChange={(e) => setFormData({ ...formData, experienceType: e.target.value })}
+                        className="field"
+                      >
+                        <option value="استرخاء وهواء جبلي طبيعي (أبها / الطائف)">استرخاء وهواء جبلي طبيعي (أبها / الطائف)</option>
+                        <option value="يوغا وعلاجات سبا شاطئية (ساحل البحر الأحمر)">يوغا وعلاجات سبا شاطئية (ساحل البحر الأحمر)</option>
+                        <option value="ينابيع حارة وحمامات طينية واستشفاء جسدي (الأحساء)">ينابيع حارة وحمامات طينية واستشفاء جسدي (الأحساء)</option>
+                        <option value="علاج عطري ونقاهة بحدائق الورود (الطائف)">علاج عطري ونقاهة بحدائق الورود (الطائف)</option>
+                        <option value="تأمل وعزلة إيجابية وسط الصخور والتاريخ (العلا)">تأمل وعزلة إيجابية وسط الصخور والتاريخ (العلا)</option>
+                        <option value="ديتوكس رقمي ويوغا في سكون الصحراء (الربع الخالي)">ديتوكس رقمي ويوغا في سكون الصحراء (الربع الخالي)</option>
+                        <option value="أنشطة الهواء الطلق ومرافق العافية الحديثة (الرياض)">أنشطة الهواء الطلق ومرافق العافية الحديثة (الرياض)</option>
+                      </select>
+                    </div>
+
+                    {/* Notes */}
+                    <div>
+                      <label className="label">ملاحظات أو متطلبات خاصة (اختياري)</label>
                       <textarea
-                        required
-                        rows={4}
-                        value={formData.medicalSummary}
-                        onChange={(e) => setFormData({ ...formData, medicalSummary: e.target.value })}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-navy-950 focus:border-gold-500 focus:bg-white focus:outline-none leading-relaxed"
-                        placeholder="يرجى كتابة نبذة عن الحالة، الأعراض، الفحوصات المجراة مسبقاً، وأي رغبات خاصة بشأن المستشفى المعالج أو فترة النقاهة..."
+                        rows={3}
+                        value={formData.notes}
+                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        placeholder="أي متطلبات صحية، نوع الإقامة المفضل، أو تفاصيل ترغب في مشاركتها معنا..."
+                        className="field resize-none"
                       />
                     </div>
 
+                    {/* Submit Button */}
                     <button
                       type="submit"
-                      disabled={submitting}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gold-gradient py-3.5 text-xs sm:text-sm font-black text-navy-950 shadow-gold hover:scale-[1.01] transition-all disabled:opacity-50 cursor-pointer"
+                      disabled={loading}
+                      className="btn-gold w-full !py-3.5 text-sm font-black shadow-gold flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <Send size={15} />
-                      <span>{submitting ? 'جاري إرسال الطلب...' : 'إرسال طلب التقييم الطبي الدولي'}</span>
+                      {loading ? (
+                        <span>جاري إرسال الطلب...</span>
+                      ) : (
+                        <>
+                          <Send size={16} />
+                          <span>تأكيد طلب حجز الرحلة العلاجية</span>
+                        </>
+                      )}
                     </button>
+
+                    <p className="text-center text-[11px] text-slate-500">
+                      بياناتك الشخصية والصحية مشمولة بالسرية والخصوصية التامة وفق أعلى المعايير.
+                    </p>
                   </form>
                 )}
               </div>
@@ -590,40 +776,55 @@ ${formData.medicalSummary}`,
         </div>
       </section>
 
-      {/* FAQ Accordion */}
-      <section className="py-16 sm:py-20 bg-slate-50 border-t border-slate-200">
-        <div className="container-x max-w-3xl mx-auto">
+      {/* FAQ Accordion Section */}
+      <section className="py-16 sm:py-20 bg-white border-t border-slate-200">
+        <div className="container-x max-w-4xl">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-50 px-3.5 py-1 text-xs font-bold text-gold-800">
-              <HelpCircle size={14} className="text-gold-600" />
-              <span>إجابات واضحة</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-50 px-3.5 py-1 text-xs font-bold text-gold-800">
+              <HelpCircle size={13} className="text-gold-600" />
+              <span>معلومات هامة</span>
             </div>
-            <h2 className="mt-3 font-display text-2xl font-black text-navy-950">
-              الأسئلة الشائعة حول العلاج بالمملكة
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl font-black text-navy-950">
+              الأسئلة الشائعة حول السياحة العلاجية والاستشفاء
             </h2>
           </div>
 
           <div className="space-y-3">
-            {FAQS.map((faq, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs transition-colors"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                  className="w-full flex items-center justify-between p-4 text-start font-bold text-xs sm:text-sm text-navy-950 hover:text-gold-700 transition-colors"
+            {FAQS.map((faq, idx) => {
+              const isOpen = activeFaq === idx;
+              return (
+                <div
+                  key={idx}
+                  className="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden transition-colors"
                 >
-                  <span>{faq.q}</span>
-                  <span className="text-gold-600 text-base">{openFaq === idx ? '−' : '+'}</span>
-                </button>
-                {openFaq === idx && (
-                  <div className="px-4 pb-4 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
+                  <button
+                    type="button"
+                    onClick={() => setActiveFaq(isOpen ? null : idx)}
+                    className="flex w-full items-center justify-between p-5 text-right font-display text-sm sm:text-base font-bold text-navy-950 hover:text-gold-700 transition-colors cursor-pointer"
+                  >
+                    <span>{faq.q}</span>
+                    <span className="text-lg font-mono text-gold-600 transition-transform">
+                      {isOpen ? '−' : '+'}
+                    </span>
+                  </button>
+
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-200/60">
+                          {faq.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

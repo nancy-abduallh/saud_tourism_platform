@@ -4,181 +4,190 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  Activity,
-  ArrowLeft,
-  Building2,
-  CheckCircle2,
-  FileCheck,
+  Compass,
+  Heart,
   HeartHandshake,
-  HeartPulse,
-  Hospital,
-  Plane,
-  ShieldCheck,
+  MapPin,
+  MessageCircle,
   Sparkles,
-  Stethoscope,
-  Users,
+  Sun,
+  Trees,
+  Waves,
+  Wind,
 } from 'lucide-react';
 
-const MEDICAL_FEATURES = [
+const HIGHLIGHT_DESTINATIONS = [
   {
-    icon: Hospital,
-    title: 'صروح ومدن طبية مرجعية عالمية',
-    subtitle: 'تنسيق مباشر مع مستشفى الملك فيصل التخصصي، مدينة سلطان بن عبدالعزيز الإنسانية، ومدينة الملك فهد الطبية المعتمدة دولياً (JCI).',
-    badge: 'اعتماد دولي JCI',
-    color: 'from-emerald-500/10 to-teal-500/5 border-emerald-500/20 text-emerald-700',
+    id: 'abha',
+    name: 'أبها',
+    title: 'منتجع جبلي هادئ',
+    desc: 'منحدرات خضراء وهواء بارد نقي في منتزه عسير الوطني لسلام داخلي عميق.',
+    image: '/images/medical-abha.jpg',
+    badge: 'استرخاء جبلي',
   },
   {
-    icon: HeartHandshake,
-    title: 'كونسيرج ورعاية المرضى الدوليين 24/7',
-    subtitle: 'تسهيل إصدار التأشيرات العلاجية للمريض ومرافقيه، ومرافق ومترجم طبي خاص على مدار الساعة طوال فترة الإقامة.',
-    badge: 'خدمة كبار الشخصيات',
-    color: 'from-gold-500/10 to-amber-500/5 border-gold-500/20 text-gold-700',
+    id: 'red-sea',
+    name: 'ساحل البحر الأحمر',
+    title: 'ملاذ صحي وشاطئي',
+    desc: 'يوغا شاطئية وعلاجات السبا المريحة أمام مياه البحر الأحمر الصافية بكورنيش جدة.',
+    image: '/images/medical-redsea-jeddah.jpg',
+    badge: 'ملاذ صحي',
   },
   {
-    icon: Plane,
-    title: 'إخلاء واستقبال طبي VIP من الطائرة',
-    subtitle: 'أسطول إسعاف جوي مجهز بأحدث وحدات العناية المركزة واستقبال حصري من مدرج المطار حتى الجناح الملكي بالمستشفى.',
-    badge: 'نقل طبي فوري',
-    color: 'from-blue-500/10 to-sky-500/5 border-blue-500/20 text-blue-700',
+    id: 'ahsa',
+    name: 'الأحساء',
+    title: 'جمال الطبيعة وينابيع ساخنة',
+    desc: 'ينابيع الهفوف ذات الخصائص العلاجية وحمامات طينية وواحات النخيل وجبل القارة.',
+    image: '/images/medical-ahsa.jpg',
+    badge: 'ينابيع علاجية',
   },
   {
-    icon: Sparkles,
-    title: 'برامج نقاهة واستشفاء طبيعي ملكي',
-    subtitle: 'مرحلة تعافٍ واسترخاء بعد العلاج في مصحات ومنتجعات البحر الأحمر وأمالا الاستشفائية، وهواء جبال عسير وواحات العلا.',
-    badge: 'استشفاء وسياحة',
-    color: 'from-purple-500/10 to-indigo-500/5 border-purple-500/20 text-purple-700',
+    id: 'taif',
+    name: 'الطائف',
+    title: 'جنة زهور للاسترخاء',
+    desc: 'مدينة الورود بهوائها الجبلي وحدائق قصر شبرا لتهدئة الحواس واستعادة النشاط.',
+    image: '/images/medical-taif.jpg',
+    badge: 'علاج عطري',
   },
-];
-
-const STATS = [
-  { value: '+95%', label: 'نسبة نجاح الجراحات المعقدة' },
-  { value: '100%', label: 'مستشفيات معتمدة دولياً (JCI)' },
-  { value: '24/7', label: 'مرافقة طبية ومترجم خاص' },
-  { value: '13 فرعاً', label: 'تغطية وتنسيق ميداني شامل' },
+  {
+    id: 'alula',
+    name: 'العلا',
+    title: 'التوازن بين الحاضر والماضي',
+    desc: 'تأمل وسكينة بين الصخور القديمة والبلدة القديمة وصخرة الفيل لإعادة التوازن الروحي.',
+    image: '/images/medical-alula.jpg',
+    badge: 'سكينة وتأمل',
+  },
+  {
+    id: 'rub-al-khali',
+    name: 'الصحراء العربية',
+    title: 'السكينة والهدوء بالربع الخالي',
+    desc: 'رحلات استرخاء روحية وممارسة اليوغا ورؤية النجوم وسط الكثبان الرملية الشاسعة.',
+    image: '/images/medical-rub-al-khali.jpg',
+    badge: 'سكينة الصحراء',
+  },
 ];
 
 export default function MedicalTourismSection() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 py-16 sm:py-24 border-t border-slate-200">
-      {/* Subtle Ambient Glow */}
+      {/* Ambient Glow */}
       <div className="absolute top-0 right-1/4 h-96 w-96 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 h-96 w-96 rounded-full bg-gold-500/5 blur-3xl pointer-events-none" />
 
       <div className="container-x relative">
         {/* Header */}
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-50 px-4 py-1.5 text-xs font-bold text-emerald-800 shadow-sm">
-            <HeartPulse size={15} className="text-emerald-600 animate-pulse" />
-            <span>بوابة السياحة العلاجية والاستشفائية في المملكة</span>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-50 px-4 py-1.5 text-xs font-bold text-emerald-800 shadow-sm">
+              <Sun size={15} className="text-emerald-600" />
+              <span>السياحة العلاجية والاستشفائية في المملكة</span>
+            </div>
+
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-navy-950 leading-tight">
+              7 وجهات للسياحة العلاجية والاستشفاء الطبيعي بالمملكة
+            </h2>
+
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+              بيئات طبيعية ساحرة وملاذات هادئة صُممت لتمنح الجسد والروح فرصة للاسترخاء، واستعادة النشاط، والسلام الداخلي.
+            </p>
           </div>
 
-          <h2 className="mt-4 font-display text-2xl sm:text-3xl lg:text-4xl font-black text-navy-950 leading-tight">
-            رعاية طبية تخصصية فائقة ونقاهة استثنائية في وطن الخير
-          </h2>
-
-          <p className="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-            نستقبل المرضى من كافة أنحاء العالم لتقديم أرقى مستويات العلاج الطبي في كبرى المستشفيات والمدن الطبية المرجعية بالمملكة العربية السعودية، مترافقة مع خدمات كونسيرج متكاملة وإقامة فاخرة وبرامج استشفاء سياحية في أروع معالم المملكة.
-          </p>
+          <Link
+            href="/medical-tourism"
+            className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-2.5 text-xs font-black text-navy-950 shadow-gold transition-transform hover:scale-105 self-start sm:self-auto shrink-0"
+          >
+            <span>استعراض كافة الوجهات الـ 7 وكيفية الحجز</span>
+            <span>←</span>
+          </Link>
         </div>
 
-        {/* 4 Feature Cards */}
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {MEDICAL_FEATURES.map((feat, idx) => {
-            const Icon = feat.icon;
-            return (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className={`relative flex flex-col justify-between rounded-3xl border bg-gradient-to-b p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 ${feat.color}`}
+        {/* 6 Destination Cards Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {HIGHLIGHT_DESTINATIONS.map((dest, idx) => (
+            <motion.div
+              key={dest.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.08 }}
+            >
+              <Link
+                href={`/medical-tourism#dest-${dest.id}`}
+                className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:border-gold-500/50 hover:shadow-xl"
               >
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-sm border border-slate-100 text-navy-950">
-                      <Icon size={24} className="text-navy-950" />
-                    </div>
-                    <span className="rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-black tracking-wider text-navy-950 shadow-xs border border-slate-200">
-                      {feat.badge}
-                    </span>
+                {/* Image */}
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                  <img
+                    src={dest.image}
+                    alt={dest.name}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy-950/75 via-transparent to-transparent opacity-90" />
+
+                  {/* Top Badge */}
+                  <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy-950/85 px-3 py-1 text-[11px] font-bold text-gold-300 backdrop-blur-md">
+                    <Sparkles size={11} className="text-gold-400" />
+                    <span>{dest.badge}</span>
                   </div>
 
-                  <h3 className="mt-5 font-display text-base font-black text-navy-950">
-                    {feat.title}
-                  </h3>
-
-                  <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-                    {feat.subtitle}
-                  </p>
+                  {/* Name on image bottom */}
+                  <div className="absolute bottom-3 right-3 left-3 flex items-center justify-between text-white">
+                    <div className="font-display text-lg font-black">{dest.name}</div>
+                    <span className="text-xs text-gold-300 font-bold">{dest.title}</span>
+                  </div>
                 </div>
-              </motion.div>
-            );
-          })}
+
+                {/* Content */}
+                <div className="flex flex-1 flex-col justify-between p-5">
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {dest.desc}
+                  </p>
+
+                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+                    <span className="font-bold text-emerald-700 group-hover:underline">
+                      تفاصيل الوجهة وكيفية الحجز
+                    </span>
+                    <span className="text-slate-400 transition-transform group-hover:-translate-x-1">
+                      ←
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Highlighted Banner: Journey & Action */}
-        <div className="mt-10 overflow-hidden rounded-3xl border border-gold-500/30 bg-navy-950 p-6 sm:p-10 text-white shadow-xl relative">
-          <div className="absolute top-0 right-0 h-40 w-40 bg-gold-500/10 rounded-full blur-2xl" />
-
-          <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-500/10 px-3 py-1 text-[11px] font-bold text-gold-300">
-                <CheckCircle2 size={13} className="text-gold-400" />
-                <span>برنامج كونسيرج المريض الدولي المكتمل</span>
-              </div>
-
-              <h3 className="mt-3 font-display text-xl sm:text-2xl font-black text-white">
-                رحلة علاجية واستشفائية مصممة خصيصاً لكل مريض ومرافقيه
-              </h3>
-
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-slate-300">
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-gold-400" />
-                  <span>تأشيرات علاجية ميسرة</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-gold-400" />
-                  <span>استشارة وتقييم عن بُعد</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-gold-400" />
-                  <span>أجنحة وفنادق 5 نجوم</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-gold-400" />
-                  <span>متابعة ما بعد التعافي</span>
-                </div>
-              </div>
+        {/* Quick Booking Callout */}
+        <div className="mt-12 rounded-3xl bg-gradient-to-r from-navy-950 via-navy-900 to-navy-950 p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="max-w-xl text-center md:text-right">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-gold-300 mb-2">
+              <Heart size={14} className="text-gold-400 fill-gold-400" />
+              <span>استشارة مجانية وبرامج مخصصة</span>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-              <Link
-                href="/medical-tourism"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 py-3.5 text-xs font-black text-navy-950 shadow-gold transition hover:scale-105"
-              >
-                <span>دليل السياحة العلاجية الشامل</span>
-                <ArrowLeft size={15} />
-              </Link>
-              <Link
-                href="/medical-tourism#consultation"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-6 py-3.5 text-xs font-bold text-white transition hover:bg-white/10"
-              >
-                <Stethoscope size={15} className="text-gold-400" />
-                <span>طلب استشارة وتقييم حالة</span>
-              </Link>
-            </div>
+            <h3 className="font-display text-xl sm:text-2xl font-bold">
+              هل تبحث عن تجربة استشفاء وهدوء مخصصة لك؟
+            </h3>
+            <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
+              تواصل مع كونسيرج العافية لتصميم برنامج استشفائي خاص بك في أبها، البحر الأحمر، الأحساء، الطائف، العلا، الصحراء، أو الرياض مع كافة ترتيبات السكن والتنقل.
+            </p>
           </div>
 
-          {/* Quick Stats Grid */}
-          <div className="mt-8 border-t border-white/10 pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-            {STATS.map((s, idx) => (
-              <div key={idx} className="rounded-xl bg-white/5 p-3 backdrop-blur-xs">
-                <div className="font-display text-xl sm:text-2xl font-black text-gold-400">{s.value}</div>
-                <div className="mt-1 text-[11px] text-slate-300">{s.label}</div>
-              </div>
-            ))}
+          <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+            <Link
+              href="/medical-tourism#booking-form-section"
+              className="btn-gold !py-3 !px-6 text-xs font-black shadow-gold"
+            >
+              احجز رحلتك العلاجية الآن
+            </Link>
+            <a
+              href="https://wa.me/966571713078?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A8%D8%B1%D8%A7%D9%85%D8%AC%20%D9%88%D9%88%D8%AC%D9%87%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%AD%D8%A9%20%D8%A7%D9%84%D8%B9%D9%84%D8%A7%D8%AC%D9%8A%D8%A9%20%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%B4%D9%81%D8%A7%D8%A6%D9%8A%D8%A9."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-2xl border border-white/20 bg-white/10 hover:bg-white/20 px-5 py-3 text-xs font-bold text-white transition-all backdrop-blur-md"
+            >
+              <MessageCircle size={15} />
+              <span>واتساب كونسيرج العافية</span>
+            </a>
           </div>
         </div>
       </div>
