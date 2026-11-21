@@ -15,11 +15,13 @@ import {
   Star,
   Users,
 } from 'lucide-react';
-import type { Branch } from '@/lib/types';
+import type { Branch, PackageDetail, PackageSummary } from '@/lib/types';
 import { BRANCH_REGIONS } from '@/lib/types';
+import { countPackagesForLocation, formatPackageCountArabic } from '@/lib/package-counts';
 
 interface Props {
   initialBranches: Branch[];
+  packages?: (PackageSummary | PackageDetail)[];
 }
 
 const REGION_BADGES: Record<string, { bg: string; text: string; border: string }> = {
@@ -30,7 +32,7 @@ const REGION_BADGES: Record<string, { bg: string; text: string; border: string }
   'المنطقة الشرقية': { bg: 'bg-teal-500/10', text: 'text-teal-300', border: 'border-teal-500/30' },
 };
 
-export default function BranchesBrowser({ initialBranches }: Props) {
+export default function BranchesBrowser({ initialBranches, packages = [] }: Props) {
   const [selectedRegion, setSelectedRegion] = useState<string>('الكل');
   const [search, setSearch] = useState<string>('');
 
@@ -176,6 +178,11 @@ export default function BranchesBrowser({ initialBranches }: Props) {
                     </span>
                     <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/80">
                       {branch.city}
+                    </span>
+                    <span className="rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-1 text-xs font-bold text-gold-300">
+                      {formatPackageCountArabic(
+                        countPackagesForLocation({ name: branch.name, city: branch.city }, packages)
+                      )}
                     </span>
                   </div>
 

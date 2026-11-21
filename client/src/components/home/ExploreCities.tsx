@@ -4,13 +4,14 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Building2, Compass, MapPin, Sparkles } from 'lucide-react';
-import type { ExploreCityItem } from '@/lib/types';
+import type { ExploreCityItem, PackageDetail, PackageSummary } from '@/lib/types';
+import { countPackagesForLocation, formatPackageCountArabic } from '@/lib/package-counts';
 
 const CITIES = [
   {
     name: 'حائل',
     title: 'عروس الشمال ونفود جبة',
-    count: '18 باقة وتجربة',
+    count: '1 باقة وتجربة',
     image: '/images/hail.jpg',
     href: '/packages?destination=hail',
     badge: 'كرم حاتمي',
@@ -18,7 +19,7 @@ const CITIES = [
   {
     name: 'تبوك',
     title: 'وادي الديسة وسواحل حقل',
-    count: '14 باقة وتجربة',
+    count: '1 باقة وتجربة',
     image: '/images/tabuk-disah.jpg',
     href: '/packages?destination=tabuk',
     badge: 'طبيعة بكر',
@@ -26,7 +27,7 @@ const CITIES = [
   {
     name: 'الطائف',
     title: 'عروس المصائف وقمم الهدا',
-    count: '15 باقة وتجربة',
+    count: '1 باقة وتجربة',
     image: '/images/taif.jpg',
     href: '/packages?destination=taif',
     badge: 'أجواء صيفية',
@@ -34,7 +35,7 @@ const CITIES = [
   {
     name: 'القصيم',
     title: 'واحات النخيل وعنيزة التراثية',
-    count: '12 باقة وتجربة',
+    count: '1 باقة وتجربة',
     image: '/images/qassim.jpg',
     href: '/packages?destination=qassim',
     badge: 'نزل ريفية',
@@ -42,7 +43,7 @@ const CITIES = [
   {
     name: 'الخرج',
     title: 'عيون الماء وقصر الملك عبدالعزيز',
-    count: '9 باقات وتجربة',
+    count: '1 باقة وتجربة',
     image: '/images/kharj-springs.jpg',
     href: '/packages?destination=kharj',
     badge: 'قريبة من الرياض',
@@ -50,14 +51,20 @@ const CITIES = [
   {
     name: 'جازان',
     title: 'جزر فرسان وأرخبيل المرجان',
-    count: '11 باقة وتجربة',
+    count: '1 باقة وتجربة',
     image: '/images/jazan-farasan.jpg',
     href: '/packages?destination=jazan',
     badge: 'جزر فيروزية',
   },
 ];
 
-export default function ExploreCities({ items }: { items?: ExploreCityItem[] }) {
+export default function ExploreCities({
+  items,
+  packages = [],
+}: {
+  items?: ExploreCityItem[];
+  packages?: (PackageSummary | PackageDetail)[];
+}) {
   const displayCities = items && items.length > 0 ? items : CITIES;
 
   return (
@@ -89,46 +96,59 @@ export default function ExploreCities({ items }: { items?: ExploreCityItem[] }) 
 
         {/* 6 Responsive Grid Cards */}
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-          {displayCities.map((city, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.06 }}
-            >
-              <Link
-                href={city.href}
-                className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-gold-500/60 hover:shadow-xl"
+          {displayCities.map((city, idx) => {
+            const hasRealPackages = packages && packages.length > 0;
+            const realCount = hasRealPackages
+              ? countPackagesForLocation({ name: city.name, href: city.href }, packages)
+              : null;
+            const displayCount =
+              realCount !== null
+                ? formatPackageCountArabic(realCount)
+                : (city.count && !city.count.match(/^(1[0-9]|[2-9][0-9])\s*باقة/)
+                    ? city.count
+                    : '1 باقة وتجربة');
+
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.06 }}
               >
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-100 mb-3">
-                  <img
-                    src={city.image}
-                    alt={city.name}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <Link
+                  href={city.href}
+                  className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-gold-500/60 hover:shadow-xl"
+                >
+                  <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-100 mb-3">
+                    <img
+                      src={city.image}
+                      alt={city.name}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-                  {/* Badge */}
-                  <span className="absolute bottom-2 right-2 rounded-md bg-navy-950/90 border border-gold-500/30 px-2 py-0.5 text-[9px] font-bold text-gold-300">
-                    {city.badge}
-                  </span>
-                </div>
+                    {/* Badge */}
+                    <span className="absolute bottom-2 right-2 rounded-md bg-navy-950/90 border border-gold-500/30 px-2 py-0.5 text-[9px] font-bold text-gold-300">
+                      {city.badge}
+                    </span>
+                  </div>
 
-                <div className="space-y-0.5 text-start">
-                  <h4 className="font-display text-sm font-black text-navy-950 group-hover:text-gold-700 transition-colors">
-                    {city.name}
-                  </h4>
-                  <p className="text-[11px] text-slate-500 line-clamp-1">
-                    {city.title}
-                  </p>
-                  <span className="block pt-1 text-[10px] font-bold text-gold-700">
-                    {city.count}
-                  </span>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                  <div className="space-y-0.5 text-start">
+                    <h4 className="font-display text-sm font-black text-navy-950 group-hover:text-gold-700 transition-colors">
+                      {city.name}
+                    </h4>
+                    <p className="text-[11px] text-slate-500 line-clamp-1">
+                      {city.title}
+                    </p>
+                    <span className="block pt-1 text-[10px] font-bold text-gold-700">
+                      {displayCount}
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

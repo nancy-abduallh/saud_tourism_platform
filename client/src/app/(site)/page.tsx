@@ -22,7 +22,7 @@ import VipClubBanner from '@/components/home/VipClubBanner';
 import MedicalTourismSection from '@/components/home/MedicalTourismSection';
 import TravelRoutes from '@/components/home/TravelRoutes';
 import { serverFetch } from '@/lib/api';
-import { getBranches, getHomeSectionsData, getSiteSettings } from '@/lib/db';
+import { getBranches, getHomeSectionsData, getPackages, getSiteSettings } from '@/lib/db';
 import type { Destination, HeroSlide, PackageSummary, PublicStats, Review, VipService } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -73,10 +73,11 @@ const homeJsonLd = {
 };
 
 export default async function HomePage() {
-  const [slides, destinations, packages, services, reviews, stats, branches, settings, sectionsData] = await Promise.all([
+  const [slides, destinations, featuredPackages, allPackages, services, reviews, stats, branches, settings, sectionsData] = await Promise.all([
     serverFetch<HeroSlide[]>('/hero', []),
     serverFetch<Destination[]>('/destinations', []),
     serverFetch<PackageSummary[]>('/packages?featured=1&limit=6', []),
+    getPackages(),
     serverFetch<VipService[]>('/services', []),
     serverFetch<Review[]>('/reviews', []),
     serverFetch<PublicStats | undefined>('/stats', undefined),
@@ -108,11 +109,13 @@ export default async function HomePage() {
       {vis.valueProps !== false && <BookingValueProps items={sectionsData.valueProps} />}
       {vis.stayTypes !== false && <StayTypes items={sectionsData.stayTypes} />}
       {vis.trendingDestinations !== false && <TrendingDestinations />}
-      {vis.exploreCities !== false && <ExploreCities items={sectionsData.exploreCities} />}
+      {vis.exploreCities !== false && <ExploreCities items={sectionsData.exploreCities} packages={allPackages} />}
       {vis.marquee !== false && <Marquee items={marqueeItems} />}
       {vis.quickTripPlanner !== false && <QuickTripPlanner categories={sectionsData.tripPlanner} />}
       {vis.weekendDeals !== false && <WeekendDeals deals={sectionsData.weekendDeals} />}
-      {vis.featuredPackages !== false && <FeaturedPackages packages={packages} />}
+      {vis.featuredPackages !== false && (
+        <FeaturedPackages packages={featuredPackages.length > 0 ? featuredPackages : allPackages.slice(0, 6)} />
+      )}
       {vis.popularStays !== false && <PopularStays stays={sectionsData.popularStays} />}
       {vis.vipClubBanner !== false && <VipClubBanner config={sectionsData.vipBanner} />}
       {vis.medicalTourism !== false && (
@@ -121,7 +124,7 @@ export default async function HomePage() {
       {vis.stats !== false && <Stats data={stats} />}
       {vis.vipServices !== false && <VipServices services={services} />}
       {vis.ownerMessage !== false && <OwnerMessage settings={settings} />}
-      {vis.branches !== false && <BranchesHomeSection branches={branches} />}
+      {vis.branches !== false && <BranchesHomeSection branches={branches} packages={allPackages} />}
       {vis.travelRoutes !== false && <TravelRoutes departures={sectionsData.travelRoutes} />}
       {vis.whyUs !== false && <WhyUs />}
       {vis.howItWorks !== false && <HowItWorks />}

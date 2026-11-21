@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import BranchesBrowser from '@/components/BranchesBrowser';
-import { getBranches } from '@/lib/db';
+import { getBranches, getPackages } from '@/lib/db';
 import { Building2, Globe2, MapPin, ShieldCheck, Sparkles, Users } from 'lucide-react';
 
 const BASE_URL = 'https://saudtourism.ksaplatforms.com';
@@ -52,7 +52,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function BranchesPage() {
-  const branches = await getBranches();
+  const [branches, packages] = await Promise.all([
+    getBranches(),
+    getPackages(),
+  ]);
 
   const branchesJsonLd = {
     '@context': 'https://schema.org',
@@ -131,7 +134,7 @@ export default async function BranchesPage() {
 
       {/* Main Interactive Browser Section */}
       <section className="container-x pb-24">
-        <BranchesBrowser initialBranches={branches} />
+        <BranchesBrowser initialBranches={branches} packages={packages} />
       </section>
     </main>
   );

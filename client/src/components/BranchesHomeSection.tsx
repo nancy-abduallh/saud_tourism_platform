@@ -2,13 +2,15 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Building2, MapPin, MessageCircle, Phone, Sparkles, Star } from 'lucide-react';
-import type { Branch } from '@/lib/types';
+import type { Branch, PackageDetail, PackageSummary } from '@/lib/types';
+import { countPackagesForLocation, formatPackageCountArabic } from '@/lib/package-counts';
 
 interface Props {
   branches: Branch[];
+  packages?: (PackageSummary | PackageDetail)[];
 }
 
-export default function BranchesHomeSection({ branches }: Props) {
+export default function BranchesHomeSection({ branches, packages = [] }: Props) {
   // Highlight top 8 branches on homepage or all 13 as sleek cards
   const displayBranches = branches.slice(0, 8);
 
@@ -91,7 +93,14 @@ export default function BranchesHomeSection({ branches }: Props) {
                   <h3 className="mt-3 font-display text-lg font-bold text-white transition group-hover:text-gold-300">
                     {branch.name}
                   </h3>
-                  <p className="font-sans text-[11px] text-white/50">{branch.city}</p>
+                  <div className="mt-1 flex items-center justify-between text-[11px]">
+                    <span className="font-sans text-white/50">{branch.city}</span>
+                    <span className="font-bold text-gold-400">
+                      {formatPackageCountArabic(
+                        countPackagesForLocation({ name: branch.name, city: branch.city }, packages)
+                      )}
+                    </span>
+                  </div>
 
                   {branch.description && (
                     <p className="mt-3 line-clamp-2 text-xs leading-relaxed text-white/70">
